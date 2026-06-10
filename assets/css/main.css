@@ -1,0 +1,635 @@
+/* ============================================================================
+ *  Worker F — global theme + reusable component classes (the design system).
+ *  Fonts: Cinzel (display/engraved) + Marcellus (body) via Google Fonts.
+ *  Component classes live in @layer components so other UI workers can compose
+ *  them directly: .hs-card .hs-frame .mana-gem .stat-gem-attack .stat-gem-health
+ *  .rarity-gem .btn-gold .panel-wood (+ helpers).
+ * ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Marcellus&family=Cabin:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------------------------------------------------------------------------
+ * Global base + wood-table backdrop
+ * ------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+  /* shared design tokens (mirror tailwind.config.js for raw-CSS consumers) */
+  --gold: #f0c850;
+  --gold-light: #ffe9a8;
+  --gold-dark: #8a5e16;
+  --parchment: #e8d9b5;
+  --wood-900: #1a120a;
+  --wood-700: #3a2a18;
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  position: relative;
+  color: #f3e9d2;
+  font-family: 'Marcellus', 'Cabin', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  /* Warm wood table: layered radial warmth over a brown plank gradient. */
+  background-color: #1a120a;
+  background-image:
+    radial-gradient(120% 80% at 50% 16%, rgba(132, 96, 50, 0.6) 0%, rgba(58, 42, 24, 0.22) 44%, rgba(20, 14, 8, 0) 70%),
+    radial-gradient(140% 100% at 50% 120%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 60%),
+    repeating-linear-gradient(
+      96deg,
+      #2a1c10 0px,
+      #31221300 0px,
+      #341f12 2px,
+      #2a1b0f 3px,
+      #321f11 26px
+    ),
+    linear-gradient(180deg, #3a2a18 0%, #271a0e 55%, #160e07 100%);
+  background-attachment: fixed;
+}
+
+/* Atmospheric overlays painted over the whole viewport — a soft film grain and a
+ * deep edge vignette that frames the play area. Pointer-events disabled so they
+ * never intercept clicks; sit just above the body backdrop and below the app. */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Fine procedural grain (SVG fractal noise as a data URI — no extra request). */
+body::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+/* Vignette: warm glow up top, heavy darkening toward the corners. */
+body::after {
+  background:
+    radial-gradient(120% 95% at 50% 8%, rgba(255, 224, 160, 0.07) 0%, rgba(0, 0, 0, 0) 38%),
+    radial-gradient(135% 120% at 50% 50%, rgba(0, 0, 0, 0) 52%, rgba(8, 5, 2, 0.55) 100%);
+}
+/* Keep the real app above the ambiance layers. */
+#__nuxt {
+  position: relative;
+  z-index: 1;
+}
+
+* {
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* ----------------------------------------------------------------------------
+ * Global focus state — golden ring, never the default blue outline.
+ * ------------------------------------------------------------------------- */
+:focus-visible {
+  outline: none;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 2px rgba(20, 14, 8, 0.9),
+    0 0 0 4px rgba(240, 200, 80, 0.85),
+    0 0 12px 2px rgba(240, 200, 80, 0.45);
+}
+
+/* ----------------------------------------------------------------------------
+ * Scrollbar — golden on wood
+ * ------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.5), rgba(20, 14, 8, 0.55) 50%, rgba(0, 0, 0, 0.5));
+  border-radius: 8px;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(180deg, #f6da86 0%, #d8a830 22%, #b8841f 55%, #8a5e16 100%);
+  border: 2px solid #2a1c10;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 245, 210, 0.55),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.45);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ffe9a8 0%, #f0c850 40%, #b8841f 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.7),
+    0 0 8px rgba(240, 200, 80, 0.55);
+}
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #d8a830, #8a5e16);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+* {
+  scrollbar-color: #b8841f rgba(20, 14, 8, 0.6);
+  scrollbar-width: thin;
+}
+
+/* ============================================================================
+ *  COMPONENT CLASSES  (@layer components)
+ * ========================================================================== */
+@layer components {
+  /* --- Typography helpers --- */
+  .font-engrave {
+    font-family: 'Cinzel', 'Trajan Pro', Georgia, serif;
+    letter-spacing: 0.02em;
+  }
+  .text-engrave {
+    color: var(--gold-light);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9), 0 0 8px rgba(240, 200, 80, 0.25);
+  }
+
+  /* --- Golden ornamental frame (reusable rim) --- */
+  .hs-frame {
+    position: relative;
+    border: 2px solid #6b4a16;
+    border-radius: 14px;
+    background:
+      linear-gradient(115deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 38%),
+      linear-gradient(180deg, #f6da86 0%, #d8a830 18%, #b8841f 50%, #8a5e16 82%, #6b4a16 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+      inset 0 1px 2px rgba(255, 255, 255, 0.6),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.45),
+      0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* --- Wood panel (menus, sidebars, dialogs) --- */
+  .panel-wood {
+    position: relative;
+    border: 2px solid #6b4a16;
+    border-radius: 12px;
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(126, 92, 48, 0.45), rgba(0, 0, 0, 0) 60%),
+      repeating-linear-gradient(94deg, #3a2a18 0px, #2f2113 14px, #3a2a18 28px),
+      linear-gradient(180deg, #42301c 0%, #2a1c10 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 245, 210, 0.1),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.35),
+      inset 0 -3px 8px rgba(0, 0, 0, 0.55),
+      0 10px 28px rgba(0, 0, 0, 0.6);
+    color: #f3e9d2;
+  }
+  /* Hairline golden inner keyline that reads as gilt edge on the wood. */
+  .panel-wood::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 9px;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(240, 200, 80, 0.16);
+  }
+
+  /* --- Parchment surface (card body text area, reward text) --- */
+  .panel-parchment {
+    position: relative;
+    border-radius: 8px;
+    background:
+      radial-gradient(140% 120% at 22% 6%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 40%),
+      radial-gradient(120% 120% at 30% 10%, #f3e9d2 0%, #e8d9b5 55%, #cdb888 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(120, 90, 50, 0.55),
+      inset 0 2px 6px rgba(120, 90, 50, 0.35),
+      inset 0 -6px 14px rgba(150, 116, 70, 0.3);
+    color: #3a2410;
+  }
+
+  /* --- Golden button --- */
+  .btn-gold {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #3a2410;
+    text-shadow: 0 1px 0 rgba(255, 240, 200, 0.6);
+    border: 2px solid #6b4a16;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    background: linear-gradient(180deg, #ffe9a8 0%, #f0c850 30%, #d8a830 60%, #b8841f 100%);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.7),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+      0 4px 10px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+  /* Glossy top highlight that brightens on hover. */
+  .btn-gold::before {
+    content: '';
+    position: absolute;
+    inset: 1px 1px 50% 1px;
+    border-radius: 8px 8px 14px 14px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%);
+    opacity: 0.7;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+  /* Travelling sheen swept across on hover. */
+  .btn-gold::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(105deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-18deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .btn-gold:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.85),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+      0 6px 16px rgba(0, 0, 0, 0.5),
+      0 0 16px 2px rgba(240, 200, 80, 0.45);
+  }
+  .btn-gold:hover::before {
+    opacity: 1;
+  }
+  .btn-gold:hover::after {
+    animation: btnSheen 0.7s ease-out;
+  }
+  .btn-gold:active {
+    transform: translateY(1px) scale(0.985);
+    filter: brightness(0.95);
+    box-shadow:
+      inset 0 2px 5px rgba(0, 0, 0, 0.45),
+      inset 0 1px 1px rgba(255, 255, 255, 0.3),
+      0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+  .btn-gold:disabled,
+  .btn-gold[aria-disabled='true'] {
+    filter: grayscale(0.7) brightness(0.75);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  .btn-gold:disabled::before,
+  .btn-gold[aria-disabled='true']::before {
+    opacity: 0.25;
+  }
+  .btn-gold:disabled::after,
+  .btn-gold[aria-disabled='true']::after {
+    display: none;
+  }
+
+  /* Quiet (wood) button variant */
+  .btn-wood {
+    position: relative;
+    overflow: hidden;
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 600;
+    color: #f3e9d2;
+    border: 2px solid #6b4a16;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    background:
+      radial-gradient(120% 130% at 50% -10%, rgba(126, 92, 48, 0.5), rgba(0, 0, 0, 0) 60%),
+      linear-gradient(180deg, #4d3620 0%, #2a1c10 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 245, 210, 0.12),
+      inset 0 -2px 5px rgba(0, 0, 0, 0.5),
+      0 4px 10px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+  .btn-wood:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+    border-color: #8a5e16;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 245, 210, 0.18),
+      inset 0 -2px 5px rgba(0, 0, 0, 0.5),
+      0 6px 14px rgba(0, 0, 0, 0.5),
+      0 0 10px rgba(240, 200, 80, 0.18);
+  }
+  .btn-wood:active {
+    transform: translateY(1px) scale(0.985);
+    filter: brightness(0.95);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.6),
+      0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+  .btn-wood:disabled,
+  .btn-wood[aria-disabled='true'] {
+    filter: grayscale(0.6) brightness(0.7);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* --- Mana gem (top-left cost orb, faceted blue crystal) --- */
+  .mana-gem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 800;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    background:
+      radial-gradient(circle at 32% 26%, #bfe2ff 0%, #6fb6ff 22%, #2e7fd6 55%, #11447f 100%);
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.65),
+      inset 0 -4px 8px rgba(0, 0, 0, 0.55),
+      0 2px 5px rgba(0, 0, 0, 0.6),
+      0 0 8px rgba(46, 127, 214, 0.6);
+    border: 2px solid #0c3361;
+  }
+  /* Crescent glare across the top-left — sells the polished-crystal read. */
+  .mana-gem::before {
+    content: '';
+    position: absolute;
+    top: 11%;
+    left: 16%;
+    width: 56%;
+    height: 42%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 35%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+  }
+
+  /* --- Stat gems (attack = gold blade, health = red blood drop) --- */
+  .stat-gem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+    border-radius: 50%;
+  }
+  /* Shared specular highlight for both stat gems. */
+  .stat-gem-attack::before,
+  .stat-gem-health::before {
+    content: '';
+    position: absolute;
+    top: 12%;
+    left: 18%;
+    width: 52%;
+    height: 40%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 40% 35%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+  }
+  .stat-gem-attack {
+    background: radial-gradient(circle at 34% 28%, #ffe9a8 0%, #f0c850 30%, #c79018 65%, #7a560d 100%);
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.7),
+      inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+      0 2px 5px rgba(0, 0, 0, 0.6);
+    border: 2px solid #5e420a;
+  }
+  .stat-gem-health {
+    background: radial-gradient(circle at 34% 28%, #ff9b8c 0%, #e2503a 30%, #b32414 65%, #6d0f06 100%);
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.55),
+      inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+      0 2px 5px rgba(0, 0, 0, 0.6);
+    border: 2px solid #5e0d05;
+  }
+  /* Damaged / buffed stat text recoloring helpers */
+  .stat-buffed {
+    color: #8cff7a;
+    text-shadow: 0 0 6px rgba(80, 255, 90, 0.8), 0 1px 2px rgba(0, 0, 0, 0.9);
+  }
+  .stat-damaged {
+    color: #ff6a5a;
+    text-shadow: 0 0 6px rgba(255, 80, 60, 0.8), 0 1px 2px rgba(0, 0, 0, 0.9);
+  }
+
+  /* --- Rarity gem (small faceted diamond under the art / on the banner) --- */
+  .rarity-gem {
+    width: 0.7rem;
+    height: 0.7rem;
+    transform: rotate(45deg);
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.7),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.5),
+      0 0 4px rgba(0, 0, 0, 0.5);
+  }
+  .rarity-free {
+    background: radial-gradient(circle at 30% 30%, #cfd4d9, #9aa0a6 70%, #6b7075);
+  }
+  .rarity-common {
+    background: radial-gradient(circle at 30% 30%, #ffffff, #c7ccd1 70%, #8b9197);
+  }
+  .rarity-rare {
+    background: radial-gradient(circle at 30% 30%, #aacbff, #3d7ff0 70%, #1a4fb0);
+  }
+  .rarity-epic {
+    background: radial-gradient(circle at 30% 30%, #e6b4ff, #b14ee0 70%, #7a23a8);
+  }
+  .rarity-legendary {
+    background: radial-gradient(circle at 30% 30%, #ffd9a0, #f0902a 70%, #b85e10);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.75),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.5),
+      0 0 6px 1px rgba(240, 144, 42, 0.7);
+  }
+
+  /* --- The card shell --- */
+  .hs-card {
+    position: relative;
+    border-radius: 14px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.5);
+    will-change: transform;
+  }
+  /* Hover = a gentle tactile lift + glow. The fully-readable zoom is handled by the
+     global <CardPreview> overlay (viewport-clamped, never clips), so the in-place
+     transform stays small and a low z-index keeps it under that overlay. */
+  .hs-card-hover:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6), 0 5px 12px rgba(0, 0, 0, 0.45);
+    z-index: 5;
+  }
+  .hs-card-sm.hs-card-hover:hover {
+    transform: translateY(-6px) scale(1.06);
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.58), 0 4px 9px rgba(0, 0, 0, 0.42);
+    z-index: 5;
+  }
+  /* Playable: persistent golden aura + subtle pulse */
+  .hs-card-playable {
+    animation: cardGlow 1.8s ease-in-out infinite;
+  }
+  .hs-card-playable:hover {
+    animation: none;
+    box-shadow:
+      0 18px 34px rgba(0, 0, 0, 0.6),
+      0 0 28px 8px rgba(240, 200, 80, 0.65),
+      0 0 10px 2px rgba(255, 233, 168, 0.8);
+  }
+
+  /* Card type tints used behind the art frame */
+  .frame-minion {
+    --frame-tint: #b8841f;
+  }
+  .frame-spell {
+    --frame-tint: #4f8fd6;
+  }
+  .frame-weapon {
+    --frame-tint: #8a6a3a;
+  }
+  .frame-hero_power {
+    --frame-tint: #7a4fb0;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Small bold-keyword styling for rendered card text (**Battlecry:** etc.)
+ * ------------------------------------------------------------------------- */
+.card-text-kw {
+  font-weight: 700;
+  color: #2a1607;
+}
+/* Spell-damage-boosted number in card text (e.g. "Deal 3* damage"). */
+.card-text-sd {
+  font-weight: 800;
+  color: #1f6a14;
+  text-shadow: 0 0 6px rgba(110, 255, 110, 0.45);
+}
+
+/* ============================================================================
+ *  Shared keyframes + utilities (reusable by every screen)
+ * ========================================================================== */
+
+/* Button sheen sweep (consumed by .btn-gold:hover::after). */
+@keyframes btnSheen {
+  0% {
+    left: -60%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+/* Slow rotating conic gleam — for legendary frames / treasure reveals. */
+@keyframes goldSweep {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Gentle vertical bob distinct from .animate-float (smaller, slower). */
+@keyframes driftSoft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* One-shot pop used for value changes / freshly placed elements. */
+@keyframes popIn {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Soft golden breathing ring — selectable / highlighted targets. */
+@keyframes auraPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 1px rgba(240, 200, 80, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 18px 5px rgba(240, 200, 80, 0.75);
+  }
+}
+
+@layer utilities {
+  /* A gilt rotating gleam layer — place inside a position:relative parent. */
+  .gold-gleam {
+    position: absolute;
+    inset: -40%;
+    pointer-events: none;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0) 0deg,
+      rgba(255, 245, 210, 0.35) 30deg,
+      rgba(255, 255, 255, 0) 70deg,
+      rgba(255, 255, 255, 0) 360deg
+    );
+    animation: goldSweep 6s linear infinite;
+  }
+  .animate-drift {
+    animation: driftSoft 4.5s ease-in-out infinite;
+  }
+  .animate-popIn {
+    animation: popIn 0.32s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+  }
+  .animate-auraPulse {
+    animation: auraPulse 1.8s ease-in-out infinite;
+  }
+  /* Engraved parchment heading divider (thin gilt rule). */
+  .rule-gold {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(240, 200, 80, 0) 0%,
+      rgba(240, 200, 80, 0.7) 50%,
+      rgba(240, 200, 80, 0) 100%
+    );
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Reduced-motion: silence the heavy, looping decorative animations. One-shot
+ * transitions (hover lifts, presses) stay — they're brief and informative.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .animate-cardGlow,
+  .hs-card-playable,
+  .animate-float,
+  .animate-pulseSoft,
+  .animate-shimmer,
+  .animate-drift,
+  .animate-auraPulse,
+  .gold-gleam {
+    animation: none !important;
+  }
+  .btn-gold:hover::after {
+    animation: none !important;
+  }
+}

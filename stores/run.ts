@@ -1,0 +1,609 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import type {
+  CardDef,
+  GameSetup,
+  HeroState,
+  PlayerSetup,
+  RewardOffering,
+  RewardType,
+  RngState,
+  RunStage,
+  RunState,
+} from '~/game/types'
+import {
+  RUN_TARGET_WINS,
+  RUN_MAX_LOSSES,
+  STARTING_HEALTH,
+  HEALTH_PER_ROUND,
+} from '~/game/types'
+import { getCard, generateOffering } from '~/game/index'
+import type { RewardPools } from '~/game/index'
+import { nextInt } from '~/game/rng'
+import {
+  getHeroDef,
+  getTreasureDef,
+  getBucketDef,
+  getEnemyDef,
+  enemies,
+  bucketIdsForClass,
+  passiveTreasureIds,
+  activeTreasureIds,
+  initializeContent,
+  isContentInitialized,
+} from '~/data/registry'
+import { scalingTreasureForRound } from '~/data/treasures/scaling'
+
+const STORAGE_KEY = 'duels-run'
+
+/** Cap on the player-built deck (signature treasure is the +1 16th card). */
+const DECK_LIMIT = 15
+
+/** Make sure the engine has its content registered before we build state. */
+function ensureContent(): void {
+  if (!isContentInitialized()) initializeContent()
+}
+
+/** Build a fresh, empty RunState at the hero-select stage. */
+function freshRunState(seed: number): RunState {
+  return {
+    stage: 'heroSelect',
+    heroId: undefined,
+    heroPowerId: undefined,
+    signatureTreasureId: undefined,
+    deck: [],
+    passiveTreasureIds: [],
+    activeTreasureIds: [],
+    wins: 0,
+    losses: 0,
+    maxHealth: STARTING_HEALTH,
+    round: 1,
+    seed,
+    offering: undefined,
+    currentEnemyId: undefined,
+  }
+}
+
+/**
+ * The run / meta-progression store. Owns the whole roguelike loop: hero draft,
+ * deck build, the 12-win / 3-loss combat ladder, and reward offerings. Drives a
+ * single match at a time through {@link useGameStore}. Persisted to localStorage
+ * under 'duels-run' on every mutation and reloaded on startup.
+ */
+export const useRunStore = defineStore('run', () => {
+  // --- core state (mirrors RunState) ---
+  const stage = ref<RunStage>('heroSelect')
+  const heroId = ref<string | undefined>(undefined)
+  const heroPowerId = ref<string | undefined>(undefined)
+  const signatureTreasureId = ref<string | undefined>(undefined)
+  const deck = ref<string[]>([])
+  const passiveTreasures = ref<string[]>([])
+  const activeTreasures = ref<string[]>([])
+  const wins = ref(0)
+  const losses = ref(0)
+  const maxHealth = ref(STARTING_HEALTH)
+  const round = ref(1)
+  const seed = ref(Date.now() & 0x7fffffff)
+  const offering = ref<RewardOffering | undefined>(undefined)
+  /** Reward offerings queued behind the current one (treasure round → treasure + bucket). */
+  const rewardQueue = ref<RewardOffering[]>([])
+  const currentEnemyId = ref<string | undefined>(undefined)
+
+  /** True once a run has been started (used by the run page to gate redirects). */
+  const active = ref(false)
+
+  /** Seeded RNG advanced for reward generation (kept inside the persisted seed). */
+  function rngState(): RngState {
+    return { seed: seed.value }
+  }
+
+  /* ------------------------------------------------------------------------
+   * Getters
+   * --------------------------------------------------------------------- */
+
+  /** The chosen hero's definition, or undefined before selection. */
+  const heroDef = computed(() => (heroId.value ? getHeroDef(heroId.value) : undefined))
+
+  /** Resolved CardDefs for every card in the built deck (excludes signature). */
+  const deckCardDefs = computed<CardDef[]>(() => deck.value.map((id) => getCard(id)))
+
+  /** Number of cards in the built deck (signature not counted). */
+  const deckCount = computed(() => deck.value.length)
+
+  /** Whether the deck has reached the 15-card build limit. */
+  const deckFull = computed(() => deck.value.length >= DECK_LIMIT)
+
+  /** The enemy definition for the current/next combat. */
+  const currentEnemyDef = computed(() =>
+    currentEnemyId.value ? getEnemyDef(currentEnemyId.value) : enemyForRound(round.value)
+  )
+
+  /** Human-readable run progress, e.g. "Round 3 · 2 Wins · 1 Loss". */
+  const progressText = computed(() => {
+    const w = `${wins.value} ${wins.value === 1 ? 'Win' : 'Wins'}`
+    const l = `${losses.value} ${losses.value === 1 ? 'Loss' : 'Losses'}`
+    return `Round ${round.value} · ${w} · ${l}`
+  })
+
+  /**
+   * Can the given card still be added to the deck?
+   * Rules: deck not full, card not already present (no duplicates), card exists.
+   * @param cardId - the candidate card id
+   */
+  function canAdd(cardId: string): boolean {
+    if (deck.value.length >= DECK_LIMIT) return false
+    if (deck.value.includes(cardId)) return false
+    return true
+  }
+
+  /* ------------------------------------------------------------------------
+   * Persistence
+   * --------------------------------------------------------------------- */
+
+  /** Snapshot the reactive state into a plain RunState. */
+  function snapshot(): RunState {
+    return {
+      stage: stage.value,
+      heroId: heroId.value,
+      heroPowerId: heroPowerId.value,
+      signatureTreasureId: signatureTreasureId.value,
+      deck: [...deck.value],
+      passiveTreasureIds: [...passiveTreasures.value],
+      activeTreasureIds: [...activeTreasures.value],
+      wins: wins.value,
+      losses: losses.value,
+      maxHealth: maxHealth.value,
+      round: round.value,
+      seed: seed.value,
+      offering: offering.value ? { ...offering.value, choices: [...offering.value.choices] } : undefined,
+      rewardQueue: rewardQueue.value.map((o) => ({ ...o, choices: [...o.choices] })),
+      currentEnemyId: currentEnemyId.value,
+    }
+  }
+
+  /** Write the current run to localStorage. Safe to call from any mutation. */
+  function save(): void {
+    if (typeof window === 'undefined') return
+    if (!active.value) return
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()))
+    } catch {
+      // Storage may be unavailable — ignore.
+    }
+  }
+
+  /** Apply a plain RunState onto the reactive refs. */
+  function hydrate(s: RunState): void {
+    stage.value = s.stage
+    heroId.value = s.heroId
+    heroPowerId.value = s.heroPowerId
+    signatureTreasureId.value = s.signatureTreasureId
+    deck.value = [...(s.deck ?? [])]
+    passiveTreasures.value = [...(s.passiveTreasureIds ?? [])]
+    activeTreasures.value = [...(s.activeTreasureIds ?? [])]
+    wins.value = s.wins ?? 0
+    losses.value = s.losses ?? 0
+    maxHealth.value = s.maxHealth ?? STARTING_HEALTH
+    round.value = s.round ?? 1
+    seed.value = s.seed ?? (Date.now() & 0x7fffffff)
+    offering.value = s.offering
+    rewardQueue.value = (s.rewardQueue ?? []).map((o) => ({ ...o, choices: [...o.choices] }))
+    currentEnemyId.value = s.currentEnemyId
+    active.value = true
+  }
+
+  /**
+   * Load a saved run from localStorage, if any.
+   * @returns true when an in-progress run was restored.
+   */
+  function loadFromStorage(): boolean {
+    if (typeof window === 'undefined') return false
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (!raw) return false
+      const data = JSON.parse(raw) as RunState
+      if (!data || typeof data.stage !== 'string') return false
+      hydrate(data)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /** Remove any persisted run. */
+  function clearStorage(): void {
+    if (typeof window === 'undefined') return
+    try {
+      window.localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+   * Run lifecycle
+   * --------------------------------------------------------------------- */
+
+  /**
+   * Begin a brand-new run at the hero-select stage. Clears any prior progress.
+   * @param newSeed - optional deterministic seed (defaults to a time-based seed)
+   */
+  function startNewRun(newSeed?: number): void {
+    ensureContent()
+    const s = freshRunState(newSeed ?? (Date.now() & 0x7fffffff))
+    hydrate(s)
+    active.value = true
+    // Auto-pick the only hero so the player lands on the hero portrait screen,
+    // but leave selection explicit (HeroSelect calls selectHero to advance).
+    save()
+  }
+
+  /** Abandon the current run entirely and wipe its save. */
+  function abandon(): void {
+    clearStorage()
+    active.value = false
+    const s = freshRunState(Date.now() & 0x7fffffff)
+    hydrate(s)
+    active.value = false
+  }
+
+  /* ------------------------------------------------------------------------
+   * Draft stages
+   * --------------------------------------------------------------------- */
+
+  /** Pick the run hero and advance to hero-power selection. */
+  function selectHero(id: string): void {
+    ensureContent()
+    heroId.value = id
+    stage.value = 'heroPowerSelect'
+    save()
+  }
+
+  /** Pick the hero power and advance to signature-treasure selection. */
+  function selectHeroPower(id: string): void {
+    heroPowerId.value = id
+    stage.value = 'signatureSelect'
+    save()
+  }
+
+  /** Pick the signature treasure and advance to deck building. */
+  function selectSignature(id: string): void {
+    signatureTreasureId.value = id
+    stage.value = 'deckBuild'
+    save()
+  }
+
+  /* ------------------------------------------------------------------------
+   * Deck building
+   * --------------------------------------------------------------------- */
+
+  /** Add a card to the deck if allowed (no duplicates, under the limit). */
+  function deckAdd(cardId: string): void {
+    if (!canAdd(cardId)) return
+    deck.value = [...deck.value, cardId]
+    save()
+  }
+
+  /** Remove the first matching card from the deck. */
+  function deckRemove(cardId: string): void {
+    const i = deck.value.indexOf(cardId)
+    if (i < 0) return
+    const next = [...deck.value]
+    next.splice(i, 1)
+    deck.value = next
+    save()
+  }
+
+  /** Toggle a card in/out of the deck (add if absent & allowed, else remove). */
+  function deckToggle(cardId: string): void {
+    if (deck.value.includes(cardId)) deckRemove(cardId)
+    else deckAdd(cardId)
+  }
+
+  /** Lock in the deck (must be exactly the build limit) and start the first combat. */
+  function confirmDeck(): void {
+    if (deck.value.length !== DECK_LIMIT) return
+    stage.value = 'map'
+    save()
+    startNextCombat()
+  }
+
+  /* ------------------------------------------------------------------------
+   * Combat
+   * --------------------------------------------------------------------- */
+
+  /**
+   * Choose the enemy for a given (1-based) round: cycle the regular roster, and
+   * face the boss in the final stretch. Difficulty is scaled separately.
+   */
+  function enemyForRound(r: number) {
+    const bosses = enemies.filter((e) => e.isBoss)
+    const regular = enemies.filter((e) => !e.isBoss)
+    if (r >= RUN_TARGET_WINS && bosses.length > 0) return bosses[bosses.length - 1]
+    const pool = regular.length > 0 ? regular : enemies
+    return pool[(r - 1) % pool.length]
+  }
+
+  /**
+   * Cards the enemy has "drafted" by a given (1-based) round: one bucket from
+   * its class/neutral pool per completed round, mirroring the player's
+   * bucket-after-every-fight growth so opposing decks keep pace with ours.
+   * Deterministic for a given run seed; uses a local RNG stream so enemy
+   * drafting never disturbs the persisted reward RNG.
+   */
+  function enemyGrowthCards(heroClass: string, r: number): string[] {
+    const pool = bucketIdsForClass(heroClass)
+    if (pool.length === 0 || r <= 1) return []
+    const rng: RngState = { seed: (seed.value ^ 0xb7e15163) | 0 }
+    const cards: string[] = []
+    for (let i = 1; i < r; i++) {
+      const bucketId = pool[nextInt(rng, pool.length)]
+      cards.push(...getBucketDef(bucketId).cardIds)
+    }
+    return cards
+  }
+
+  /**
+   * Build both PlayerSetups, assemble the GameSetup, and hand off to the game
+   * store to begin the fight. Sets stage to 'combat'.
+   */
+  function startNextCombat(): void {
+    ensureContent()
+    const game = useGameStore()
+
+    const enemyDef = enemyForRound(round.value)
+    currentEnemyId.value = enemyDef.id
+
+    // --- human setup ---
+    const hDef = getHeroDef(heroId.value as string)
+    const humanHero: HeroState = {
+      name: hDef.name,
+      cardClass: hDef.cardClass,
+      health: maxHealth.value,
+      maxHealth: maxHealth.value,
+      armor: 0,
+      attack: 0,
+      attacksThisTurn: 0,
+      art: hDef.portraitArt ?? hDef.art,
+    }
+    // Signature treasure: most embed a card added to the deck; a few are PASSIVE
+    // (auras/triggers, no card) and instead attach to the player like a passive treasure.
+    const sigDef = signatureTreasureId.value ? getTreasureDef(signatureTreasureId.value) : undefined
+    const humanDeck = sigDef?.card ? [sigDef.card.id, ...deck.value] : [...deck.value]
+    const sigPassiveIds = sigDef && !sigDef.card ? [sigDef.id] : []
+
+    const human: PlayerSetup = {
+      hero: humanHero,
+      heroPowerId: heroPowerId.value as string,
+      deckCardIds: humanDeck,
+      passiveTreasureIds: [...passiveTreasures.value, ...sigPassiveIds],
+      isAI: false,
+    }
+
+    // --- enemy setup --- scales with the run: more health each round, a minion
+    // stat buff at higher rounds, and extra drafted cards so the enemy's deck
+    // grows alongside the player's.
+    const baseHealth = enemyDef.startingHealth ?? STARTING_HEALTH
+    const enemyHealth = baseHealth + Math.max(0, round.value - 1) * 4
+    const enemyHero: HeroState = {
+      name: enemyDef.heroName,
+      cardClass: enemyDef.heroClass,
+      health: enemyHealth,
+      maxHealth: enemyHealth,
+      armor: 0,
+      attack: 0,
+      attacksThisTurn: 0,
+      art: enemyDef.portraitArt,
+    }
+    const scaleId = scalingTreasureForRound(round.value)
+    const enemyPassives = [
+      ...(enemyDef.passiveTreasureIds ?? []),
+      ...(scaleId ? [scaleId] : []),
+    ]
+    const enemy: PlayerSetup = {
+      hero: enemyHero,
+      heroPowerId: enemyDef.heroPowerId,
+      deckCardIds: [...enemyDef.deck, ...enemyGrowthCards(enemyDef.heroClass, round.value)],
+      passiveTreasureIds: enemyPassives,
+      isAI: true,
+    }
+
+    // Odd rounds: human goes first; even rounds: enemy first.
+    const firstPlayer = round.value % 2 === 1 ? 0 : 1
+    const setup: GameSetup = { players: [human, enemy], firstPlayer }
+
+    stage.value = 'combat'
+    save()
+
+    // Tell the game store which enemy this is so it can resolve the AI profile.
+    if (typeof (game as { setEnemyById?: (id: string) => void }).setEnemyById === 'function') {
+      ;(game as unknown as { setEnemyById: (id: string) => void }).setEnemyById(enemyDef.id)
+    }
+
+    // Derive a per-combat seed from the run seed + round so matches are
+    // deterministic for a given run but differ each round.
+    const combatSeed = (seed.value ^ (round.value * 0x9e3779b1)) | 0
+    game.startMatch(setup, combatSeed)
+  }
+
+  /* ------------------------------------------------------------------------
+   * Combat resolution -> rewards
+   * --------------------------------------------------------------------- */
+
+  /**
+   * Resolve the just-finished combat. Called by the run page's watcher when the
+   * game store reaches phase 'gameOver'.
+   * @param didWin - true when the human (player 0) won
+   */
+  function resolveCombat(didWin: boolean): void {
+    if (didWin) wins.value += 1
+    else losses.value += 1
+
+    // Heal/grow between fights.
+    maxHealth.value += HEALTH_PER_ROUND
+
+    if (wins.value >= RUN_TARGET_WINS) {
+      stage.value = 'victory'
+      save()
+      return
+    }
+    if (losses.value >= RUN_MAX_LOSSES) {
+      stage.value = 'defeat'
+      save()
+      return
+    }
+
+    // Build this round's rewards, then advance the ladder.
+    const completedRound = round.value
+    round.value += 1
+    buildRewards(completedRound)
+  }
+
+  /** Reward pools handed to the engine's pure offering generator. */
+  function rewardPools(): RewardPools {
+    const heroClass = heroDef.value?.cardClass ?? 'neutral'
+    return {
+      buckets: bucketIdsForClass(heroClass),
+      passiveTreasures: passiveTreasureIds.filter((id) => !passiveTreasures.value.includes(id)),
+      activeTreasures: activeTreasureIds.filter((id) => !activeTreasures.value.includes(id)),
+    }
+  }
+
+  /**
+   * The treasure (if any) offered after a given completed round, per Duels rules:
+   *  - passive treasure after rounds 1 & 3
+   *  - active treasure after rounds 2, 4, 5, 7, 9, 11, 13
+   *  - no treasure on other rounds (bucket only)
+   */
+  function treasureTypeForRound(r: number): RewardType | null {
+    if (r === 1 || r === 3) return 'passiveTreasure'
+    if ([2, 4, 5, 7, 9, 11, 13].includes(r)) return 'activeTreasure'
+    return null
+  }
+
+  /**
+   * Build the reward offerings for a completed round and present the first.
+   * Duels gives a card bucket after EVERY round, plus a treasure on scheduled
+   * rounds — so a treasure round queues a treasure pick THEN a bucket pick.
+   * @param completedRound - the round just finished (1-based)
+   */
+  function buildRewards(completedRound: number): void {
+    const rng = rngState()
+    const queue: RewardOffering[] = []
+
+    const tType = treasureTypeForRound(completedRound)
+    if (tType) {
+      const t = generateOffering(tType, completedRound, rng, rewardPools())
+      if (t.choices.length > 0) queue.push(t)
+    }
+    const bucket = generateOffering('bucket', completedRound, rng, rewardPools())
+    if (bucket.choices.length > 0) queue.push(bucket)
+
+    seed.value = rng.seed // persist the advanced RNG
+    rewardQueue.value = queue
+    presentNextReward()
+  }
+
+  /** Present the next queued reward, or start the next fight when none remain. */
+  function presentNextReward(): void {
+    const q = [...rewardQueue.value]
+    const next = q.shift()
+    rewardQueue.value = q
+    if (!next) {
+      offering.value = undefined
+      save()
+      startNextCombat()
+      return
+    }
+    offering.value = next
+    stage.value = next.type === 'bucket' ? 'reward' : 'treasure'
+    save()
+  }
+
+  /** Whether the current offering may be skipped (buckets are optional; treasures are not). */
+  const canSkipReward = computed(() => offering.value?.type === 'bucket')
+
+  /* ------------------------------------------------------------------------
+   * Reward selection
+   * --------------------------------------------------------------------- */
+
+  /**
+   * Apply the chosen reward (bucket cards or a treasure) and proceed to the next
+   * combat. Buckets push all 3 cards into the deck (allowed to exceed 15 as run
+   * growth). Treasures attach themselves; active treasures also add their card.
+   * @param id - the chosen bucket or treasure id
+   */
+  function chooseReward(id: string): void {
+    const type = offering.value?.type
+    if (type === 'bucket') {
+      const bucket = getBucketDef(id)
+      deck.value = [...deck.value, ...bucket.cardIds]
+    } else if (type === 'passiveTreasure') {
+      if (!passiveTreasures.value.includes(id)) {
+        passiveTreasures.value = [...passiveTreasures.value, id]
+      }
+    } else if (type === 'activeTreasure') {
+      if (!activeTreasures.value.includes(id)) {
+        activeTreasures.value = [...activeTreasures.value, id]
+      }
+      const def = getTreasureDef(id)
+      if (def.card) deck.value = [...deck.value, def.card.id]
+    }
+
+    // Present the next queued reward (e.g. the bucket after a treasure), else fight.
+    presentNextReward()
+  }
+
+  /** Skip the current reward without taking anything (buckets only), then continue. */
+  function skipReward(): void {
+    presentNextReward()
+  }
+
+  return {
+    // state
+    stage,
+    heroId,
+    heroPowerId,
+    signatureTreasureId,
+    deck,
+    passiveTreasureIds: passiveTreasures,
+    activeTreasureIds: activeTreasures,
+    wins,
+    losses,
+    maxHealth,
+    round,
+    seed,
+    offering,
+    currentEnemyId,
+    active,
+    // getters
+    heroDef,
+    deckCardDefs,
+    deckCount,
+    deckFull,
+    currentEnemyDef,
+    progressText,
+    canAdd,
+    canSkipReward,
+    // lifecycle
+    startNewRun,
+    abandon,
+    loadFromStorage,
+    save,
+    // draft
+    selectHero,
+    selectHeroPower,
+    selectSignature,
+    // deck
+    deckAdd,
+    deckRemove,
+    deckToggle,
+    confirmDeck,
+    // combat
+    startNextCombat,
+    resolveCombat,
+    // rewards
+    chooseReward,
+    skipReward,
+  }
+})

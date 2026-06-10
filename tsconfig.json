@@ -1,0 +1,8 @@
+{
+  // Nuxt generates .nuxt/tsconfig.json on `nuxt prepare` (runs in postinstall).
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": false
+  }
+}

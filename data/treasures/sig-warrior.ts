@@ -1,0 +1,185 @@
+import type { CardDef, TreasureDef } from '../../game/types'
+
+// ---------------------------------------------------------------------------
+// Warrior signature treasure cards
+// ---------------------------------------------------------------------------
+
+/**
+ * Rattlegore's Rage — 7-mana legendary warrior spell.
+ * Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.
+ * (Re-costed from 6: ~8 mana of raw effect was beyond even signature-treasure
+ *  push; at 7 it sits ~1 above curve, in line with other signatures.)
+ */
+const rattlegoreChainCard: CardDef = {
+  id: 'sig_warrior_rattlegore_chain',
+  name: "Rattlegore's Rage",
+  cost: 7,
+  type: 'spell',
+  cardClass: 'warrior',
+  rarity: 'legendary',
+  text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
+  spell: [
+    { kind: 'damage', amount: 3, target: 'allEnemyCharacters' },
+    { kind: 'gainArmor', amount: 3 },
+    { kind: 'draw', count: 1 },
+  ],
+  token: true,
+  art: undefined,
+}
+
+/**
+ * Death Wish — 6-mana legendary warrior spell.
+ * Destroy a minion. Gain Armor equal to its Attack.
+ * Approximated: destroy chosen minion and gain 6 Armor (fixed strong value,
+ * per-minion stat read not supported by EffectSpec). Re-costed from 4:
+ * unconditional destroy alone is worth 5 (Assassinate rate).
+ */
+const deathWishCard: CardDef = {
+  id: 'sig_warrior_death_wish',
+  name: 'Death Wish',
+  cost: 6,
+  type: 'spell',
+  cardClass: 'warrior',
+  rarity: 'legendary',
+  text: 'Destroy a minion and gain 6 Armor.',
+  targeted: true,
+  targetFilter: 'allMinions',
+  spell: [
+    { kind: 'destroy', target: 'chosenTarget' },
+    { kind: 'gainArmor', amount: 6 },
+  ],
+  token: true,
+  art: undefined,
+}
+
+/**
+ * Iron Colossus — 9/9 legendary warrior minion with Taunt.
+ * Battlecry: Gain 5 Armor.
+ * (Was 8 mana / 7 Armor: a 9/9 Taunt is ~a full 9-mana body on its own, so the
+ *  old version was ~3 mana over even with signature push. Now 9 mana / 5 Armor,
+ *  ~1 above curve.)
+ */
+const colossusCard: CardDef = {
+  id: 'sig_warrior_colossus',
+  name: 'Iron Colossus',
+  cost: 9,
+  type: 'minion',
+  cardClass: 'warrior',
+  rarity: 'legendary',
+  text: '**Taunt**. **Battlecry:** Gain 5 Armor.',
+  attack: 9,
+  health: 9,
+  tribe: 'none',
+  keywords: ['taunt'],
+  battlecry: [{ kind: 'gainArmor', amount: 5 }],
+  token: true,
+  art: undefined,
+}
+
+/**
+ * Bladestorm — 5-mana legendary warrior spell.
+ * Deal 2 damage to all minions. Equip a 4/2 weapon.
+ */
+const bladestormCard: CardDef = {
+  id: 'sig_warrior_bladestorm',
+  name: 'Bladestorm',
+  cost: 5,
+  type: 'spell',
+  cardClass: 'warrior',
+  rarity: 'legendary',
+  text: 'Deal 2 damage to all minions. Equip a 4/2 Weapon.',
+  spell: [
+    { kind: 'damage', amount: 2, target: 'allMinions' },
+    { kind: 'equipWeapon', cardId: 'sig_warrior_bladestorm_axe' },
+  ],
+  token: true,
+  art: undefined,
+}
+
+/**
+ * Bladestorm Axe weapon token — 4/2.
+ * Defined here, also referenced in warriorCards via the sig card only.
+ */
+const bladestormAxeToken: CardDef = {
+  id: 'sig_warrior_bladestorm_axe',
+  name: 'Bladestorm Axe',
+  cost: 5,
+  type: 'weapon',
+  cardClass: 'warrior',
+  rarity: 'legendary',
+  text: '',
+  attack: 4,
+  durability: 2,
+  token: true,
+  art: undefined,
+}
+
+// ---------------------------------------------------------------------------
+// Passive signature treasure
+// ---------------------------------------------------------------------------
+
+/**
+ * Bulwark of Azzinoth — Passive.
+ * Your minions have +1/+1 and Taunt.
+ */
+
+// ---------------------------------------------------------------------------
+// Export
+// ---------------------------------------------------------------------------
+
+/**
+ * All signature treasures for Rattlegore (Warrior).
+ */
+export const warriorSignatureTreasures: TreasureDef[] = [
+  {
+    id: 'sig_warrior_rattlegore_chain',
+    name: "Rattlegore's Rage",
+    kind: 'signature',
+    text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
+    card: rattlegoreChainCard,
+    tags: ['warrior-good'],
+  },
+  {
+    id: 'sig_warrior_death_wish',
+    name: 'Death Wish',
+    kind: 'signature',
+    text: 'Destroy a minion and gain 6 Armor.',
+    card: deathWishCard,
+    tags: ['warrior-good'],
+  },
+  {
+    id: 'sig_warrior_colossus',
+    name: 'Iron Colossus',
+    kind: 'signature',
+    text: '9/9 Taunt. Battlecry: Gain 5 Armor.',
+    card: colossusCard,
+    tags: ['warrior-good'],
+  },
+  {
+    id: 'sig_warrior_bladestorm',
+    name: 'Bladestorm',
+    kind: 'signature',
+    text: 'Deal 2 damage to all minions. Equip a 4/2 Weapon.',
+    card: bladestormCard,
+    tags: ['warrior-good'],
+  },
+  {
+    id: 'sig_warrior_bulwark',
+    name: 'Bulwark of Azzinoth',
+    kind: 'signature',
+    text: 'Your minions have +1/+1 and Taunt.',
+    auras: [
+      { kind: 'minionStat', atk: 1, health: 1, filter: 'minion' },
+      { kind: 'giveKeyword', keyword: 'taunt', filter: 'minion' },
+    ],
+    tags: ['warrior-good'],
+  },
+]
+
+/**
+ * Extra token cards generated by warrior signature cards (Bladestorm Axe).
+ * Export so the registry can register them.
+ */
+export const warriorSignatureTreasureTokens: CardDef[] = [
+  bladestormAxeToken,
+]
