@@ -22,6 +22,14 @@ export interface InternalGameState extends GameState {
    * dealt lethal damage still fires its trigger before it is removed.
    */
   _damagedMinions?: { instanceId: string; owner: PlayerId }[]
+  /**
+   * Card ids of minions that actually DIED on board this game, per player.
+   * The graveyard can't serve as this log — overdraw burns push there too.
+   * Read by resummonDeadMinion.
+   */
+  _deadMinionCards?: [string[], string[]]
+  /** Spells cast this turn per player (drives firstSpellEachTurnTwice). */
+  _spellsCastThisTurn?: [number, number]
 }
 
 export type TempBuff =

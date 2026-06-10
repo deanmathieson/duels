@@ -29,6 +29,8 @@ function minionMatchesFilter(def: CardDef, m: MinionInstance, filter: CardFilter
       return m.tribe === 'dragon'
     case 'costGte5':
       return def.cost >= 5
+    case 'costLte2':
+      return def.cost <= 2
     case 'spell':
       return false
     case 'battlecry':
@@ -38,6 +40,55 @@ function minionMatchesFilter(def: CardDef, m: MinionInstance, filter: CardFilter
     default:
       return false
   }
+}
+
+/**
+ * How many times the player's deathrattles/battlecries fire: 1 + one extra per
+ * `triggerTwice` aura from passive treasures and non-silenced board minions
+ * (stacking — a doubler minion plus a doubler treasure = 3x). Read at effect
+ * resolution time rather than materialized by recomputeAuras.
+ * @param state - game state
+ * @param player - the effect owner
+ * @param what - which mechanic is being multiplied
+ * @returns the total number of firings (>= 1)
+ */
+export function effectMultiplier(
+  state: GameState,
+  player: PlayerId,
+  what: 'deathrattle' | 'battlecry'
+): number {
+  const p = state.players[player]
+  let extra = 0
+  for (const passive of p.passives) {
+    for (const aura of passive.auras) {
+      if (aura.kind === 'triggerTwice' && aura.what === what) extra++
+    }
+  }
+  for (const m of p.board) {
+    if (m.silenced || !m.hasAuras) continue
+    const def = hasCard(m.cardId) ? getCard(m.cardId) : undefined
+    for (const aura of def?.auras ?? []) {
+      if (aura.kind === 'triggerTwice' && aura.what === what) extra++
+    }
+  }
+  return 1 + extra
+}
+
+/**
+ * Whether the player has a `firstSpellEachTurnTwice` aura (passive treasure or
+ * non-silenced board minion).
+ */
+export function hasFirstSpellTwice(state: GameState, player: PlayerId): boolean {
+  const p = state.players[player]
+  for (const passive of p.passives) {
+    if (passive.auras.some((a) => a.kind === 'firstSpellEachTurnTwice')) return true
+  }
+  for (const m of p.board) {
+    if (m.silenced || !m.hasAuras) continue
+    const def = hasCard(m.cardId) ? getCard(m.cardId) : undefined
+    if (def?.auras?.some((a) => a.kind === 'firstSpellEachTurnTwice')) return true
+  }
+  return false
 }
 
 type AuraSource = { auras: AuraDef[]; sourceInstanceId?: string }

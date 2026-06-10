@@ -91,6 +91,8 @@ function matchesPool(card: CardDef, pool: CardPool): boolean {
       return Array.isArray(card.chooseOne) && card.chooseOne.length > 0
     case 'legendaryMinion':
       return card.type === 'minion' && card.rarity === 'legendary'
+    case 'deathrattleMinion':
+      return card.type === 'minion' && !!card.deathrattle
     default:
       return false
   }

@@ -22,7 +22,7 @@ import { shuffle } from './rng'
 import { asInternal } from './internal'
 import type { EffectContext } from './effects'
 import { hasKeyword } from './keywords'
-import { recomputeAuras } from './auras'
+import { effectMultiplier, hasFirstSpellTwice, recomputeAuras } from './auras'
 import {
   applyChooseOneSpell,
   drawCard,
@@ -193,6 +193,11 @@ function startTurn(state: GameState, player: PlayerId, events: GameEvent[]): voi
 
   // Reset hero power.
   p.heroPower.usedThisTurn = false
+
+  // Reset the first-spell-each-turn counter.
+  const internalStart = asInternal(state)
+  internalStart._spellsCastThisTurn = internalStart._spellsCastThisTurn ?? [0, 0]
+  internalStart._spellsCastThisTurn[player] = 0
 
   state.turn += 1
   events.push({ type: 'turnStarted', player, turn: state.turn })
@@ -502,13 +507,20 @@ function handlePlayCard(
     playSpell(state, action.player, def, action, chooseOneIndex, events)
   } else if (def.type === 'weapon') {
     equipWeaponForPlayer(state, action.player, def.id)
-    // Weapons can have a Battlecry (e.g. Coghammer's Divine Shield). Run it on equip.
+    // Weapons can have a Battlecry (e.g. Coghammer's Divine Shield). Run it on
+    // equip, honouring the battlecry triggerTwice multiplier.
     const ctx: EffectContext = {
       state,
       sourcePlayer: action.player,
       chosenTargetId: action.targetId,
     }
-    if (def.battlecry) runEffects(def.battlecry, ctx, events)
+    if (def.battlecry) {
+      const times = effectMultiplier(state, action.player, 'battlecry')
+      for (let i = 0; i < times; i++) {
+        const { paused } = runEffects(def.battlecry, ctx, events)
+        if (paused) break
+      }
+    }
     if (def.scriptId) runEffects([{ kind: 'script', id: def.scriptId }], ctx, events)
   }
 
@@ -549,7 +561,9 @@ function playMinion(
 
   recomputeAuras(state)
 
-  // Battlecry.
+  // Battlecry — fired once per triggerTwice multiplier (same chosen target).
+  // If a run pauses on a discover, the extra runs are skipped: doubling a
+  // pending choice would corrupt the continuation.
   if (battlecry) {
     const ctx: EffectContext = {
       state,
@@ -557,7 +571,11 @@ function playMinion(
       sourceInstanceId: minion.instanceId,
       chosenTargetId: action.targetId,
     }
-    runEffects(battlecry, ctx, events)
+    const times = effectMultiplier(state, player, 'battlecry')
+    for (let i = 0; i < times; i++) {
+      const { paused } = runEffects(battlecry, ctx, events)
+      if (paused) break
+    }
   }
   if (def.scriptId) {
     const ctx: EffectContext = {
@@ -579,19 +597,36 @@ function playSpell(
   chooseOneIndex: number | undefined,
   events: GameEvent[]
 ): void {
+  const internal = asInternal(state)
+  internal._spellsCastThisTurn = internal._spellsCastThisTurn ?? [0, 0]
+  internal._spellsCastThisTurn[player] += 1
+  const isFirstThisTurn = internal._spellsCastThisTurn[player] === 1
+
   const ctx: EffectContext = {
     state,
     sourcePlayer: player,
     chosenTargetId: action.targetId,
     isSpellSource: true,
   }
-  if (def.chooseOne && chooseOneIndex !== undefined) {
-    const opt = def.chooseOne[chooseOneIndex] as ChooseOneOption | undefined
-    if (opt) applyChooseOneSpell(opt, ctx, events)
-  } else if (def.spell) {
-    runEffects(def.spell, ctx, events)
-  } else if (def.scriptId) {
-    runEffects([{ kind: 'script', id: def.scriptId }], ctx, events)
+  const castOnce = (): boolean => {
+    if (def.chooseOne && chooseOneIndex !== undefined) {
+      const opt = def.chooseOne[chooseOneIndex] as ChooseOneOption | undefined
+      return opt ? applyChooseOneSpell(opt, ctx, events).paused : false
+    } else if (def.spell) {
+      return runEffects(def.spell, ctx, events).paused
+    } else if (def.scriptId) {
+      return runEffects([{ kind: 'script', id: def.scriptId }], ctx, events).paused
+    }
+    return false
+  }
+
+  const paused = castOnce()
+
+  // firstSpellEachTurnTwice: the first spell each turn is cast again with the
+  // same chosen target/option. The recast neither recurses nor doubles a
+  // pending discover (skip when the first cast paused).
+  if (isFirstThisTurn && !paused && hasFirstSpellTwice(state, player)) {
+    castOnce()
   }
 }
 

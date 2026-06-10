@@ -91,6 +91,7 @@ export type TargetSelector =
   | 'randomEnemyMinion'
   | 'randomEnemy'
   | 'randomFriendlyMinion'
+  | 'randomFriendlyDeathrattleMinion' // random friendly minion with a (non-silenced) deathrattle
 
 /** Pools used by discover / add-random / random-summon style effects. */
 export type CardPool =
@@ -101,6 +102,7 @@ export type CardPool =
   | 'druidSpell'
   | 'chooseOne'
   | 'legendaryMinion'
+  | 'deathrattleMinion'
 
 /** Filters used by static auras and cost reduction. */
 export type CardFilter =
@@ -113,6 +115,7 @@ export type CardFilter =
   | 'battlecry'
   | 'deathrattle'
   | 'costGte5'
+  | 'costLte2'
 
 /* ----------------------------------------------------------------------------
  * EffectSpec — the closed union the engine interprets.
@@ -157,6 +160,14 @@ export type EffectSpec =
   | { kind: 'heroAttackThisTurn'; amount: number } // Nature's Gifts option 1
   | { kind: 'spellDamageThisTurnHero'; amount: number } // Nature's Gifts option 2
   | { kind: 'equipWeapon'; cardId: string }
+  // --- deathrattle archetype ---
+  /** Fire the deathrattles of the targeted minion(s) without killing them. */
+  | { kind: 'triggerDeathrattles'; target: TargetSelector }
+  /** Resummon up to `count` random friendly minions that DIED this game. */
+  | { kind: 'resummonDeadMinion'; count: number; filter?: CardFilter }
+  /** Summon a copy of the referenced minion (works for dead trigger sources);
+   *  `atk`/`health` are ABSOLUTE overrides (e.g. a 1/1 copy). */
+  | { kind: 'summonCopy'; of: 'triggerSource' | 'chosenTarget'; atk?: number; health?: number }
   // --- escape hatch for compound logic (Worker A implements each ScriptId) ---
   | { kind: 'script'; id: ScriptId }
 
@@ -217,6 +228,9 @@ export type TriggerCondition =
   | 'cardIsSpell'
   | 'cardCost4Plus'
   | 'cardCost5Plus'
+  | 'cardHasDeathrattle'
+  | 'cardHasBattlecry'
+  | 'cardIsDemon'
 
 /** Static, continuous modifiers (passive treasures, aura minions). */
 export type AuraDef =
@@ -224,6 +238,10 @@ export type AuraDef =
   | { kind: 'minionStat'; atk?: number; health?: number; filter?: CardFilter }
   | { kind: 'spellDamage'; amount: number }
   | { kind: 'giveKeyword'; keyword: Keyword; filter?: CardFilter }
+  /** The owner's deathrattles/battlecries fire one extra time (stacks). */
+  | { kind: 'triggerTwice'; what: 'deathrattle' | 'battlecry' }
+  /** The first spell the owner casts each turn is cast twice. */
+  | { kind: 'firstSpellEachTurnTwice' }
 
 /* ----------------------------------------------------------------------------
  * Card / Hero / Treasure definitions (static data in /data)
@@ -322,6 +340,10 @@ export interface TreasureDef {
 
   /** Hint for the AI / UI on who this is good for. */
   tags?: string[]
+
+  /** Passive offering band: tier 1 = early (round 1), tier 2 = game-warping
+   *  (round 3). Treasures without a tier default to 1. */
+  tier?: 1 | 2
 }
 
 /** A card "bucket" reward: pick 1 of 3 buckets, each adds these cards to the deck. */
@@ -354,6 +376,8 @@ export interface EnemyDef {
   deck: string[]
   aiProfile: AiProfileName
   passiveTreasureIds?: string[] // bosses may carry treasures
+  /** Elite encounters grant a bonus treasure reward on defeat. */
+  elite?: boolean
   portraitArt?: string
   isBoss?: boolean
 }

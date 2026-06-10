@@ -1,5 +1,6 @@
 import type {
   CardDef,
+  CardFilter,
   ChooseOneOption,
   EffectSpec,
   GameEvent,
@@ -17,6 +18,7 @@ import { getCard, getPool, hasCard } from './cardDb'
 import { nextInt, pick, shuffle } from './rng'
 import { grantKeyword, hasKeyword } from './keywords'
 import { asInternal, asInternalMinion } from './internal'
+import { effectMultiplier } from './auras'
 
 /* ----------------------------------------------------------------------------
  * Resolution context & shared instance counter
@@ -237,6 +239,13 @@ export function resolveTargets(
       const all: Entity[] = [{ kind: 'hero', player: foe }, ...enemyMinions()]
       const e = pick(state.rng, all)
       return e ? [e] : []
+    }
+    case 'randomFriendlyDeathrattleMinion': {
+      const pool = state.players[me].board.filter(
+        (m) => !m.silenced && hasCard(m.cardId) && !!getCard(m.cardId).deathrattle
+      )
+      const m = pick(state.rng, pool)
+      return m ? [minionEntity(m, me)] : []
     }
     default:
       return []
@@ -507,8 +516,35 @@ function reduceCostInHand(
       if (filter === 'battlecry' && !def.battlecry) continue
       if (filter === 'deathrattle' && !def.deathrattle) continue
       if (filter === 'costGte5' && def.cost < 5) continue
+      if (filter === 'costLte2' && def.cost > 2) continue
     }
     inst.costReduction = (inst.costReduction ?? 0) + amount
+  }
+}
+
+/**
+ * Whether a dead minion's card matches a resummon filter. A small dedicated
+ * matcher: resummon filters act on the card DEFINITION (the instance is gone).
+ */
+function cardMatchesResummonFilter(def: CardDef, filter: CardFilter | undefined): boolean {
+  if (!filter || filter === 'all' || filter === 'minion') return true
+  switch (filter) {
+    case 'beast':
+      return def.tribe === 'beast'
+    case 'dragon':
+      return def.tribe === 'dragon'
+    case 'taunt':
+      return (def.keywords ?? []).includes('taunt')
+    case 'battlecry':
+      return !!def.battlecry
+    case 'deathrattle':
+      return !!def.deathrattle
+    case 'costGte5':
+      return def.cost >= 5
+    case 'costLte2':
+      return def.cost <= 2
+    default:
+      return false
   }
 }
 
@@ -808,6 +844,62 @@ function applyEffect(eff: EffectSpec, ctx: EffectContext, events: GameEvent[]): 
     }
     case 'equipWeapon': {
       equipWeaponForPlayer(state, me, eff.cardId)
+      break
+    }
+    case 'triggerDeathrattles': {
+      // Fire the targets' deathrattles without killing them. Honours silence
+      // and the owner's triggerTwice multiplier.
+      const targets = resolveTargets(state, ctx, eff.target)
+      for (const t of targets) {
+        if (t.kind !== 'minion' || t.minion.silenced) continue
+        const def = hasCard(t.minion.cardId) ? getCard(t.minion.cardId) : undefined
+        if (!def?.deathrattle) continue
+        const drCtx: EffectContext = {
+          state,
+          sourcePlayer: t.owner,
+          sourceInstanceId: t.minion.instanceId,
+          triggerSourceId: t.minion.instanceId,
+          playedCardId: t.minion.cardId,
+        }
+        const times = effectMultiplier(state, t.owner, 'deathrattle')
+        for (let i = 0; i < times; i++) runEffects(def.deathrattle, drCtx, events)
+      }
+      break
+    }
+    case 'resummonDeadMinion': {
+      // Resummon random friendly minions from the on-board death log.
+      const internal = asInternal(state)
+      const log = internal._deadMinionCards?.[me] ?? []
+      const pool = log.filter((cardId) => {
+        if (!hasCard(cardId)) return false
+        const def = getCard(cardId)
+        if (def.type !== 'minion') return false
+        return cardMatchesResummonFilter(def, eff.filter)
+      })
+      for (let i = 0; i < eff.count; i++) {
+        const cardId = pick(state.rng, pool)
+        if (!cardId) break
+        pool.splice(pool.indexOf(cardId), 1)
+        const minion = makeMinion(getCard(cardId))
+        if (!placeMinion(state, me, minion, undefined, events)) break
+      }
+      break
+    }
+    case 'summonCopy': {
+      // Summon a copy of the referenced minion. The reference may be DEAD
+      // (death-trigger source) — fall back to the trigger's card id.
+      let def: CardDef | undefined
+      const refId = eff.of === 'chosenTarget' ? ctx.chosenTargetId : ctx.triggerSourceId
+      if (refId) {
+        const f = findMinion(state, refId)
+        if (f && hasCard(f.minion.cardId)) def = getCard(f.minion.cardId)
+      }
+      if (!def && eff.of === 'triggerSource' && ctx.playedCardId && hasCard(ctx.playedCardId)) {
+        def = getCard(ctx.playedCardId)
+      }
+      if (!def || def.type !== 'minion') break
+      const copy = makeMinion(def, { attack: eff.atk, health: eff.health })
+      placeMinion(state, me, copy, undefined, events)
       break
     }
     case 'script': {

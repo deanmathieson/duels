@@ -6,7 +6,7 @@ import type { GameEvent, GameState, MinionInstance, PlayerId, TriggerCondition, 
 import { HERO_TARGET } from './types'
 import { getCard, hasCard } from './cardDb'
 import { asInternal } from './internal'
-import { recomputeAuras } from './auras'
+import { effectMultiplier, recomputeAuras } from './auras'
 import { hasKeyword, isRushRestricted, removeKeyword } from './keywords'
 import {
   dealDamageToEntity,
@@ -256,13 +256,19 @@ export function checkDeaths(state: GameState, events: GameEvent[]): void {
         cardId: d.minion.cardId,
         cost: hasCard(d.minion.cardId) ? getCard(d.minion.cardId).cost : 0,
       })
+      // True on-board death log (graveyard also holds overdraw burns) — feeds
+      // resummonDeadMinion.
+      if (!internal._deadMinionCards) internal._deadMinionCards = [[], []]
+      internal._deadMinionCards[d.owner].push(d.minion.cardId)
       events.push({ type: 'death', instanceId: d.minion.instanceId, player: d.owner })
     }
 
     // Removing minions may remove aura sources — recompute before triggers run.
     recomputeAuras(state)
 
-    // Deathrattles fire in play order.
+    // Deathrattles fire in play order, multiplied by triggerTwice auras. The
+    // multiplier is read per dead minion at fire time — a doubler that died in
+    // the same batch no longer counts (it is already off board).
     for (const d of dead) {
       if (d.minion.silenced) continue
       const def = hasCard(d.minion.cardId) ? getCard(d.minion.cardId) : undefined
@@ -272,8 +278,12 @@ export function checkDeaths(state: GameState, events: GameEvent[]): void {
           sourcePlayer: d.owner,
           sourceInstanceId: d.minion.instanceId,
           triggerSourceId: d.minion.instanceId,
+          playedCardId: d.minion.cardId,
         }
-        runEffects(def.deathrattle, ctx, events)
+        const times = effectMultiplier(state, d.owner, 'deathrattle')
+        for (let i = 0; i < times; i++) {
+          runEffects(def.deathrattle, ctx, events)
+        }
       }
     }
 
@@ -388,6 +398,12 @@ export function conditionHolds(
       return def.cost >= 4
     case 'cardCost5Plus':
       return def.cost >= 5
+    case 'cardHasDeathrattle':
+      return !!def.deathrattle
+    case 'cardHasBattlecry':
+      return !!def.battlecry
+    case 'cardIsDemon':
+      return def.type === 'minion' && def.tribe === 'demon'
     default:
       return false
   }

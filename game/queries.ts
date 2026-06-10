@@ -75,6 +75,8 @@ function cardMatchesCostFilter(def: CardDef, filter: string): boolean {
       return !!def.deathrattle
     case 'costGte5':
       return def.cost >= 5
+    case 'costLte2':
+      return def.cost <= 2
     default:
       return false
   }
