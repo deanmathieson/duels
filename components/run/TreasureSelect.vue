@@ -57,7 +57,7 @@
     </div>
 
     <div class="mt-8 flex items-center gap-3 shrink-0 action-row">
-      <!-- Treasures are mandatory in Duels; Skip only appears if the rules ever allow it. -->
+      <!-- Treasure picks are mandatory; Skip only appears if the rules ever allow it. -->
       <BaseButton v-if="run.canSkipReward" variant="wood" size="md" @click="skip">Skip</BaseButton>
       <BaseButton variant="gold" size="lg" :disabled="!selectedId" @click="take">Claim Treasure</BaseButton>
     </div>

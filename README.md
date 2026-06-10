@@ -1,10 +1,15 @@
-# Duels — A Hearthstone Roguelike
+# HOLLOWMOOR — A Roguelike Card Duel
 
-A fan recreation of Hearthstone's retired **Duels** game mode: pick a hero, a hero power and a
-signature treasure, build a 15-card deck, then fight a gauntlet of AI opponents. Between fights you
-pick card "buckets" and powerful **treasures** until you reach **12 wins or 3 losses**.
+An original roguelike deckbuilder set in **Hollowmoor**: a cursed county of crooked woods,
+peat bogs and candlelit villages where every duel is a bargain and the dead never stop
+talking. Pick one of nine callings (Hedgewitch, Trapper, Stargazer, Lamplighter, Vicar,
+Cutpurse, Augur, Bargainer, Banneret), take a hero power and a signature treasure, build a
+15-card deck, then fight a seeded 12-fight gauntlet — locals, elites with bonus treasure,
+and one of the moor's three terrors at the end. **12 wins or 3 losses.**
 
-This first release focuses on the **Druid** hero **Forest Warden Omu**.
+The project began as a study of roguelike-deckbuilder run structure and has since grown
+into a fully original game: its own world, cards, archetypes (including the **Haunt**
+deathrattle economy), and a bawdy folk-horror voice.
 
 ## Tech
 
@@ -17,11 +22,20 @@ This first release focuses on the **Druid** hero **Forest Warden Omu**.
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run test         # engine unit tests (vitest)
-npm run scrape-art   # download card/hero art into public/assets (run once)
-npm run generate     # static build for GitHub Pages
+npm run dev                 # http://localhost:3000
+npm run test                # engine + content tests (vitest)
+npm run gen-art-prompts     # emit per-card AI art prompts (scripts/art-prompts.json)
+npm run build-art-manifest  # wire generated images in public/assets into the manifest
+npm run generate            # static build for GitHub Pages
 ```
+
+### Art pipeline
+
+Card art is generated, not bundled: `gen-art-prompts` emits one Hollowmoor-styled prompt
+per content id; render them with any image model, drop the results into
+`public/assets/{cards,heroes,treasures}/<id>.jpg`, and run `build-art-manifest`. Ids
+without an image fall back to the styled placeholder frame, so partial batches are always
+safe.
 
 ## Deploy (GitHub Pages)
 
@@ -48,10 +62,11 @@ env so `baseURL` defaults to `/`.
 - `game/types.ts` — the frozen data contract (cards, effects, state, actions).
 - `game/` — engine, combat, effect interpreter, AI, run/reward logic.
 - `data/` — cards, heroes, treasures, enemies (all expressed as `EffectSpec` data).
+- `data/terms.ts` — the Hollowmoor dictionary: every player-facing term in one place.
 - `stores/`, `components/`, `pages/` — the Vue/Nuxt presentation layer.
+- `tests/original-ip.spec.ts` — regression guard: no third-party IP in any display field.
 
-## Disclaimer
+## License & content
 
-This is a non-commercial **fan project** for personal/educational use. Hearthstone and all related
-card names, art and assets are trademarks and copyright of **Blizzard Entertainment**. This project is
-**not affiliated with, endorsed by, or sponsored by Blizzard**.
+All game content (names, text, flavor, world) is original. Code and content
+© the project author.

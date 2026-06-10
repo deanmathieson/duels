@@ -1,8 +1,8 @@
 {
-  "name": "hearthstone-duels",
+  "name": "hollowmoor",
   "private": true,
   "type": "module",
-  "description": "Duels — a roguelike deckbuilder card game inspired by Hearthstone's retired Duels mode. Fan project, not affiliated with Blizzard.",
+  "description": "Hollowmoor — an original roguelike deckbuilder card duel set in a cursed county of crooked woods.",
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",

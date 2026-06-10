@@ -12,17 +12,18 @@
     <!-- Title block -->
     <div class="relative z-10 flex flex-col items-center px-6 text-center">
       <p class="font-engrave tracking-[0.5em] text-gold-200/70 text-xs sm:text-sm mb-2 uppercase title-sub">
-        A Hearthstone Roguelike
+        {{ GAME_SUBTITLE }}
       </p>
 
       <div class="title-wrap">
         <span class="title-halo" aria-hidden="true" />
-        <AnimatedTitle text="DUELS" variant="gold" enter="rise" class="title-main" />
+        <AnimatedTitle :text="GAME_TITLE" variant="gold" enter="rise" class="title-main" />
       </div>
 
       <p class="font-body text-parchment-light/80 text-sm sm:text-base mt-4 max-w-md tagline">
-        Draft a hero, forge a deck, and climb to <span class="text-gold-200 font-semibold">12 wins</span> —
-        but three defeats end your run.
+        Every duel is a bargain in the cursed county. Climb to
+        <span class="text-gold-200 font-semibold">12 wins</span> —
+        but three defeats and the moor keeps you.
       </p>
 
       <!-- Primary actions -->
@@ -89,7 +90,7 @@
     <!-- Footer -->
     <footer class="absolute bottom-3 left-0 right-0 text-center z-10">
       <p class="font-body text-[10px] text-parchment-light/40 px-4">
-        A fan project for learning &amp; love of the game. Not affiliated with or endorsed by Blizzard Entertainment.
+        HOLLOWMOOR — an original roguelike card duel. The moor thanks you for your custom.
       </p>
     </footer>
   </div>
@@ -98,6 +99,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useAudio } from '~/composables/useAudio'
+import { GAME_SUBTITLE, GAME_TITLE } from '~/data/terms'
 
 /** Main menu: title, glowing PLAY, how-to-play, settings shelf, footer. */
 const router = useRouter()
@@ -112,11 +114,11 @@ const hasSavedRun = ref(false)
 const volumePct = computed(() => Math.round(settings.volume * 100))
 
 const howTo = [
-  '<strong>Draft your champion.</strong> Pick a hero, a hero power, and a powerful signature treasure.',
-  '<strong>Build a 15-card deck</strong> from the Druid &amp; neutral card pool.',
-  '<strong>Fight the ladder.</strong> Each foe is tougher than the last — play minions, cast spells, and attack to drop your opponent to 0.',
+  '<strong>Draft your champion.</strong> Pick one of the moor\'s nine callings, a hero power, and a powerful signature treasure.',
+  '<strong>Build a 15-card deck</strong> from your calling\'s cards and the county\'s common pool.',
+  '<strong>Fight the ladder.</strong> Twelve foes stand between you and the prize — locals first, then elites with bonus treasure, then one of the moor\'s three terrors.',
   '<strong>Grow between fights.</strong> Win to earn <span class="text-engrave">card buckets</span> and <span class="text-engrave">treasures</span>; your hero gains +5 max health each round.',
-  '<strong>Reach 12 wins to claim victory.</strong> Three losses, and the run is over.',
+  '<strong>Reach 12 wins to claim victory.</strong> Three losses, and the moor keeps you.',
 ]
 
 onMounted(() => {

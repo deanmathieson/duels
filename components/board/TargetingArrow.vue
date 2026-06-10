@@ -87,7 +87,7 @@ const grad = computed(() => {
   return { from: '#ffc1b3', to: '#e2503a', head: '#ff9b8c' }
 })
 
-/** Quadratic bezier that bows the arrow upward for that Hearthstone arc. */
+/** Quadratic bezier that bows the arrow upward for the classic card-game arc. */
 const control = computed(() => {
   const mx = (props.from.x + props.to.x) / 2
   const my = (props.from.y + props.to.y) / 2

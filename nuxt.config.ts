@@ -46,14 +46,14 @@ export default defineNuxtConfig({
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
     head: {
-      title: 'Duels — A Hearthstone Roguelike',
+      title: 'Hollowmoor — A Roguelike Card Duel',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
           content:
-            'A roguelike deckbuilder card game inspired by Hearthstone Duels. Fan project, not affiliated with Blizzard.'
+            'Hollowmoor: an original roguelike deckbuilder card duel set in a cursed county of crooked woods, where the dead never stop talking.'
         }
       ],
       htmlAttrs: { lang: 'en' }

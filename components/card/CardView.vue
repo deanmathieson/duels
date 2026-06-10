@@ -187,7 +187,7 @@ import { computed, ref } from 'vue'
 import type { CardDef, CardClass, Rarity } from '~/game/types'
 import { TRIBE_LABEL } from '~/data/terms'
 
-/** A polished Hearthstone-style card. */
+/** A polished collectible-card render. */
 const props = withDefaults(
   defineProps<{
     card: CardDef
@@ -203,7 +203,7 @@ const props = withDefaults(
      *  the printed cost. The gem recolors when it differs. */
     displayCost?: number | null
     /** The owner's current Spell Damage bonus: spell text "Deal N damage"
-     *  numbers render boosted (N+bonus, highlighted) like in Hearthstone. */
+     *  numbers render boosted (N+bonus, highlighted) (boosted-number convention). */
     spellDamage?: number
   }>(),
   { playable: false, small: false, faceDown: false, noHover: false, displayCost: null, spellDamage: 0 }
@@ -342,7 +342,7 @@ function escapeHtml(s: string): string {
 
 /** Render card text: escape, convert **keyword** to bold spans, newlines to <br>.
  *  For spells with an active Spell Damage bonus, "Deal N damage" numbers render
- *  boosted (N+bonus, starred + highlighted) like in Hearthstone. */
+ *  boosted (N+bonus, starred + highlighted) (boosted-number convention). */
 const renderedText = computed(() => {
   let escaped = escapeHtml(props.card.text ?? '')
   if (props.card.type === 'spell' && (props.spellDamage ?? 0) > 0) {
