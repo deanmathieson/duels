@@ -139,6 +139,7 @@ import { ref, computed, onMounted } from 'vue'
 import type { CardDef } from '~/game/types'
 import { getCard } from '~/game/index'
 import { collectibleCardIdsForClass, getTreasureDef } from '~/data/registry'
+import { CLASS_LABEL } from '~/data/terms'
 import { gsap } from 'gsap'
 
 /** The deck-building screen: pool grouped by cost + the live deck list with a mana curve. */
@@ -148,7 +149,7 @@ const DECK_LIMIT = 15
 
 /** The chosen hero's class — drives the deck pool and the class filter tab. */
 const heroClass = computed(() => run.heroDef?.cardClass ?? 'neutral')
-const className = computed(() => heroClass.value.charAt(0).toUpperCase() + heroClass.value.slice(1))
+const className = computed(() => CLASS_LABEL[heroClass.value])
 
 type FilterKey = 'all' | 'minion' | 'spell' | 'class' | 'neutral'
 const filters = computed<{ key: FilterKey; label: string }[]>(() => [

@@ -88,6 +88,7 @@ import { computed, ref, watch } from 'vue'
 import type { CardClass, Keyword, MinionInstance } from '~/game/types'
 import { getCard, hasCard } from '~/game/index'
 import { useAnimations } from '~/composables/useAnimations'
+import { KEYWORD_LABEL } from '~/data/terms'
 
 /** Render a live minion on the battlefield. */
 const props = withDefaults(
@@ -194,11 +195,11 @@ const portraitStyle = computed(() => {
 
 /** Small keyword markers (skip taunt/stealth/divineShield which have visuals). */
 const KW_META: Partial<Record<Keyword, { glyph: string; label: string; color: string }>> = {
-  rush: { glyph: '»', label: 'Rush', color: 'linear-gradient(180deg,#7fe06b,#2c7a1f)' },
-  charge: { glyph: '⚡', label: 'Charge', color: 'linear-gradient(180deg,#ffe07f,#b8841f)' },
-  windfury: { glyph: '⟳', label: 'Windfury', color: 'linear-gradient(180deg,#9fd6ff,#2e7fd6)' },
-  lifesteal: { glyph: '✚', label: 'Lifesteal', color: 'linear-gradient(180deg,#ff9b8c,#b32414)' },
-  poisonous: { glyph: '☠', label: 'Poisonous', color: 'linear-gradient(180deg,#a6ff7f,#2c7a1f)' },
+  rush: { glyph: '»', label: KEYWORD_LABEL.rush, color: 'linear-gradient(180deg,#7fe06b,#2c7a1f)' },
+  charge: { glyph: '⚡', label: KEYWORD_LABEL.charge, color: 'linear-gradient(180deg,#ffe07f,#b8841f)' },
+  windfury: { glyph: '⟳', label: KEYWORD_LABEL.windfury, color: 'linear-gradient(180deg,#9fd6ff,#2e7fd6)' },
+  lifesteal: { glyph: '✚', label: KEYWORD_LABEL.lifesteal, color: 'linear-gradient(180deg,#ff9b8c,#b32414)' },
+  poisonous: { glyph: '☠', label: KEYWORD_LABEL.poisonous, color: 'linear-gradient(180deg,#a6ff7f,#2c7a1f)' },
 }
 
 const keywordBadges = computed(() => {

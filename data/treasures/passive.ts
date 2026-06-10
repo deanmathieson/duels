@@ -36,7 +36,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_hold_the_line',
     name: 'Hold the Line',
     kind: 'passive',
-    text: 'Your Taunt minions have +1/+2.',
+    text: 'Your Ward minions have +1/+2.',
     auras: [{ kind: 'minionStat', atk: 1, health: 2, filter: 'taunt' }],
   },
   {
@@ -81,7 +81,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_growing_season',
     name: 'Growing Season',
     kind: 'passive',
-    text: 'Your Taunt minions have +0/+2.',
+    text: 'Your Ward minions have +0/+2.',
     auras: [{ kind: 'minionStat', health: 2, filter: 'taunt' }],
   },
 
@@ -97,7 +97,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_vampiric_fangs',
     name: 'Vampiric Fangs',
     kind: 'passive',
-    text: 'Your minions have Lifesteal.',
+    text: 'Your minions have Leeching.',
     auras: [{ kind: 'giveKeyword', keyword: 'lifesteal', filter: 'minion' }],
   },
 
@@ -130,7 +130,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_divine_illumination',
     name: 'Divine Illumination',
     kind: 'passive',
-    text: 'After you play a minion, give it Divine Shield.',
+    text: 'After you play a minion, give it Blessing.',
     triggers: [
       {
         event: 'onPlayMinion',
@@ -144,7 +144,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_crystal_gem',
     name: 'Crystal Gem',
     kind: 'passive',
-    text: 'Start of Game: Gain an empty Mana Crystal.',
+    text: 'Start of Game: Gain an empty Mana Stone.',
     startOfGame: [{ kind: 'gainManaCrystal', count: 1, empty: true }],
     tags: ['druid-good'],
   },

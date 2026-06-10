@@ -35,7 +35,7 @@
           </div>
           <div class="portrait-glaze" />
           <div class="portrait-bottom-fade" />
-          <span class="class-tag font-engrave">{{ hero.cardClass }}</span>
+          <span class="class-tag font-engrave">{{ CLASS_LABEL[hero.cardClass] }}</span>
         </div>
 
         <h2 class="hero-name font-engrave">{{ hero.name }}</h2>
@@ -77,6 +77,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { heroes } from '~/data/registry'
+import { CLASS_LABEL } from '~/data/terms'
 import { gsap } from 'gsap'
 
 /** Hero draft screen. Clicking a portrait selects the hero; a floating

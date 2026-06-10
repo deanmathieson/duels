@@ -32,18 +32,18 @@ export const shamanHeroPowers: HeroPowerDef[] = [
     id: 'hp_shaman_totemic_call',
     name: 'Totemic Call',
     cost: 2,
-    text: 'Choose One - Summon a 1/1 Searing Totem; or a 0/2 Stoneskin Totem with Taunt; or a 0/2 Wrath of Air Totem with Spell Damage +1.',
+    text: 'Choose One - Summon a 1/1 Searing Effigy; or a 0/2 Stoneskin Effigy with Ward; or a 0/2 Wrath of Air Effigy with Spell Damage +1.',
     chooseOne: [
       {
-        text: 'Summon a 1/1 Searing Totem.',
+        text: 'Summon a 1/1 Searing Effigy.',
         effects: [{ kind: 'summon', token: 'shaman_token_searing_totem', count: 1 }],
       },
       {
-        text: 'Summon a 0/2 Stoneskin Totem with Taunt.',
+        text: 'Summon a 0/2 Stoneskin Effigy with Ward.',
         effects: [{ kind: 'summon', token: 'shaman_token_stoneskin_totem', count: 1 }],
       },
       {
-        text: 'Summon a 0/2 Wrath of Air Totem with Spell Damage +1.',
+        text: 'Summon a 0/2 Wrath of Air Effigy with Spell Damage +1.',
         effects: [{ kind: 'summon', token: 'shaman_token_wrath_of_air_totem', count: 1 }],
       },
     ],

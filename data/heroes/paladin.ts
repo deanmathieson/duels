@@ -57,7 +57,7 @@ export const paladinHeroPowers: HeroPowerDef[] = [
     id: 'hp_paladin_blessing_of_wisdom',
     name: 'Blessing of Wisdom',
     cost: 3,
-    text: 'Give a friendly minion +1/+1 and Divine Shield.',
+    text: 'Give a friendly minion +1/+1 and Blessing.',
     targeted: true,
     targetFilter: 'friendlyMinions',
     effects: [

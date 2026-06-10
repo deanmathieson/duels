@@ -185,6 +185,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { CardDef, CardClass, Rarity } from '~/game/types'
+import { TRIBE_LABEL } from '~/data/terms'
 
 /** A polished Hearthstone-style card. */
 const props = withDefaults(
@@ -318,17 +319,7 @@ const showRarityGem = computed(() => props.card.rarity !== 'free' && !props.card
 
 const rarityClass = computed(() => `rarity-${props.card.rarity}`)
 
-const TRIBE_LABEL: Record<string, string> = {
-  beast: 'Beast',
-  dragon: 'Dragon',
-  demon: 'Demon',
-  elemental: 'Elemental',
-  mech: 'Mech',
-  murloc: 'Murloc',
-  pirate: 'Pirate',
-  totem: 'Totem',
-  ancient: 'Ancient'
-}
+// Tribe display names come from the Hollowmoor dictionary (see data/terms.ts).
 
 /** Small ribbon under the name: tribe for minions, type otherwise. */
 const ribbonLabel = computed(() => {

@@ -131,7 +131,7 @@ const cards: CardDef[] = [
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'free',
-    text: '**Battlecry:** Deal 3 damage to your hero.',
+    text: '**Omen:** Deal 3 damage to your hero.',
     attack: 3,
     health: 2,
     tribe: 'demon',
