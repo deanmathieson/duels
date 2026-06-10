@@ -60,6 +60,7 @@ import { shamanSignatureTreasures } from './treasures/sig-shaman'
 import { warlockSignatureTreasures } from './treasures/sig-warlock'
 import { warriorSignatureTreasures, warriorSignatureTreasureTokens } from './treasures/sig-warrior'
 import { scalingTreasures } from './treasures/scaling'
+import { bossTreasures } from './treasures/boss'
 
 // --- authored per-class + neutral card buckets ---
 import { hunterBuckets } from './buckets/hunter'
@@ -136,6 +137,7 @@ export const allTreasures: TreasureDef[] = [
   ...activeTreasures,
   ...signatureTreasures,
   ...scalingTreasures,
+  ...bossTreasures,
 ]
 
 /** Every CardDef in the game (collectibles + tokens + embedded treasure cards). */

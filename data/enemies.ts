@@ -1,21 +1,30 @@
 import type { EnemyDef } from '../game/types'
 
 /**
- * Enemy definitions for the run.
- * Tiers 1–6; tier 6 is the boss (isBoss: true, startingHealth: 35).
+ * Enemy roster for the run — 18 encounters in difficulty bands.
+ *
+ * Bands: tier 1-4 regulars (3 each), tier 5 ELITES (elite: true — bonus
+ * treasure on defeat), tier 6 BOSSES (isBoss, 35 base HP). Each run draws a
+ * seeded lineup from the bands (see stores/run.ts enemyLineup): 2 per regular
+ * tier, all 3 elites, 1 boss = 12 fights.
  *
  * Enemy decks reference PLAYER card ids directly so the same-named card always
  * behaves identically on both sides of the board. The only enemy-exclusive
- * cards are in data/cards/enemy.ts (soulfire, assassinate — no player
- * counterpart exists).
+ * cards are in data/cards/enemy.ts (soulfire, assassinate).
+ *
+ * AI deck rules (the greedy heuristic misplays these — keep them OUT):
+ *  - heal-only targeted spells (the spell-target chooser has no heal branch)
+ *  - damage+friendly-buff battlecries (warrior_cruel_taskmaster)
+ *  - hand-tempo tricks (rogue_shadowstep/vanish/conceal/preparation, vancleef)
+ *  - r_shallow_grave (destroys its own minion "for value")
  */
 export const enemies: EnemyDef[] = [
-  // -----------------------------------------------------------------------
-  // Tier 1 — Aggro Hunter
-  // -----------------------------------------------------------------------
+  // =========================================================================
+  // TIER 1 — opening fights
+  // =========================================================================
   {
     id: 'enemy_aggro_hunter',
-    name: 'Rexxar\'s Apprentice',
+    name: "Rexxar's Apprentice",
     tier: 1,
     heroName: 'Rexxar',
     heroClass: 'hunter',
@@ -40,13 +49,67 @@ export const enemies: EnemyDef[] = [
       'ironfur_grizzly',
     ],
   },
+  {
+    id: 'enemy_recruit_sergeant',
+    name: 'The Recruiting Sergeant',
+    tier: 1,
+    heroName: 'Sergeant Bramblewick',
+    heroClass: 'paladin',
+    heroPowerId: 'hp_reinforce',
+    aiProfile: 'aggro',
+    deck: [
+      'wisp',
+      'wisp',
+      'paladin_blessing_of_might',
+      'paladin_blessing_of_might',
+      'paladin_shielded_minibot',
+      'paladin_shielded_minibot',
+      'paladin_muster_for_battle',
+      'paladin_muster_for_battle',
+      'paladin_sound_the_bells',
+      'shattered_sun_cleric',
+      'shattered_sun_cleric',
+      'river_crocolisk',
+      'river_crocolisk',
+      'ironfur_grizzly',
+      'ironfur_grizzly',
+      'paladin_silver_hand_knight',
+    ],
+  },
+  {
+    id: 'enemy_gutter_blade',
+    name: 'The Gutter Blade',
+    tier: 1,
+    heroName: 'Knub the Knife',
+    heroClass: 'rogue',
+    heroPowerId: 'hp_rogue_dagger_mastery',
+    aiProfile: 'tempo',
+    deck: [
+      'rogue_backstab',
+      'rogue_backstab',
+      'rogue_sinister_strike',
+      'rogue_sinister_strike',
+      'rogue_deadly_poison',
+      'rogue_deadly_poison',
+      'rogue_goblin_auto_barber',
+      'rogue_goblin_auto_barber',
+      'rogue_defias_ringleader',
+      'rogue_defias_ringleader',
+      'bloodfen_raptor',
+      'bloodfen_raptor',
+      'rogue_si7_agent',
+      'rogue_si7_agent',
+      'rogue_eviscerate',
+      'rogue_eviscerate',
+    ],
+  },
 
-  // -----------------------------------------------------------------------
-  // Tier 2 — Tempo Mage
-  // -----------------------------------------------------------------------
+  // =========================================================================
+  // TIER 2
+  // =========================================================================
   {
     id: 'enemy_tempo_mage',
-    name: 'Khadgar\'s Disciple',
+    name: "Khadgar's Disciple",
     tier: 2,
     heroName: 'Khadgar',
     heroClass: 'mage',
@@ -72,13 +135,69 @@ export const enemies: EnemyDef[] = [
       'fire_elemental',
     ],
   },
+  {
+    id: 'enemy_zoo_warlock',
+    name: "Gul'dan's Servant",
+    tier: 2,
+    heroName: "Gul'dan",
+    heroClass: 'warlock',
+    heroPowerId: 'hp_life_tap',
+    aiProfile: 'aggro',
+    deck: [
+      'wisp',
+      'wisp',
+      'warlock_flame_imp',
+      'warlock_flame_imp',
+      'soulfire',
+      'soulfire',
+      'elven_archer',
+      'elven_archer',
+      'river_crocolisk',
+      'river_crocolisk',
+      'bloodfen_raptor',
+      'bloodfen_raptor',
+      'chillwind_yeti',
+      'chillwind_yeti',
+      'sen_jin_shieldmasta',
+      'boulderfist_ogre',
+      'war_golem',
+      'stormwind_champion',
+    ],
+  },
+  {
+    id: 'enemy_bog_augur',
+    name: 'The Bog Augur',
+    tier: 2,
+    heroName: 'Old Maggie Marshlight',
+    heroClass: 'shaman',
+    heroPowerId: 'hp_shaman_totemic_call',
+    aiProfile: 'tempo',
+    deck: [
+      'shaman_lightning_bolt',
+      'shaman_lightning_bolt',
+      'shaman_rockbiter_weapon',
+      'shaman_flametongue_totem',
+      'shaman_flametongue_totem',
+      'shaman_totem_golem',
+      'shaman_totem_golem',
+      'shaman_totemic_surge',
+      'shaman_feral_spirit',
+      'shaman_feral_spirit',
+      'shaman_unbound_elemental',
+      'shaman_unbound_elemental',
+      'shaman_lightning_storm',
+      'shaman_bloodlust',
+      'shaman_bloodlust',
+      'chillwind_yeti',
+    ],
+  },
 
-  // -----------------------------------------------------------------------
-  // Tier 3 — Midrange Paladin
-  // -----------------------------------------------------------------------
+  // =========================================================================
+  // TIER 3
+  // =========================================================================
   {
     id: 'enemy_midrange_paladin',
-    name: 'Uther\'s Champion',
+    name: "Uther's Champion",
     tier: 3,
     heroName: 'Uther',
     heroClass: 'paladin',
@@ -104,47 +223,68 @@ export const enemies: EnemyDef[] = [
       'boulderfist_ogre',
     ],
   },
-
-  // -----------------------------------------------------------------------
-  // Tier 4 — Zoo Warlock
-  // -----------------------------------------------------------------------
   {
-    id: 'enemy_zoo_warlock',
-    name: 'Gul\'dan\'s Servant',
-    tier: 4,
-    heroName: 'Gul\'dan',
-    heroClass: 'warlock',
-    heroPowerId: 'hp_life_tap',
-    aiProfile: 'aggro',
+    id: 'enemy_cinder_curate',
+    name: 'The Cinder Curate',
+    tier: 3,
+    heroName: 'Father Ashby',
+    heroClass: 'mage',
+    heroPowerId: 'hp_fireblast',
+    aiProfile: 'tempo',
     deck: [
-      'wisp',
-      'wisp',
-      'warlock_flame_imp',
-      'warlock_flame_imp',
-      'soulfire',
-      'soulfire',
-      'elven_archer',
-      'elven_archer',
+      'mage_arcane_missiles',
+      'mage_arcane_missiles',
+      'mage_frostbolt',
+      'mage_frostbolt',
+      'mage_sorcerers_apprentice',
+      'mage_sorcerers_apprentice',
+      'mage_arcane_explosion',
+      'mage_dalaran_mage',
+      'mage_dalaran_mage',
+      'mage_arcane_intellect',
+      'mage_cone_of_cold',
+      'mage_fireball',
+      'mage_fireball',
+      'azure_drake',
+      'azure_drake',
+      'mage_flamestrike',
+    ],
+  },
+  {
+    id: 'enemy_briar_hedgewitch',
+    name: 'The Hedgewitch of the Briar',
+    tier: 3,
+    heroName: 'Goodwife Nettle',
+    heroClass: 'druid',
+    heroPowerId: 'hp_natures_gifts',
+    aiProfile: 'midrange',
+    deck: [
+      'claw',
+      'wrath',
+      'wrath',
       'river_crocolisk',
       'river_crocolisk',
-      'bloodfen_raptor',
-      'bloodfen_raptor',
-      'chillwind_yeti',
-      'chillwind_yeti',
-      'sen_jin_shieldmasta',
-      'boulderfist_ogre',
-      'war_golem',
-      'stormwind_champion',
+      'power_of_the_wild',
+      'power_of_the_wild',
+      'swipe',
+      'swipe',
+      'druid_of_the_claw',
+      'druid_of_the_claw',
+      'ironfur_grizzly',
+      'ironfur_grizzly',
+      'starfire',
+      'ancient_of_war',
+      'ironbark_protector',
     ],
   },
 
-  // -----------------------------------------------------------------------
-  // Tier 5 — Control Warrior
-  // -----------------------------------------------------------------------
+  // =========================================================================
+  // TIER 4
+  // =========================================================================
   {
     id: 'enemy_control_warrior',
-    name: 'Garrosh\'s Warlord',
-    tier: 5,
+    name: "Garrosh's Warlord",
+    tier: 4,
     heroName: 'Garrosh',
     heroClass: 'warrior',
     heroPowerId: 'hp_armor_up',
@@ -170,10 +310,154 @@ export const enemies: EnemyDef[] = [
       'stormwind_champion',
     ],
   },
+  {
+    id: 'enemy_pact_binder',
+    name: 'The Pact-Binder',
+    tier: 4,
+    heroName: 'Notary Grimsworth',
+    heroClass: 'warlock',
+    heroPowerId: 'hp_life_tap',
+    aiProfile: 'midrange',
+    deck: [
+      'warlock_flame_imp',
+      'warlock_flame_imp',
+      'warlock_voidwalker',
+      'warlock_voidwalker',
+      'warlock_vulgar_homunculus',
+      'warlock_vulgar_homunculus',
+      'warlock_imp_gang_boss',
+      'warlock_imp_gang_boss',
+      'warlock_shadow_bolt',
+      'soulfire',
+      'soulfire',
+      'warlock_felguard',
+      'warlock_doomguard',
+      'warlock_hellfire',
+      'warlock_siphon_soul',
+      'warlock_abyssal_enforcer',
+    ],
+  },
+  {
+    id: 'enemy_silent_synod',
+    name: 'The Silent Synod',
+    tier: 4,
+    heroName: 'The Quiet Sisters',
+    heroClass: 'priest',
+    heroPowerId: 'hp_priest_mending',
+    aiProfile: 'control',
+    deck: [
+      'priest_northshire_cleric',
+      'priest_northshire_cleric',
+      'priest_power_word_shield',
+      'priest_shadow_word_pain',
+      'priest_shadow_word_pain',
+      'priest_injured_blademaster',
+      'priest_mind_blast',
+      'priest_mind_blast',
+      'priest_holy_nova',
+      'priest_shadow_word_death',
+      'priest_shadow_word_death',
+      'priest_temple_enforcer',
+      'priest_temple_enforcer',
+      'oasis_snapjaw',
+      'chillwind_yeti',
+      'boulderfist_ogre',
+    ],
+  },
 
-  // -----------------------------------------------------------------------
-  // Tier 6 — BOSS: The Arcane Amalgam
-  // -----------------------------------------------------------------------
+  // =========================================================================
+  // TIER 5 — ELITES (bonus treasure on defeat)
+  // =========================================================================
+  {
+    id: 'enemy_elite_quartermaster',
+    name: 'The Iron Quartermaster',
+    tier: 5,
+    elite: true,
+    heroName: 'Quartermaster Hew',
+    heroClass: 'warrior',
+    heroPowerId: 'hp_armor_up',
+    aiProfile: 'aggro',
+    deck: [
+      'warrior_fiery_war_axe',
+      'warrior_fiery_war_axe',
+      'warrior_heroic_strike',
+      'warrior_heroic_strike',
+      'warrior_frothing_berserker',
+      'warrior_frothing_berserker',
+      'warrior_korkron_elite',
+      'warrior_korkron_elite',
+      'warrior_deaths_bite',
+      'chillwind_yeti',
+      'chillwind_yeti',
+      'warrior_arcanite_reaper',
+      'warrior_arcanite_reaper',
+      'warrior_brawl',
+      'warrior_gorehowl',
+      'warrior_grommash_hellscream',
+    ],
+  },
+  {
+    id: 'enemy_elite_stormsworn',
+    name: 'The Storm-Sworn',
+    tier: 5,
+    elite: true,
+    heroName: 'Brother Thunderhead',
+    heroClass: 'shaman',
+    heroPowerId: 'hp_shaman_storm_strike',
+    aiProfile: 'midrange',
+    deck: [
+      'shaman_lightning_bolt',
+      'shaman_lightning_bolt',
+      'shaman_unbound_elemental',
+      'shaman_unbound_elemental',
+      'shaman_hex',
+      'shaman_lava_burst',
+      'shaman_lava_burst',
+      'faerie_dragon',
+      'faerie_dragon',
+      'fire_elemental',
+      'fire_elemental',
+      'shaman_earth_elemental',
+      'shaman_earth_elemental',
+      'shaman_volcano',
+      'shaman_thing_from_below',
+      'shaman_alakir_the_windlord',
+    ],
+  },
+  {
+    id: 'enemy_elite_gravecaller',
+    name: 'The Gravecaller',
+    tier: 5,
+    elite: true,
+    heroName: 'Deacon Mould',
+    heroClass: 'hunter',
+    heroPowerId: 'hp_steady_shot',
+    aiProfile: 'midrange',
+    // Haunt-archetype showcase: the new deathrattle package on the other side
+    // of the board.
+    deck: [
+      'hunter_webspinner',
+      'hunter_webspinner',
+      'n_coffin_beetle',
+      'n_coffin_beetle',
+      'h_cellar_broodmother',
+      'h_cellar_broodmother',
+      'hunter_rat_pack',
+      'hunter_rat_pack',
+      'n_lychgate_keeper',
+      'n_lychgate_keeper',
+      'h_carrion_hound',
+      'h_gorecrow_matron',
+      'hunter_savannah_highmane',
+      'hunter_savannah_highmane',
+      'n_body_snatcher',
+      'n_hollow_sexton',
+    ],
+  },
+
+  // =========================================================================
+  // TIER 6 — BOSSES (one per run)
+  // =========================================================================
   {
     id: 'boss_arcane_amalgam',
     name: 'The Arcane Amalgam',
@@ -206,6 +490,68 @@ export const enemies: EnemyDef[] = [
       'fire_elemental',
       'war_golem',
       'stormwind_champion',
+    ],
+  },
+  {
+    id: 'boss_hollow_shepherd',
+    name: 'The Hollow Shepherd',
+    tier: 6,
+    heroName: 'The Hollow Shepherd',
+    heroClass: 'warlock',
+    heroPowerId: 'hp_warlock_imp_summoner',
+    startingHealth: 35,
+    aiProfile: 'midrange',
+    isBoss: true,
+    // Gimmick: every dead lamb rejoins the flock as a 1/1.
+    passiveTreasureIds: ['boss_undying_flock'],
+    deck: [
+      'warlock_flame_imp',
+      'warlock_flame_imp',
+      'warlock_voidwalker',
+      'warlock_voidwalker',
+      'warlock_imp_gang_boss',
+      'warlock_imp_gang_boss',
+      'warlock_darkshire_councilman',
+      'warlock_darkshire_councilman',
+      'warlock_shadow_bolt',
+      'soulfire',
+      'warlock_hellfire',
+      'warlock_doomguard',
+      'warlock_felguard',
+      'warlock_siphon_soul',
+      'warlock_twisting_nether',
+      'boulderfist_ogre',
+    ],
+  },
+  {
+    id: 'boss_barrow_king',
+    name: 'The Barrow-King',
+    tier: 6,
+    heroName: 'The Barrow-King',
+    heroClass: 'warrior',
+    heroPowerId: 'hp_armor_up',
+    startingHealth: 35,
+    aiProfile: 'control',
+    isBoss: true,
+    // Gimmick: the cairn builds itself higher every turn.
+    passiveTreasureIds: ['boss_living_cairn'],
+    deck: [
+      'warrior_shield_slam',
+      'warrior_whirlwind',
+      'warrior_armorsmith',
+      'warrior_armorsmith',
+      'sen_jin_shieldmasta',
+      'warrior_bloodhoof_brave',
+      'warrior_bloodhoof_brave',
+      'sunwalker',
+      'warrior_shieldmaiden',
+      'warrior_brawl',
+      'warrior_alley_armorsmith',
+      'warrior_alley_armorsmith',
+      'war_golem',
+      'warrior_rattlegore',
+      'warrior_gorehowl',
+      'warrior_execute',
     ],
   },
 ]

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type {
   CardDef,
+  EnemyDef,
   GameSetup,
   HeroState,
   PlayerSetup,
@@ -19,7 +20,7 @@ import {
 } from '~/game/types'
 import { getCard, generateOffering } from '~/game/index'
 import type { RewardPools } from '~/game/index'
-import { nextInt } from '~/game/rng'
+import { nextInt, shuffle } from '~/game/rng'
 import {
   getHeroDef,
   getTreasureDef,
@@ -117,7 +118,7 @@ export const useRunStore = defineStore('run', () => {
 
   /** The enemy definition for the current/next combat. */
   const currentEnemyDef = computed(() =>
-    currentEnemyId.value ? getEnemyDef(currentEnemyId.value) : enemyForRound(round.value)
+    currentEnemyId.value ? getEnemyDef(currentEnemyId.value) : enemyForFight()
   )
 
   /** Human-readable run progress, e.g. "Round 3 · 2 Wins · 1 Loss". */
@@ -320,15 +321,39 @@ export const useRunStore = defineStore('run', () => {
    * --------------------------------------------------------------------- */
 
   /**
-   * Choose the enemy for a given (1-based) round: cycle the regular roster, and
-   * face the boss in the final stretch. Difficulty is scaled separately.
+   * The run's full 12-fight enemy lineup — a pure function of the run seed
+   * (dedicated RNG stream, mirroring enemyGrowthCards) so it needs no extra
+   * persisted state and old saves recompute the same lineup.
+   *
+   * Band structure: 2 from each of tiers 1-4, all 3 elites (shuffled), then
+   * 1 of the bosses. Fights are indexed by WINS, so a loss is a rematch
+   * against the same lineup entry (the round-based HP scaling makes the
+   * rematch slightly harder).
    */
-  function enemyForRound(r: number) {
+  function enemyLineup(): EnemyDef[] {
+    const rng: RngState = { seed: (seed.value ^ 0x2545f491) | 0 }
+    const band = (tier: number): EnemyDef[] => {
+      const pool = enemies.filter((e) => !e.isBoss && e.tier === tier)
+      shuffle(rng, pool)
+      return pool
+    }
+    const lineup: EnemyDef[] = []
+    for (const tier of [1, 2, 3, 4]) lineup.push(...band(tier).slice(0, 2))
+    lineup.push(...band(5).slice(0, 3))
     const bosses = enemies.filter((e) => e.isBoss)
-    const regular = enemies.filter((e) => !e.isBoss)
-    if (r >= RUN_TARGET_WINS && bosses.length > 0) return bosses[bosses.length - 1]
-    const pool = regular.length > 0 ? regular : enemies
-    return pool[(r - 1) % pool.length]
+    shuffle(rng, bosses)
+    if (bosses.length > 0) lineup.push(bosses[0])
+    // Safety: if bands are short (test fixtures), pad by cycling what we have.
+    while (lineup.length < RUN_TARGET_WINS && lineup.length > 0) {
+      lineup.push(lineup[lineup.length % Math.max(1, lineup.length - 1)])
+    }
+    return lineup
+  }
+
+  /** The enemy for the current fight: the lineup entry at the win count. */
+  function enemyForFight(): EnemyDef {
+    const lineup = enemyLineup()
+    return lineup[Math.min(wins.value, RUN_TARGET_WINS - 1)] ?? enemies[0]
   }
 
   /**
@@ -358,7 +383,7 @@ export const useRunStore = defineStore('run', () => {
     ensureContent()
     const game = useGameStore()
 
-    const enemyDef = enemyForRound(round.value)
+    const enemyDef = enemyForFight()
     currentEnemyId.value = enemyDef.id
 
     // --- human setup ---
@@ -443,6 +468,12 @@ export const useRunStore = defineStore('run', () => {
    * @param didWin - true when the human (player 0) won
    */
   function resolveCombat(didWin: boolean): void {
+    // Capture the beaten enemy BEFORE state advances (elite bonus reward).
+    const beaten =
+      currentEnemyId.value && hasEnemyDef(currentEnemyId.value)
+        ? getEnemyDef(currentEnemyId.value)
+        : undefined
+
     if (didWin) wins.value += 1
     else losses.value += 1
 
@@ -463,7 +494,7 @@ export const useRunStore = defineStore('run', () => {
     // Build this round's rewards, then advance the ladder.
     const completedRound = round.value
     round.value += 1
-    buildRewards(completedRound)
+    buildRewards(completedRound, didWin && !!beaten?.elite)
   }
 
   /**
@@ -501,11 +532,13 @@ export const useRunStore = defineStore('run', () => {
 
   /**
    * Build the reward offerings for a completed round and present the first.
-   * Duels gives a card bucket after EVERY round, plus a treasure on scheduled
+   * A card bucket comes after EVERY round, plus a treasure on scheduled
    * rounds — so a treasure round queues a treasure pick THEN a bucket pick.
+   * Beating an ELITE adds a bonus active-treasure pick on top.
    * @param completedRound - the round just finished (1-based)
+   * @param eliteBonus - true when an elite enemy was just defeated
    */
-  function buildRewards(completedRound: number): void {
+  function buildRewards(completedRound: number, eliteBonus = false): void {
     const rng = rngState()
     const queue: RewardOffering[] = []
 
@@ -513,6 +546,10 @@ export const useRunStore = defineStore('run', () => {
     if (tType) {
       const t = generateOffering(tType, completedRound, rng, rewardPools(completedRound))
       if (t.choices.length > 0) queue.push(t)
+    }
+    if (eliteBonus) {
+      const bonus = generateOffering('activeTreasure', completedRound, rng, rewardPools(completedRound))
+      if (bonus.choices.length > 0) queue.push(bonus)
     }
     const bucket = generateOffering('bucket', completedRound, rng, rewardPools(completedRound))
     if (bucket.choices.length > 0) queue.push(bucket)
@@ -618,6 +655,7 @@ export const useRunStore = defineStore('run', () => {
     deckToggle,
     confirmDeck,
     // combat
+    enemyLineup,
     startNextCombat,
     resolveCombat,
     // rewards

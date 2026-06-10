@@ -56,7 +56,7 @@
       <!-- Threat level indicator -->
       <div class="threat-bar">
         <span class="threat-label font-engrave">
-          {{ enemy.isBoss ? 'FINAL BOSS' : `TIER ${enemy.tier} THREAT` }}
+          {{ enemy.isBoss ? 'FINAL BOSS' : enemy.elite ? 'ELITE THREAT' : `TIER ${enemy.tier} THREAT` }}
         </span>
       </div>
 
@@ -73,7 +73,7 @@
         <div class="opp-info">
           <p class="opp-label font-engrave">Next Opponent</p>
           <h2 class="opp-name font-engrave">{{ enemy.name }}</h2>
-          <p class="opp-sub font-body">{{ enemy.heroName }} · <span class="opp-class">{{ enemy.heroClass }}</span></p>
+          <p class="opp-sub font-body">{{ enemy.heroName }} · <span class="opp-class">{{ CLASS_LABEL[enemy.heroClass] }}</span></p>
           <div class="opp-meta">
             <span class="opp-chip font-engrave">Tier {{ enemy.tier }}</span>
             <span class="opp-chip font-engrave" :class="`profile-${enemy.aiProfile}`">{{ profileLabel }}</span>
@@ -99,6 +99,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
+import { CLASS_LABEL } from '~/data/terms'
 import { gsap } from 'gsap'
 
 /** Stylized 12-round progress track with the next-opponent preview. */
