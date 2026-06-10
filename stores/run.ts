@@ -466,12 +466,23 @@ export const useRunStore = defineStore('run', () => {
     buildRewards(completedRound)
   }
 
-  /** Reward pools handed to the engine's pure offering generator. */
-  function rewardPools(): RewardPools {
+  /**
+   * Reward pools handed to the engine's pure offering generator.
+   * Passive treasures are tier-banded: the round-1 pick offers tier 1
+   * (archetype nudges), the round-3 pick offers tier 2 (game-warping).
+   * Treasures without a tier count as tier 1.
+   * @param completedRound - the round whose rewards are being built
+   */
+  function rewardPools(completedRound?: number): RewardPools {
     const heroClass = heroDef.value?.cardClass ?? 'neutral'
+    const passiveTier = completedRound === 3 ? 2 : 1
     return {
       buckets: bucketIdsForClass(heroClass),
-      passiveTreasures: passiveTreasureIds.filter((id) => !passiveTreasures.value.includes(id)),
+      passiveTreasures: passiveTreasureIds.filter((id) => {
+        if (passiveTreasures.value.includes(id)) return false
+        if (completedRound === undefined) return true
+        return (getTreasureDef(id).tier ?? 1) === passiveTier
+      }),
       activeTreasures: activeTreasureIds.filter((id) => !activeTreasures.value.includes(id)),
     }
   }
@@ -500,10 +511,10 @@ export const useRunStore = defineStore('run', () => {
 
     const tType = treasureTypeForRound(completedRound)
     if (tType) {
-      const t = generateOffering(tType, completedRound, rng, rewardPools())
+      const t = generateOffering(tType, completedRound, rng, rewardPools(completedRound))
       if (t.choices.length > 0) queue.push(t)
     }
-    const bucket = generateOffering('bucket', completedRound, rng, rewardPools())
+    const bucket = generateOffering('bucket', completedRound, rng, rewardPools(completedRound))
     if (bucket.choices.length > 0) queue.push(bucket)
 
     seed.value = rng.seed // persist the advanced RNG

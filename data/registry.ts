@@ -48,7 +48,7 @@ import { warriorHero, warriorHeroPowers } from './heroes/warrior'
 // --- treasures ---
 import { buckets as druidBuckets } from './buckets'
 import { enemies } from './enemies'
-import { passiveTreasures } from './treasures/passive'
+import { archivedPassiveTreasures, passiveTreasures } from './treasures/passive'
 import { activeTreasures, activeTreasureTokens } from './treasures/active'
 import { signatureTreasures as omuSignatureTreasures, signatureTreasureTokens } from './treasures/signature'
 import { hunterSignatureTreasures } from './treasures/sig-hunter'
@@ -128,9 +128,11 @@ export const signatureTreasures: TreasureDef[] = [
   ...warriorSignatureTreasures,
 ]
 
-/** All treasures across kinds (incl. enemy-only scaling passives the engine must resolve). */
+/** All treasures across kinds (incl. enemy-only scaling passives and retired
+ *  passives the engine must still resolve for old saves / boss gimmicks). */
 export const allTreasures: TreasureDef[] = [
   ...passiveTreasures,
+  ...archivedPassiveTreasures,
   ...activeTreasures,
   ...signatureTreasures,
   ...scalingTreasures,

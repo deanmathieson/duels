@@ -17,6 +17,7 @@ export const hunterHero: HeroDef = {
     'sig_hunter_rat_trap',
     'sig_hunter_tavish_stormpike',
     'sig_hunter_explosive_shot',
+    'sig_hunter_carrion_wake',
     'sig_hunter_beast_bond',
   ],
   art: undefined,

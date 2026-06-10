@@ -192,6 +192,18 @@ function chooseSpellTarget(
   const enemyMinions = state.players[foe].board.filter((m) => legal.has(m.instanceId))
   const friendlyMinions = state.players[player].board.filter((m) => legal.has(m.instanceId))
 
+  // Haunt triggers ("trigger a friendly minion's Deathrattle"): aim at the
+  // most expensive friendly minion that actually HAS a non-silenced
+  // deathrattle — anything else whiffs.
+  if (describesDeathrattleTrigger(def)) {
+    const withDr = friendlyMinions.filter(
+      (m) => !m.silenced && hasCard(m.cardId) && !!getCard(m.cardId).deathrattle
+    )
+    if (withDr.length === 0) return undefined
+    withDr.sort((a, b) => getCard(b.cardId).cost - getCard(a.cardId).cost)
+    return withDr[0].instanceId
+  }
+
   if (isFriendlyBuff) {
     // Buff the highest-attack friendly minion.
     const best = highestAttack(friendlyMinions)
@@ -228,6 +240,13 @@ function describesDamage(def: CardDef): boolean {
   const all = [...(def.spell ?? []), ...(def.battlecry ?? [])]
   for (const opt of def.chooseOne ?? []) all.push(...(opt.effects ?? []))
   return all.some((e) => e.kind === 'damage' || e.kind === 'destroy')
+}
+
+/** Does the card trigger friendly deathrattles (Haunt-archetype tools)? */
+function describesDeathrattleTrigger(def: CardDef): boolean {
+  const all = [...(def.spell ?? []), ...(def.battlecry ?? [])]
+  for (const opt of def.chooseOne ?? []) all.push(...(opt.effects ?? []))
+  return all.some((e) => e.kind === 'triggerDeathrattles')
 }
 
 /** Crude check: does the card buff friendly minions? */

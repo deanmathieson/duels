@@ -66,4 +66,22 @@ export const neutralBuckets: BucketDef[] = [
     cardClass: 'neutral',
     cardIds: ['elven_archer', 'shattered_sun_cleric', 'fire_elemental'],
   },
+  {
+    id: 'nbucket_haunt_core',
+    name: 'Restless Dead',
+    cardClass: 'neutral',
+    cardIds: ['n_coffin_beetle', 'n_bone_courier', 'n_lychgate_keeper'],
+  },
+  {
+    id: 'nbucket_haunt_payoffs',
+    name: 'The Corpse Trade',
+    cardClass: 'neutral',
+    cardIds: ['n_widow_hargreave', 'n_body_snatcher', 'n_hollow_sexton'],
+  },
+  {
+    id: 'nbucket_haunt_walls',
+    name: 'Buried Ramparts',
+    cardClass: 'neutral',
+    cardIds: ['n_somethings_egg', 'n_barrow_tortoise', 'n_plague_wagon'],
+  },
 ]

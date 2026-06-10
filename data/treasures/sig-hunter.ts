@@ -102,9 +102,27 @@ const explosiveShotCard: CardDef = {
 }
 
 /**
- * All Hunter signature treasures for Beaststalker Tavish.
+ * Carrion Wake — 5-mana Hunter spell.
+ * Summon three 1/2 Gorecrows with "Haunt: Draw a card." — the Haunt-archetype
+ * signature: a sticky board that replaces itself when it dies.
+ */
+const carrionWakeCard: CardDef = {
+  id: 'sig_hunter_carrion_wake',
+  name: 'Carrion Wake',
+  cost: 5,
+  type: 'spell',
+  cardClass: 'hunter',
+  rarity: 'legendary',
+  text: 'Summon three 1/2 Gorecrows with "**Haunt:** Draw a card."',
+  flavor: 'A proper Hollowmoor funeral: black feathers, light fingers, open bar.',
+  spell: [{ kind: 'summon', token: 'carrion_bird', count: 3 }],
+  token: true,
+}
+
+/**
+ * All Hunter signature treasures for the Trapper hero.
  *
- * 4 active signatures (each embeds a powerful token card).
+ * 5 active signatures (each embeds a powerful token card).
  * 1 passive signature (Beast Bond aura — your Beasts cost 1 less).
  */
 export const hunterSignatureTreasures: TreasureDef[] = [
@@ -139,6 +157,14 @@ export const hunterSignatureTreasures: TreasureDef[] = [
     text: 'Deal 5 damage to a minion and 2 damage to adjacent ones.',
     card: explosiveShotCard,
     tags: ['hunter-good', 'damage'],
+  },
+  {
+    id: 'sig_hunter_carrion_wake',
+    name: 'Carrion Wake',
+    kind: 'signature',
+    text: 'Summon three 1/2 Gorecrows with "Haunt: Draw a card."',
+    card: carrionWakeCard,
+    tags: ['hunter-good', 'deathrattle'],
   },
   /**
    * Beast Bond — PASSIVE signature.

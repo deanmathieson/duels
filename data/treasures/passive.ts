@@ -1,74 +1,103 @@
 import type { TreasureDef } from '../../game/types';
 
 /**
- * All passive treasures for Hearthstone Duels.
- * Passive treasures attach auras, triggers, or startOfGame effects to the player
- * for the entire run. They do NOT grant a card — the engine reads their
- * auras/triggers/startOfGame directly from PassiveState.
+ * Passive treasures: ongoing auras/triggers/startOfGame effects attached to the
+ * player for the entire run.
+ *
+ * DESIGN RULE: every passive should be a BUILD-AROUND, not a stat stick — it
+ * should change which cards you draft after picking it. Tiers gate the
+ * offering: tier 1 passives are archetype nudges (offered round 1), tier 2 are
+ * game-warping (offered round 3). Treasures without a tier default to 1.
+ *
+ * Ids are stable across renames (saved runs reference them).
  */
 export const passiveTreasures: TreasureDef[] = [
-  // --- cost-reduction auras ---
+  /* --------------------------------------------------------------------------
+   * TIER 1 — archetype nudges
+   * ----------------------------------------------------------------------- */
+
+  // --- cost reduction ---
   {
     id: 'tr_robe_of_the_magi',
-    name: 'Robe of the Magi',
+    name: 'Witchweave Shawl',
     kind: 'passive',
     text: 'Your spells cost (1) less.',
+    tier: 1,
     auras: [{ kind: 'costReduction', amount: 1, filter: 'spell' }],
     tags: ['druid-good'],
   },
   {
     id: 'tr_inspiring_presence',
-    name: 'Inspiring Presence',
+    name: "The Recruiter's Wink",
     kind: 'passive',
     text: 'Your minions cost (1) less.',
+    tier: 1,
     auras: [{ kind: 'costReduction', amount: 1, filter: 'minion' }],
   },
 
-  // --- stat auras ---
-  {
-    id: 'tr_bitter_cold',
-    name: 'Bitter Cold',
-    kind: 'passive',
-    text: 'Your minions have +1 Attack.',
-    auras: [{ kind: 'minionStat', atk: 1, filter: 'minion' }],
-  },
+  // --- archetype stat auras ---
   {
     id: 'tr_hold_the_line',
-    name: 'Hold the Line',
+    name: 'Lock Yer Doors',
     kind: 'passive',
-    text: 'Your Ward minions have +1/+2.',
+    text: 'Your **Ward** minions have +1/+2.',
+    tier: 1,
     auras: [{ kind: 'minionStat', atk: 1, health: 2, filter: 'taunt' }],
   },
   {
     id: 'tr_natural_force',
-    name: 'Natural Force',
+    name: 'Red in Tooth',
     kind: 'passive',
     text: 'Your Beasts have +2 Attack.',
+    tier: 1,
     auras: [{ kind: 'minionStat', atk: 2, filter: 'beast' }],
     tags: ['druid-good'],
   },
   {
-    id: 'tr_barkskin',
-    name: 'Barkskin',
+    id: 'tr_titans_favor',
+    name: 'Big Bones',
     kind: 'passive',
-    text: 'Your minions have +0/+2.',
-    auras: [{ kind: 'minionStat', health: 2, filter: 'minion' }],
+    text: 'Your minions that cost (5) or more have +2/+2.',
+    tier: 1,
+    auras: [{ kind: 'minionStat', atk: 2, health: 2, filter: 'costGte5' }],
   },
+
+  // --- archetype triggers ---
+  // id kept for compatibility; re-themed from a flat beast stat stick into an
+  // on-play beast tempo build-around.
   {
     id: 'tr_menagerie',
-    name: 'Menagerie',
+    name: 'Pack Manners',
     kind: 'passive',
-    text: 'Your Beasts have +1/+1.',
-    auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'beast' }],
+    text: 'After you play a Beast, give it +1/+1 and **Rush**.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onPlayBeast',
+        effects: [
+          { kind: 'buff', atk: 1, health: 1, target: 'triggerSource' },
+          { kind: 'giveKeyword', keyword: 'rush', target: 'triggerSource' },
+        ],
+      },
+    ],
     tags: ['druid-good'],
   },
-  // id kept for compatibility; was a strictly-worse duplicate of Natural Force
-  // (Beasts +1 vs +2 Attack), re-themed into a distinct spell-synergy passive.
+  // id kept for compatibility; was "start with 10 Armor", now a weapon/attack
+  // build-around.
+  {
+    id: 'tr_iron_hide',
+    name: "Duelist's Swagger",
+    kind: 'passive',
+    text: 'After your hero attacks, draw a card.',
+    tier: 1,
+    triggers: [{ event: 'afterAttack', effects: [{ kind: 'draw', count: 1 }] }],
+  },
   {
     id: 'tr_double_treant',
-    name: 'Sapling Surge',
+    name: 'Mandrake Chorus',
     kind: 'passive',
     text: 'After you cast a spell, summon a 1/1 Sapling.',
+    tier: 1,
     triggers: [
       {
         event: 'onPlaySpell',
@@ -78,45 +107,87 @@ export const passiveTreasures: TreasureDef[] = [
     tags: ['druid-good'],
   },
   {
-    id: 'tr_growing_season',
-    name: 'Growing Season',
+    id: 'tr_grave_pact',
+    name: "The Gravedigger's Cut",
     kind: 'passive',
-    text: 'Your Ward minions have +0/+2.',
-    auras: [{ kind: 'minionStat', health: 2, filter: 'taunt' }],
-  },
-
-  // --- keyword auras ---
-  {
-    id: 'tr_rocket_backpacks',
-    name: 'Rocket Backpacks',
-    kind: 'passive',
-    text: 'Your minions have Rush.',
-    auras: [{ kind: 'giveKeyword', keyword: 'rush', filter: 'minion' }],
+    text: 'After a friendly **Haunt** minion dies, summon a 2/2 Revenant.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        condition: 'cardHasDeathrattle',
+        effects: [{ kind: 'summon', token: 'revenant', count: 1 }],
+      },
+    ],
   },
   {
-    id: 'tr_vampiric_fangs',
-    name: 'Vampiric Fangs',
+    id: 'tr_battle_drums',
+    name: 'Wedding Drums',
     kind: 'passive',
-    text: 'Your minions have Leeching.',
-    auras: [{ kind: 'giveKeyword', keyword: 'lifesteal', filter: 'minion' }],
+    text: 'After you play an **Omen** minion, give it +1/+1.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onPlayMinion',
+        condition: 'cardHasBattlecry',
+        effects: [{ kind: 'buff', atk: 1, health: 1, target: 'triggerSource' }],
+      },
+    ],
   },
-
-  // --- spell damage aura ---
   {
-    id: 'tr_arcane_brilliance',
-    name: 'Arcane Brilliance',
+    id: 'tr_standing_army',
+    name: 'The Night Watch',
     kind: 'passive',
-    text: 'Your hero has +1 Spell Damage.',
-    auras: [{ kind: 'spellDamage', amount: 1 }],
-    tags: ['druid-good'],
+    text: 'At the start of your turn, summon a 1/1 Pitchfork Volunteer.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'startOfTurn',
+        effects: [{ kind: 'summon', token: 'hollow_recruit', count: 1 }],
+      },
+    ],
   },
-
-  // --- draw trigger ---
+  {
+    id: 'tr_spell_spark',
+    name: 'Spiteful Whispers',
+    kind: 'passive',
+    text: 'After you cast a spell, deal 1 damage to a random enemy.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onPlaySpell',
+        effects: [{ kind: 'damage', amount: 1, target: 'randomEnemy' }],
+      },
+    ],
+  },
+  {
+    id: 'tr_fae_blood',
+    name: 'Faewine Hangover',
+    kind: 'passive',
+    text: 'After a friendly Fae dies, deal 2 damage to the enemy hero.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        condition: 'cardIsDemon',
+        effects: [{ kind: 'damage', amount: 2, target: 'enemyHero' }],
+      },
+    ],
+  },
+  {
+    id: 'tr_scholars_focus',
+    name: 'Confession Booth',
+    kind: 'passive',
+    text: 'After you use your Hero Power, draw a card.',
+    tier: 1,
+    triggers: [{ event: 'onHeroPowerUsed', effects: [{ kind: 'draw', count: 1 }] }],
+  },
   {
     id: 'tr_potion_of_sparking',
-    name: 'Potion of Sparking',
+    name: "Gravedigger's Flask",
     kind: 'passive',
     text: 'After you play a card that costs (5) or more, draw a card.',
+    tier: 1,
     triggers: [
       {
         event: 'onCardCost5Plus',
@@ -125,12 +196,98 @@ export const passiveTreasures: TreasureDef[] = [
     ],
   },
 
-  // --- divine shield trigger ---
+  // --- start of game ---
+  {
+    id: 'tr_crystal_gem',
+    name: 'Swallowed Moonstone',
+    kind: 'passive',
+    text: 'Start of Game: Gain an empty Mana Stone.',
+    tier: 1,
+    startOfGame: [{ kind: 'gainManaCrystal', count: 1, empty: true }],
+    tags: ['druid-good'],
+  },
+
+  /* --------------------------------------------------------------------------
+   * TIER 2 — game-warping build-arounds
+   * ----------------------------------------------------------------------- */
+
+  {
+    id: 'tr_haunt_double',
+    name: 'Second Funeral',
+    kind: 'passive',
+    text: 'Your **Haunts** trigger twice.',
+    tier: 2,
+    auras: [{ kind: 'triggerTwice', what: 'deathrattle' }],
+  },
+  {
+    id: 'tr_omen_double',
+    name: 'Twice-Told Omen',
+    kind: 'passive',
+    text: 'Your **Omens** trigger twice.',
+    tier: 2,
+    auras: [{ kind: 'triggerTwice', what: 'battlecry' }],
+  },
+  {
+    id: 'tr_echo_chamber',
+    name: "Witch's Echo",
+    kind: 'passive',
+    text: 'The first spell you cast each turn casts twice.',
+    tier: 2,
+    auras: [{ kind: 'firstSpellEachTurnTwice' }],
+  },
+  {
+    id: 'tr_grave_echo',
+    name: 'Restless Lodgers',
+    kind: 'passive',
+    text: 'After a friendly **Haunt** minion dies, summon a 1/1 copy of it.',
+    tier: 2,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        condition: 'cardHasDeathrattle',
+        effects: [{ kind: 'summonCopy', of: 'triggerSource', atk: 1, health: 1 }],
+      },
+    ],
+  },
+  {
+    id: 'tr_swarm_banner',
+    name: 'Mob Justice',
+    kind: 'passive',
+    text: 'Your minions that cost (2) or less have +1/+1.',
+    tier: 2,
+    auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'costLte2' }],
+  },
+  {
+    id: 'tr_rocket_backpacks',
+    name: 'Too Eager by Half',
+    kind: 'passive',
+    text: 'Your minions have **Rush**.',
+    tier: 2,
+    auras: [{ kind: 'giveKeyword', keyword: 'rush', filter: 'minion' }],
+  },
+  {
+    id: 'tr_vampiric_fangs',
+    name: 'A Taste for Blood',
+    kind: 'passive',
+    text: 'Your minions have **Leeching**.',
+    tier: 2,
+    auras: [{ kind: 'giveKeyword', keyword: 'lifesteal', filter: 'minion' }],
+  },
+  {
+    id: 'tr_arcane_brilliance',
+    name: 'Third Eye Open',
+    kind: 'passive',
+    text: 'Your hero has +1 Spell Damage.',
+    tier: 2,
+    auras: [{ kind: 'spellDamage', amount: 1 }],
+    tags: ['druid-good'],
+  },
   {
     id: 'tr_divine_illumination',
-    name: 'Divine Illumination',
+    name: 'Lamplighter Baptism',
     kind: 'passive',
-    text: 'After you play a minion, give it Blessing.',
+    text: 'After you play a minion, give it **Blessing**.',
+    tier: 2,
     triggers: [
       {
         event: 'onPlayMinion',
@@ -138,21 +295,33 @@ export const passiveTreasures: TreasureDef[] = [
       },
     ],
   },
+];
 
-  // --- startOfGame effects ---
+/**
+ * Retired passives: pure stat sticks cut from the offering pool. They stay
+ * registered with the engine so old saved runs (and boss gimmicks) that
+ * reference them keep working — they are simply never offered again.
+ */
+export const archivedPassiveTreasures: TreasureDef[] = [
   {
-    id: 'tr_crystal_gem',
-    name: 'Crystal Gem',
+    id: 'tr_bitter_cold',
+    name: 'Bitter Cold',
     kind: 'passive',
-    text: 'Start of Game: Gain an empty Mana Stone.',
-    startOfGame: [{ kind: 'gainManaCrystal', count: 1, empty: true }],
-    tags: ['druid-good'],
+    text: 'Your minions have +1 Attack.',
+    auras: [{ kind: 'minionStat', atk: 1, filter: 'minion' }],
   },
   {
-    id: 'tr_iron_hide',
-    name: 'Iron Hide',
+    id: 'tr_barkskin',
+    name: 'Barkskin',
     kind: 'passive',
-    text: 'Start of Game: Gain 10 Armor.',
-    startOfGame: [{ kind: 'gainArmor', amount: 10 }],
+    text: 'Your minions have +0/+2.',
+    auras: [{ kind: 'minionStat', health: 2, filter: 'minion' }],
+  },
+  {
+    id: 'tr_growing_season',
+    name: 'Growing Season',
+    kind: 'passive',
+    text: 'Your **Ward** minions have +0/+2.',
+    auras: [{ kind: 'minionStat', health: 2, filter: 'taunt' }],
   },
 ];

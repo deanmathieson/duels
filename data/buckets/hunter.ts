@@ -117,6 +117,28 @@ export const hunterBuckets: BucketDef[] = [
   },
 
   /**
+   * HAUNT PACKAGE buckets — the deathrattle-beast draft lane.
+   */
+  {
+    id: 'bucket_hunter_haunt_swarm',
+    name: 'Snare Line',
+    cardClass: 'hunter',
+    cardIds: ['h_cellar_broodmother', 'h_carrion_hound', 'hunter_rat_pack'],
+  },
+  {
+    id: 'bucket_hunter_grave_hunt',
+    name: 'The Dead Hunt',
+    cardClass: 'hunter',
+    cardIds: ['h_play_dead', 'h_gorecrow_matron', 'h_the_dead_hunt'],
+  },
+  {
+    id: 'bucket_hunter_grave_tools',
+    name: "Poacher's Toolkit",
+    cardClass: 'hunter',
+    cardIds: ['h_shallow_diggings', 'h_trophy_skinner', 'h_nest_of_teeth'],
+  },
+
+  /**
    * Legendary Finishers — powerful late-game bombs and board-swing legendaries.
    */
   {

@@ -73,7 +73,7 @@ export const activeTreasures: TreasureDef[] = [
     id: 'tr_bag_of_coins',
     name: 'Bag of Coins',
     kind: 'active',
-    text: 'Gain 3 Coins and draw a card.',
+    text: 'Gain 3 Coins and draw 2 cards.',
     card: {
       id: 'tr_bag_of_coins',
       name: 'Bag of Coins',
@@ -81,10 +81,10 @@ export const activeTreasures: TreasureDef[] = [
       type: 'spell',
       cardClass: 'neutral',
       rarity: 'legendary',
-      text: 'Gain 3 Coins and draw a card.',
+      text: 'Gain 3 Coins and draw 2 cards.',
       spell: [
         { kind: 'gainCoin', count: 3 },
-        { kind: 'draw', count: 1 },
+        { kind: 'draw', count: 2 },
       ],
       token: true,
     },
@@ -275,6 +275,26 @@ export const activeTreasures: TreasureDef[] = [
       rarity: 'legendary',
       text: 'Deal 5 damage to all enemies.',
       spell: [{ kind: 'damage', amount: 5, target: 'allEnemyCharacters' }],
+      token: true,
+    },
+  },
+
+  // ---- 3-cost (Haunt archetype prize) ----
+  {
+    id: 'tr_grave_calling',
+    name: 'Grave Calling',
+    kind: 'active',
+    text: 'Resummon 3 friendly minions that died this game.',
+    card: {
+      id: 'tr_grave_calling',
+      name: 'Grave Calling',
+      cost: 3,
+      type: 'spell',
+      cardClass: 'neutral',
+      rarity: 'legendary',
+      text: 'Resummon 3 friendly minions that died this game.',
+      flavor: 'The moor keeps excellent records. The moor makes excellent house calls.',
+      spell: [{ kind: 'resummonDeadMinion', count: 3, filter: 'all' }],
       token: true,
     },
   },

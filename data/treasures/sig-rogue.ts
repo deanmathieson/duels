@@ -30,6 +30,31 @@ const shadowbladeWeapon: CardDef = {
 }
 
 /**
+ * The Widow's Letter-Opener — 2/3 weapon.
+ * After your hero attacks, trigger a random friendly minion's Haunt.
+ * (Weapon stats are deliberately lean — the trigger is the treasure.)
+ */
+const letterOpenerWeapon: CardDef = {
+  id: 'sig_rogue_letter_opener_card',
+  name: "The Widow's Letter-Opener",
+  cost: 3,
+  type: 'weapon',
+  cardClass: 'rogue',
+  rarity: 'legendary',
+  text: "After your hero attacks, trigger a random friendly minion's **Haunt**.",
+  flavor: 'She opens correspondence, throats, and probate disputes — in that order.',
+  attack: 2,
+  durability: 3,
+  triggers: [
+    {
+      event: 'afterAttack',
+      effects: [{ kind: 'triggerDeathrattles', target: 'randomFriendlyDeathrattleMinion' }],
+    },
+  ],
+  token: true,
+}
+
+/**
  * Thieves' Canvas — 2-mana spell.
  * Add 2 random spells from any class to your hand. Draw a card.
  * (Burgle flavour: the engine can't express "the opponent's class", so the
@@ -178,6 +203,19 @@ export const rogueSignatureTreasures: TreasureDef[] = [
     kind: 'signature',
     text: '4/4 Brigand. Rush. Omen: Summon three 1/1 Lackeys.',
     card: kingpinCard,
+    tags: ['rogue-good'],
+  },
+
+  /**
+   * The Widow's Letter-Opener — Haunt-archetype signature weapon: every hero
+   * swing re-fires a random friendly Haunt without spending the body.
+   */
+  {
+    id: 'sig_rogue_letter_opener',
+    name: "The Widow's Letter-Opener",
+    kind: 'signature',
+    text: "Weapon (2/3). After your hero attacks, trigger a random friendly minion's **Haunt**.",
+    card: letterOpenerWeapon,
     tags: ['rogue-good'],
   },
 ]

@@ -140,4 +140,26 @@ export const rogueBuckets: BucketDef[] = [
     cardClass: 'rogue',
     cardIds: ['boulderfist_ogre', 'sen_jin_shieldmasta', 'fire_elemental'],
   },
+
+  /**
+   * HAUNT PACKAGE buckets — the corpse-trade draft lane.
+   */
+  {
+    id: 'bucket_rogue_haunt_tools',
+    name: "Embalmer's Kit",
+    cardClass: 'rogue',
+    cardIds: ['r_embalmers_oil', 'r_garrote_ghost', 'rogue_shadow_agent'],
+  },
+  {
+    id: 'bucket_rogue_grave_riches',
+    name: 'Grave Riches',
+    cardClass: 'rogue',
+    cardIds: ['r_corpse_broker', 'r_shallow_grave', 'r_reliquary_fence'],
+  },
+  {
+    id: 'bucket_rogue_exhumation',
+    name: 'Midnight Trade',
+    cardClass: 'rogue',
+    cardIds: ['r_mistress_velvetshroud', 'r_ossuary_creeper', 'r_midnight_exhumation'],
+  },
 ]

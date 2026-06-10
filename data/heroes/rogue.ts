@@ -19,6 +19,7 @@ export const rogueHero: HeroDef = {
     'sig_rogue_cloak_of_shadows',
     'sig_rogue_pillage',
     'sig_rogue_kingpin',
+    'sig_rogue_letter_opener',
   ],
   art: undefined,
   portraitArt: undefined,

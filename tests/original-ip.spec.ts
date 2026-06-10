@@ -7,8 +7,11 @@ import {
   enemies,
   heroPowers,
   heroes,
+  passiveTreasureIds,
 } from '../data/registry'
 import { CLASS_LABEL, KEYWORD_LABEL, TRIBE_LABEL } from '../data/terms'
+
+const passiveOfferedIds = new Set(passiveTreasureIds)
 
 /**
  * Original-IP regression guard. All player-facing copy must use the Hollowmoor
@@ -131,5 +134,15 @@ describe('original-ip: dictionary completeness', () => {
     expect(heroPowers.length).toBeGreaterThan(20)
     expect(enemies.length).toBeGreaterThanOrEqual(6)
     expect(buckets.length).toBeGreaterThan(30)
+  })
+
+  it('both passive treasure tiers have enough options for a 3-choice offering', () => {
+    const offered = allTreasures.filter(
+      (t) => t.kind === 'passive' && passiveOfferedIds.has(t.id)
+    )
+    const tier1 = offered.filter((t) => (t.tier ?? 1) === 1)
+    const tier2 = offered.filter((t) => t.tier === 2)
+    expect(tier1.length).toBeGreaterThanOrEqual(3)
+    expect(tier2.length).toBeGreaterThanOrEqual(3)
   })
 })
