@@ -23,7 +23,7 @@ export const hunterBuckets: BucketDef[] = [
     id: 'bucket_hunter_early_beasts',
     name: 'Pack of Hunters',
     cardClass: 'hunter',
-    cardIds: ['hunter_stonetusk_boar', 'hunter_jeweled_macaw', 'hunter_springpaw'],
+    cardIds: ['stonetusk_boar', 'hunter_jeweled_macaw', 'hunter_springpaw'],
   },
 
   /**

@@ -360,22 +360,7 @@ export const warriorCards: CardDef[] = [
   // 7-cost
   // -------------------------------------------------------------------------
 
-  /**
-   * War Golem — 7/7 vanilla. Solid mid-curve body.
-   */
-  {
-    id: 'warrior_war_golem',
-    name: 'War Golem',
-    cost: 7,
-    type: 'minion',
-    cardClass: 'warrior',
-    rarity: 'common',
-    text: '',
-    attack: 7,
-    health: 7,
-    tribe: 'none',
-    art: undefined,
-  },
+  // (War Golem lives in neutral.ts — warriors draft the neutral copy.)
 
   /**
    * Alley Armorsmith — 2/7 Taunt. Whenever this minion takes damage, gain

@@ -1,17 +1,13 @@
 import type { EnemyDef } from '../game/types'
 
 /**
- * Enemy definitions for the Duels run.
+ * Enemy definitions for the run.
  * Tiers 1–6; tier 6 is the boss (isBoss: true, startingHealth: 35).
  *
- * Deck card IDs drawn from:
- *   - Neutral:  wisp, elven_archer, river_crocolisk, bloodfen_raptor, ironfur_grizzly,
- *               sen_jin_shieldmasta, chillwind_yeti, oasis_snapjaw, gnomish_inventor,
- *               sunwalker, fire_elemental, boulderfist_ogre, war_golem, stormwind_champion
- *   - Enemy class cards (data/cards/enemy.ts):
- *               fireball, frostbolt, arcane_intellect, kill_command, arcane_shot,
- *               animal_companion, shield_block, consecration, soulfire, flame_imp,
- *               truesilver, assassinate
+ * Enemy decks reference PLAYER card ids directly so the same-named card always
+ * behaves identically on both sides of the board. The only enemy-exclusive
+ * cards are in data/cards/enemy.ts (soulfire, assassinate — no player
+ * counterpart exists).
  */
 export const enemies: EnemyDef[] = [
   // -----------------------------------------------------------------------
@@ -28,18 +24,18 @@ export const enemies: EnemyDef[] = [
     deck: [
       'wisp',
       'wisp',
-      'arcane_shot',
-      'arcane_shot',
+      'hunter_arcane_shot',
+      'hunter_arcane_shot',
       'elven_archer',
       'elven_archer',
       'river_crocolisk',
       'river_crocolisk',
       'bloodfen_raptor',
       'bloodfen_raptor',
-      'animal_companion',
-      'animal_companion',
-      'kill_command',
-      'kill_command',
+      'hunter_animal_companion',
+      'hunter_animal_companion',
+      'hunter_kill_command',
+      'hunter_kill_command',
       'ironfur_grizzly',
       'ironfur_grizzly',
     ],
@@ -60,15 +56,15 @@ export const enemies: EnemyDef[] = [
       'wisp',
       'elven_archer',
       'elven_archer',
-      'frostbolt',
-      'frostbolt',
-      'arcane_intellect',
-      'arcane_intellect',
+      'mage_frostbolt',
+      'mage_frostbolt',
+      'mage_arcane_intellect',
+      'mage_arcane_intellect',
       'river_crocolisk',
       'chillwind_yeti',
       'chillwind_yeti',
-      'fireball',
-      'fireball',
+      'mage_fireball',
+      'mage_fireball',
       'gnomish_inventor',
       'gnomish_inventor',
       'boulderfist_ogre',
@@ -95,10 +91,10 @@ export const enemies: EnemyDef[] = [
       'river_crocolisk',
       'ironfur_grizzly',
       'ironfur_grizzly',
-      'consecration',
-      'consecration',
-      'truesilver',
-      'truesilver',
+      'paladin_consecration',
+      'paladin_consecration',
+      'paladin_truesilver_champion',
+      'paladin_truesilver_champion',
       'sen_jin_shieldmasta',
       'sen_jin_shieldmasta',
       'chillwind_yeti',
@@ -123,8 +119,8 @@ export const enemies: EnemyDef[] = [
     deck: [
       'wisp',
       'wisp',
-      'flame_imp',
-      'flame_imp',
+      'warlock_flame_imp',
+      'warlock_flame_imp',
       'soulfire',
       'soulfire',
       'elven_archer',
@@ -154,9 +150,9 @@ export const enemies: EnemyDef[] = [
     heroPowerId: 'hp_armor_up',
     aiProfile: 'control',
     deck: [
-      'shield_block',
-      'shield_block',
-      'shield_block',
+      'warrior_shield_block',
+      'warrior_shield_block',
+      'warrior_shield_block',
       'ironfur_grizzly',
       'ironfur_grizzly',
       'sen_jin_shieldmasta',
@@ -190,20 +186,20 @@ export const enemies: EnemyDef[] = [
     isBoss: true,
     passiveTreasureIds: ['tr_bitter_cold'],
     deck: [
-      'frostbolt',
-      'frostbolt',
-      'arcane_shot',
-      'arcane_shot',
-      'arcane_intellect',
-      'arcane_intellect',
-      'fireball',
-      'fireball',
-      'fireball',
-      'kill_command',
-      'kill_command',
+      'mage_frostbolt',
+      'mage_frostbolt',
+      'hunter_arcane_shot',
+      'hunter_arcane_shot',
+      'mage_arcane_intellect',
+      'mage_arcane_intellect',
+      'mage_fireball',
+      'mage_fireball',
+      'mage_fireball',
+      'hunter_kill_command',
+      'hunter_kill_command',
       'assassinate',
       'assassinate',
-      'consecration',
+      'paladin_consecration',
       'chillwind_yeti',
       'chillwind_yeti',
       'fire_elemental',

@@ -563,24 +563,7 @@ export const hunterCards: CardDef[] = [
   },
 
   // --- 1-cost new ---
-
-  /**
-   * Stonetusk Boar — 1/1 Beast with Rush.
-   * A cheap aggressive beast that can trade into minions immediately.
-   */
-  {
-    id: 'hunter_stonetusk_boar',
-    name: 'Stonetusk Boar',
-    cost: 1,
-    type: 'minion',
-    cardClass: 'hunter',
-    rarity: 'common',
-    text: '**Rush**',
-    attack: 1,
-    health: 1,
-    tribe: 'beast',
-    keywords: ['rush'],
-  },
+  // (Stonetusk Boar lives in neutral.ts — hunters draft the neutral copy.)
 
   /**
    * Springpaw — 1/1 Beast. Battlecry: add a 1/1 Lynx with Rush to your hand.

@@ -51,7 +51,7 @@ export const shamanBuckets: BucketDef[] = [
     id: 'bucket_shaman_big_elementals',
     name: 'Elemental Fury',
     cardClass: 'shaman',
-    cardIds: ['shaman_earth_elemental', 'shaman_fire_elemental', 'shaman_kalimos_primal_lord'],
+    cardIds: ['shaman_earth_elemental', 'fire_elemental', 'shaman_kalimos_primal_lord'],
   },
 
   // --- Board buffs / Bloodlust finisher package ---

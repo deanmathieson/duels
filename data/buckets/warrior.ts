@@ -78,7 +78,7 @@ export const warriorBuckets: BucketDef[] = [
     id: 'bucket_warrior_big_minions',
     name: 'Big Bodies',
     cardClass: 'warrior',
-    cardIds: ['warrior_war_golem', 'boulderfist_ogre', 'chillwind_yeti'],
+    cardIds: ['war_golem', 'boulderfist_ogre', 'chillwind_yeti'],
   },
 
   // ---------------------------------------------------------------------------

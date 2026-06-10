@@ -532,20 +532,7 @@ export const paladinCards: CardDef[] = [
   },
 
   // --- 6-cost additions ---
-  {
-    id: 'paladin_stormwind_champion',
-    name: 'Stormwind Champion',
-    cost: 7,
-    type: 'minion',
-    cardClass: 'paladin',
-    rarity: 'common',
-    text: 'Your other minions have +1/+1.',
-    attack: 6,
-    health: 6,
-    tribe: 'none',
-    auras: [{ kind: 'minionStat', atk: 1, health: 1 }],
-    art: undefined,
-  },
+  // (Stormwind Champion lives in neutral.ts — paladins draft the neutral copy.)
   {
     id: 'paladin_shirvallah_the_tiger',
     name: 'Shirvallah, the Tiger',

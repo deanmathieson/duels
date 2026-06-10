@@ -77,7 +77,7 @@ export const paladinBuckets: BucketDef[] = [
     id: 'bucket_paladin_finishers',
     name: 'Crusade\'s End',
     cardClass: 'paladin',
-    cardIds: ['paladin_shirvallah_the_tiger', 'paladin_stormwind_champion', 'paladin_dinosize'],
+    cardIds: ['paladin_shirvallah_the_tiger', 'stormwind_champion', 'paladin_dinosize'],
   },
 
   // ---- Value / draw ----

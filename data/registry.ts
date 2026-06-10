@@ -12,7 +12,7 @@ import type {
   HeroPowerDef,
   TreasureDef,
 } from '../game/types'
-import { registerCards, registerHeroPowers, registerTreasures } from '../game/index'
+import { hasCard, registerCards, registerHeroPowers, registerTreasures } from '../game/index'
 
 // Re-export the engine card lookups through the content facade so UI components
 // can import getCard/hasCard from '~/data/registry' alongside the def lookups.
@@ -249,6 +249,46 @@ export function getEnemyDef(id: string): EnemyDef {
   const e = enemyIndex[id]
   if (!e) throw new Error('Unknown enemy ' + id)
   return e
+}
+
+/** @returns true if the enemy id is known (saved runs may hold retired ids). */
+export function hasEnemyDef(id: string): boolean {
+  return !!enemyIndex[id]
+}
+
+/* ----------------------------------------------------------------------------
+ * Saved-run migration
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Card ids that were removed during the duplicate-cleanup pass, mapped to the
+ * surviving (neutral) copy. Saved decks in localStorage may still hold them.
+ */
+export const LEGACY_CARD_IDS: Record<string, string> = {
+  hunter_stonetusk_boar: 'stonetusk_boar',
+  paladin_stormwind_champion: 'stormwind_champion',
+  warrior_war_golem: 'war_golem',
+  shaman_fire_elemental: 'fire_elemental',
+}
+
+/**
+ * Migrate a saved deck's card ids: map retired ids to their replacements and
+ * drop anything the registry no longer knows (getCard throws on unknown ids,
+ * which would brick a saved run).
+ * @param ids - card ids from a persisted run
+ * @returns ids that are safe to resolve via getCard
+ */
+export function migrateCardIds(ids: string[]): string[] {
+  const out: string[] = []
+  for (const raw of ids) {
+    const id = LEGACY_CARD_IDS[raw] ?? raw
+    if (hasCard(id)) {
+      out.push(id)
+    } else if (typeof console !== 'undefined') {
+      console.warn(`[duels] Dropping unknown card id from saved run: ${raw}`)
+    }
+  }
+  return out
 }
 
 /* ----------------------------------------------------------------------------

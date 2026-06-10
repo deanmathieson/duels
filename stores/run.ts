@@ -25,6 +25,8 @@ import {
   getTreasureDef,
   getBucketDef,
   getEnemyDef,
+  hasEnemyDef,
+  migrateCardIds,
   enemies,
   bucketIdsForClass,
   passiveTreasureIds,
@@ -178,7 +180,9 @@ export const useRunStore = defineStore('run', () => {
     heroId.value = s.heroId
     heroPowerId.value = s.heroPowerId
     signatureTreasureId.value = s.signatureTreasureId
-    deck.value = [...(s.deck ?? [])]
+    // Saved decks may reference card ids retired by content updates — map them
+    // to their replacements (or drop them) instead of crashing on getCard.
+    deck.value = migrateCardIds([...(s.deck ?? [])])
     passiveTreasures.value = [...(s.passiveTreasureIds ?? [])]
     activeTreasures.value = [...(s.activeTreasureIds ?? [])]
     wins.value = s.wins ?? 0
@@ -188,7 +192,8 @@ export const useRunStore = defineStore('run', () => {
     seed.value = s.seed ?? (Date.now() & 0x7fffffff)
     offering.value = s.offering
     rewardQueue.value = (s.rewardQueue ?? []).map((o) => ({ ...o, choices: [...o.choices] }))
-    currentEnemyId.value = s.currentEnemyId
+    // A retired enemy id falls back to the round-based lineup.
+    currentEnemyId.value = s.currentEnemyId && hasEnemyDef(s.currentEnemyId) ? s.currentEnemyId : undefined
     active.value = true
   }
 
@@ -203,6 +208,8 @@ export const useRunStore = defineStore('run', () => {
       if (!raw) return false
       const data = JSON.parse(raw) as RunState
       if (!data || typeof data.stage !== 'string') return false
+      // Content must be registered before hydrate() can validate card ids.
+      ensureContent()
       hydrate(data)
       return true
     } catch {

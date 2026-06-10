@@ -340,24 +340,7 @@ export const shamanCards: CardDef[] = [
     ],
   },
 
-  /**
-   * Fire Elemental — 6/5 Elemental. Battlecry: Deal 3 damage.
-   */
-  {
-    id: 'shaman_fire_elemental',
-    name: 'Fire Elemental',
-    cost: 6,
-    type: 'minion',
-    cardClass: 'shaman',
-    rarity: 'free',
-    text: '**Omen:** Deal 3 damage.',
-    attack: 6,
-    health: 5,
-    tribe: 'elemental',
-    targeted: true,
-    targetFilter: 'allCharacters',
-    battlecry: [{ kind: 'damage', amount: 3, target: 'chosenTarget' }],
-  },
+  // (Fire Elemental lives in neutral.ts — shamans draft the neutral copy.)
 
   // --- 7-cost ---
 

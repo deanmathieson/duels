@@ -80,25 +80,18 @@ describe('summon spells', () => {
     }
   })
 
-  it('enemy Animal Companion spell summons a panther', () => {
-    const state = setup()
-    const instanceId = give(state, 'animal_companion')
-    const after = applyAction(state, { type: 'playCard', player: 0, instanceId }).state
-    expect(after.players[0].board.map((m) => m.cardId)).toEqual(['panther'])
-  })
-
   it('pure-summon spells are unplayable on a full board (no fizzle for full mana)', () => {
     const state = setup()
     fillBoard(state)
     expect(state.players[0].board.length).toBe(7)
 
     const companion = give(state, 'hunter_animal_companion')
-    const enemyCompanion = give(state, 'animal_companion')
-    const damageSpell = give(state, 'arcane_shot') // damage spell stays playable
+    const forceOfNature = give(state, 'force_of_nature')
+    const damageSpell = give(state, 'hunter_arcane_shot') // damage spell stays playable
 
     const playable = queries.getPlayableCards(state, 0).map((c) => c.instanceId)
     expect(playable).not.toContain(companion)
-    expect(playable).not.toContain(enemyCompanion)
+    expect(playable).not.toContain(forceOfNature)
     expect(playable).toContain(damageSpell)
   })
 })
