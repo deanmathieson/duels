@@ -27,14 +27,11 @@ jobs:
       - run: npm ci
       - name: Generate static site
         run: npm run generate
-        # NOTE: builds for a ROOT-served site (baseURL '/'), which is fully working.
-        # Serve at a domain root: a user/org Pages site (<user>.github.io) or a
-        # project repo with a custom domain (add a public/CNAME file).
-        # A bare project sub-path (<user>.github.io/<repo>/) would need
-        # NUXT_APP_BASE_URL: /<repo>/, but this Nuxt+Vite version has a SPA-generate
-        # bug with a non-root baseURL — prefer root/custom-domain hosting.
-      - name: SPA deep-link fallback
-        run: cp .output/public/index.html .output/public/404.html
+        # Project-site sub-path build. Nitro prerenders real HTML shells for the
+        # base-prefixed routes (seeded in nuxt.config.ts) and emits its own
+        # 404.html SPA fallback, so deep links / hard refreshes resolve on Pages.
+        env:
+          NUXT_APP_BASE_URL: /hearthstone-duels/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .output/public
