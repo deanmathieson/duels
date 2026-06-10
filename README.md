@@ -32,11 +32,12 @@ GitHub Pages on every push to `main`. To go live:
 2. Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 3. Push to `main` (or run the workflow manually). The site deploys from `.output/public`.
 
-The workflow builds with `NUXT_APP_BASE_URL=/hearthstone-duels/` for a project-site sub-path
-(`<user>.github.io/hearthstone-duels/`). The prerender route seeding in `nuxt.config.ts` makes
-sub-path generation emit real, hydratable HTML shells (entry + `/run` deep link), so no custom
-domain is required. For a differently named repo, change the env value to `/<repo>/`; for a
-root-served site (user site or custom domain), drop the env so `baseURL` defaults to `/`.
+The workflow builds with `NUXT_APP_BASE_URL=/duels/` for the project-site sub-path — the repo
+is named `duels`, so the site serves at `toast.house/duels/` (the user site's custom domain;
+project sites are served under it). The prerender route seeding in `nuxt.config.ts` makes
+sub-path generation emit real, hydratable HTML shells (entry + `/run` deep link). For a
+differently named repo, change the env value to `/<repo>/`; for a root-served site, drop the
+env so `baseURL` defaults to `/`.
 
 > SSR note: `nuxt dev` runs with builder SSR on + per-route client rendering (top-level `ssr:false`
 > crashes the Vite 7 dev server in this version); `nuxt generate` switches to a true SPA build. This

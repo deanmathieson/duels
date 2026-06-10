@@ -27,11 +27,12 @@ jobs:
       - run: npm ci
       - name: Generate static site
         run: npm run generate
-        # Project-site sub-path build. Nitro prerenders real HTML shells for the
-        # base-prefixed routes (seeded in nuxt.config.ts) and emits its own
-        # 404.html SPA fallback, so deep links / hard refreshes resolve on Pages.
+        # Project-site sub-path build (repo "duels" -> toast.house/duels/).
+        # Nitro prerenders real HTML shells for the base-prefixed routes
+        # (seeded in nuxt.config.ts) and emits its own 404.html SPA fallback,
+        # so deep links / hard refreshes resolve on Pages.
         env:
-          NUXT_APP_BASE_URL: /hearthstone-duels/
+          NUXT_APP_BASE_URL: /duels/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .output/public
