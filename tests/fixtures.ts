@@ -512,6 +512,41 @@ export const fixtureCards: CardDef[] = [
     health: 1,
     battlecry: [{ kind: 'gainManaCrystal', count: 1 }],
   },
+  // --- conditional death trigger (Scavenging Hyena pattern) ---
+  {
+    id: 'hyena_fix',
+    name: 'Fixture Hyena',
+    cost: 2,
+    type: 'minion',
+    cardClass: 'neutral',
+    rarity: 'common',
+    text: 'Whenever a friendly Beast dies, gain +2/+1.',
+    attack: 2,
+    health: 2,
+    tribe: 'beast',
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        condition: 'cardIsBeast',
+        effects: [{ kind: 'buff', atk: 2, health: 1, target: 'self' }],
+      },
+    ],
+  },
+  // --- weapon with afterAttack splash (corpse-cleanup regression) ---
+  {
+    id: 'whirl_axe',
+    name: 'Whirl Axe',
+    cost: 3,
+    type: 'weapon',
+    cardClass: 'neutral',
+    rarity: 'common',
+    text: 'After your hero attacks, deal 1 damage to all enemy minions.',
+    attack: 1,
+    durability: 3,
+    triggers: [
+      { event: 'afterAttack', effects: [{ kind: 'damage', amount: 1, target: 'enemyMinions' }] },
+    ],
+  },
 ]
 
 /** Fixture hero powers (a simple targeted ping and a non-targeted draw). */
@@ -563,6 +598,29 @@ export const fixtureTreasures: TreasureDef[] = [
     kind: 'passive',
     text: 'Your minions have +1/+1.',
     auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'minion' }],
+  },
+  {
+    id: 'tr_fix_illumination',
+    name: 'Fixture Illumination',
+    kind: 'passive',
+    text: 'After you play a minion, give it Divine Shield.',
+    triggers: [
+      { event: 'onPlayMinion', effects: [{ kind: 'giveDivineShield', target: 'triggerSource' }] },
+    ],
+  },
+  {
+    id: 'tr_fix_battle_focus',
+    name: 'Fixture Battle Focus',
+    kind: 'passive',
+    text: 'After your hero attacks, draw a card.',
+    triggers: [{ event: 'afterAttack', effects: [{ kind: 'draw', count: 1 }] }],
+  },
+  {
+    id: 'tr_fix_inspire',
+    name: 'Fixture Inspiration',
+    kind: 'passive',
+    text: 'After you use your Hero Power, draw a card.',
+    triggers: [{ event: 'onHeroPowerUsed', effects: [{ kind: 'draw', count: 1 }] }],
   },
 ]
 

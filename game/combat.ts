@@ -316,13 +316,26 @@ function flushDamageTriggers(state: GameState, events: GameEvent[]): void {
   }
 }
 
-/** Fire onMinionDeath / onFriendlyMinionDeath triggers for surviving minions. */
+/** Fire onMinionDeath / onFriendlyMinionDeath triggers for surviving minions and passives. */
 function fireDeathTriggers(
   state: GameState,
   deadMinion: MinionInstance,
   deadOwner: PlayerId,
   events: GameEvent[]
 ): void {
+  // Passive treasures listen for deaths too (death-pact style build-arounds).
+  for (const p of [0, 1] as PlayerId[]) {
+    for (const passive of state.players[p].passives) {
+      for (const trig of passive.triggers) {
+        if (
+          trig.event === 'onMinionDeath' ||
+          (trig.event === 'onFriendlyMinionDeath' && p === deadOwner)
+        ) {
+          fireTrigger(state, trig, p, undefined, deadMinion.instanceId, events, deadMinion.cardId)
+        }
+      }
+    }
+  }
   for (const p of [0, 1] as PlayerId[]) {
     for (const m of [...state.players[p].board]) {
       if (m.silenced || !m.hasTriggers) continue
@@ -330,9 +343,9 @@ function fireDeathTriggers(
       if (!def?.triggers) continue
       for (const trig of def.triggers) {
         if (trig.event === 'onMinionDeath') {
-          fireTrigger(state, trig, p, m.instanceId, deadMinion.instanceId, events)
+          fireTrigger(state, trig, p, m.instanceId, deadMinion.instanceId, events, deadMinion.cardId)
         } else if (trig.event === 'onFriendlyMinionDeath' && p === deadOwner) {
-          fireTrigger(state, trig, p, m.instanceId, deadMinion.instanceId, events)
+          fireTrigger(state, trig, p, m.instanceId, deadMinion.instanceId, events, deadMinion.cardId)
         }
       }
     }

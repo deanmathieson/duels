@@ -264,7 +264,8 @@ function fireBoardTriggers(
   player: PlayerId,
   event: TriggerDef['event'],
   events: GameEvent[],
-  playedCardId?: string
+  playedCardId?: string,
+  triggerSourceId?: string
 ): void {
   for (const m of [...state.players[player].board]) {
     if (m.silenced || !m.hasTriggers) continue
@@ -272,7 +273,7 @@ function fireBoardTriggers(
     if (!def?.triggers) continue
     for (const trig of def.triggers) {
       if (trig.event === event) {
-        fireTrigger(state, trig, player, m.instanceId, m.instanceId, events, playedCardId)
+        fireTrigger(state, trig, player, m.instanceId, triggerSourceId ?? m.instanceId, events, playedCardId)
       }
     }
   }
@@ -284,12 +285,13 @@ function firePassiveTriggers(
   player: PlayerId,
   event: TriggerDef['event'],
   events: GameEvent[],
-  playedCardId?: string
+  playedCardId?: string,
+  triggerSourceId?: string
 ): void {
   for (const passive of state.players[player].passives) {
     for (const trig of passive.triggers) {
       if (trig.event === event) {
-        fireTrigger(state, trig, player, undefined, undefined, events, playedCardId)
+        fireTrigger(state, trig, player, undefined, triggerSourceId, events, playedCardId)
       }
     }
   }
@@ -301,7 +303,8 @@ function fireWeaponTriggers(
   player: PlayerId,
   event: TriggerDef['event'],
   events: GameEvent[],
-  playedCardId?: string
+  playedCardId?: string,
+  triggerSourceId?: string
 ): void {
   const w = state.players[player].weapon
   if (!w) return
@@ -309,13 +312,23 @@ function fireWeaponTriggers(
   if (!def?.triggers) return
   for (const trig of def.triggers) {
     if (trig.event === event) {
-      fireTrigger(state, trig, player, w.instanceId, w.instanceId, events, playedCardId)
+      fireTrigger(state, trig, player, w.instanceId, triggerSourceId ?? w.instanceId, events, playedCardId)
     }
   }
 }
 
-/** Fire play-related triggers (onPlayCard/onPlayMinion/etc.) for a card. */
-function firePlayTriggers(state: GameState, player: PlayerId, playedDef: CardDef, events: GameEvent[]): void {
+/**
+ * Fire play-related triggers (onPlayCard/onPlayMinion/etc.) for a card.
+ * For minions, playedInstanceId is the placed minion so trigger effects can
+ * target it via 'triggerSource' (e.g. "After you play a minion, give IT ...").
+ */
+function firePlayTriggers(
+  state: GameState,
+  player: PlayerId,
+  playedDef: CardDef,
+  events: GameEvent[],
+  playedInstanceId?: string
+): void {
   const eventsToFire: TriggerDef['event'][] = ['onPlayCard']
   if (playedDef.type === 'minion') {
     eventsToFire.push('onPlayMinion')
@@ -328,9 +341,9 @@ function firePlayTriggers(state: GameState, player: PlayerId, playedDef: CardDef
   if (playedDef.cost >= 5) eventsToFire.push('onCardCost5Plus')
 
   for (const ev of eventsToFire) {
-    fireBoardTriggers(state, player, ev, events, playedDef.id)
-    firePassiveTriggers(state, player, ev, events, playedDef.id)
-    fireWeaponTriggers(state, player, ev, events, playedDef.id)
+    fireBoardTriggers(state, player, ev, events, playedDef.id, playedInstanceId)
+    firePassiveTriggers(state, player, ev, events, playedDef.id, playedInstanceId)
+    fireWeaponTriggers(state, player, ev, events, playedDef.id, playedInstanceId)
   }
 }
 
@@ -482,8 +495,9 @@ function handlePlayCard(
 
   const chooseOneIndex = action.chooseOneIndex ?? inst.chooseOneIndex
 
+  let playedInstanceId: string | undefined
   if (def.type === 'minion') {
-    playMinion(state, action.player, def, action, chooseOneIndex, events)
+    playedInstanceId = playMinion(state, action.player, def, action, chooseOneIndex, events)
   } else if (def.type === 'spell') {
     playSpell(state, action.player, def, action, chooseOneIndex, events)
   } else if (def.type === 'weapon') {
@@ -499,13 +513,14 @@ function handlePlayCard(
   }
 
   // Play triggers fire after the card resolves.
-  firePlayTriggers(state, action.player, def, events)
+  firePlayTriggers(state, action.player, def, events, playedInstanceId)
 
   recomputeAuras(state)
   checkDeaths(state, events)
   checkGameOver(state, events)
 }
 
+/** @returns the placed minion's instanceId (undefined if the board was full). */
 function playMinion(
   state: GameState,
   player: PlayerId,
@@ -513,7 +528,7 @@ function playMinion(
   action: Extract<Action, { type: 'playCard' }>,
   chooseOneIndex: number | undefined,
   events: GameEvent[]
-): void {
+): string | undefined {
   let overrides: { attack?: number; health?: number; keywords?: Keyword[] } | undefined
   let battlecry = def.battlecry
   if (def.chooseOne && chooseOneIndex !== undefined) {
@@ -530,7 +545,7 @@ function playMinion(
     }
   }
   const minion = makeMinion(def, overrides)
-  if (!placeMinion(state, player, minion, action.position, events)) return
+  if (!placeMinion(state, player, minion, action.position, events)) return undefined
 
   recomputeAuras(state)
 
@@ -553,6 +568,7 @@ function playMinion(
     }
     runEffects([{ kind: 'script', id: def.scriptId }], ctx, events)
   }
+  return minion.instanceId
 }
 
 function playSpell(
@@ -594,7 +610,10 @@ function handleAttack(
     resolveHeroAttack(state, action.player, action.targetId, events)
     fireBoardTriggers(state, action.player, 'afterAttack', events)
     fireWeaponTriggers(state, action.player, 'afterAttack', events)
+    firePassiveTriggers(state, action.player, 'afterAttack', events)
     recomputeAuras(state)
+    // Trigger effects (weapon splash etc.) can deal lethal damage.
+    checkDeaths(state, events)
     checkGameOver(state, events)
     return
   }
@@ -613,6 +632,8 @@ function handleAttack(
   resolveAttack(state, action.attackerId, action.targetId, events)
   fireBoardTriggers(state, action.player, 'afterAttack', events)
   recomputeAuras(state)
+  // Trigger effects can deal lethal damage.
+  checkDeaths(state, events)
   checkGameOver(state, events)
 }
 
@@ -654,6 +675,8 @@ function handleHeroPower(
   }
 
   fireBoardTriggers(state, action.player, 'onHeroPowerUsed', events)
+  firePassiveTriggers(state, action.player, 'onHeroPowerUsed', events)
+  fireWeaponTriggers(state, action.player, 'onHeroPowerUsed', events)
   recomputeAuras(state)
   checkDeaths(state, events)
   checkGameOver(state, events)
