@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   // GitHub Pages serves a project site under a sub-path. The deploy workflow
-  // sets NUXT_APP_BASE_URL=/hearthstone-duels/. Defaults to '/' for local dev.
+  // sets NUXT_APP_BASE_URL=/duels/. Defaults to '/' for local dev.
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
     head: {
