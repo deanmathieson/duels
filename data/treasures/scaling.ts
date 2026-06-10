@@ -8,21 +8,21 @@ import type { TreasureDef } from '../../game/types'
 export const scalingTreasures: TreasureDef[] = [
   {
     id: 'enemy_scale_1',
-    name: 'Battle-Hardened',
+    name: 'The Moor Stirs',
     kind: 'passive',
     text: 'Your minions have +1/+1.',
     auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'minion' }],
   },
   {
     id: 'enemy_scale_2',
-    name: 'Veteran Ranks',
+    name: 'The Moor Rises',
     kind: 'passive',
     text: 'Your minions have +2/+2.',
     auras: [{ kind: 'minionStat', atk: 2, health: 2, filter: 'minion' }],
   },
   {
     id: 'enemy_scale_3',
-    name: 'Champion Might',
+    name: 'The Moor Hungers',
     kind: 'passive',
     text: 'Your minions have +3/+3.',
     auras: [{ kind: 'minionStat', atk: 3, health: 3, filter: 'minion' }],

@@ -1,11 +1,11 @@
 import type { BucketDef } from '../../game/types'
 
 /**
- * Warlock card buckets for Duels reward picks.
+ * Bargainer card buckets for Duels reward picks.
  * Each bucket contains 3 thematically linked card ids drawn from warlockCards
- * and the stable neutral set. Covers all major Warlock archetypes:
- * aggressive early plays, Demon tribal, self-damage synergy, board flood,
- * drain/lifesteal, removal, control/AoE, heavy draw, big finishers, and taunts.
+ * and the stable neutral set. Covers all major Bargainer archetypes:
+ * aggressive early plays, Fae tribal, self-damage synergy, board flood,
+ * drain/lifesteal, removal, control/AoE, heavy draw, big finishers, and wards.
  */
 export const warlockBuckets: BucketDef[] = [
   /**
@@ -14,18 +14,18 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_aggro',
-    name: 'Fel Rush',
+    name: 'Penny Dreadfuls',
     cardClass: 'warlock',
     cardIds: ['warlock_flame_imp', 'warlock_kobold_librarian', 'warlock_mortal_coil'],
   },
 
   /**
-   * Early Taunt Demons — establish board presence and protect the hero
-   * while setting up Demon synergies.
+   * Early Ward Fae — establish board presence and protect the hero
+   * while setting up Fae synergies.
    */
   {
     id: 'bucket_warlock_taunt_demons',
-    name: 'Demonic Wall',
+    name: 'Hedge of Teeth',
     cardClass: 'warlock',
     cardIds: ['warlock_voidwalker', 'warlock_vulgar_homunculus', 'sen_jin_shieldmasta'],
   },
@@ -36,18 +36,18 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_tempo',
-    name: 'Tempo Demons',
+    name: 'Quick Bargains',
     cardClass: 'warlock',
     cardIds: ['warlock_imp_gang_boss', 'warlock_void_terror', 'warlock_felhunter'],
   },
 
   /**
-   * Demon tribal synergy — buff your Demons and snowball with
-   * Darkshire Councilman as the payoff card.
+   * Fae tribal synergy — buff your Fae and snowball with
+   * the Crooked Alderman as the payoff card.
    */
   {
     id: 'bucket_warlock_demon_synergy',
-    name: 'Demonic Pact',
+    name: 'The Fine Print',
     cardClass: 'warlock',
     cardIds: ['warlock_darkshire_councilman', 'warlock_sense_demons', 'warlock_void_caller'],
   },
@@ -58,7 +58,7 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_self_damage',
-    name: 'Blood Price',
+    name: 'Paid in Blood',
     cardClass: 'warlock',
     cardIds: ['warlock_dark_pact', 'warlock_felguard', 'warlock_doomguard'],
   },
@@ -69,18 +69,18 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_drain',
-    name: 'Soul Drain',
+    name: 'Leechcraft',
     cardClass: 'warlock',
     cardIds: ['warlock_drain_soul', 'warlock_siphon_soul', 'warlock_enhanced_dreadlord'],
   },
 
   /**
-   * Board-flood Imps — summon many small Demon tokens quickly,
-   * then close out with Imp-losion for burst damage and more bodies.
+   * Board-flood Pennywisps — summon many small Fae tokens quickly,
+   * then close out with Burst Purse for burst damage and more bodies.
    */
   {
     id: 'bucket_warlock_board_flood',
-    name: 'Imp Swarm',
+    name: 'Wisp Riot',
     cardClass: 'warlock',
     cardIds: ['warlock_imp_losion', 'warlock_bane_of_doom', 'warlock_abyssal_enforcer'],
   },
@@ -91,7 +91,7 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_removal',
-    name: 'Dark Removal',
+    name: 'Struck From the Ledger',
     cardClass: 'warlock',
     cardIds: ['warlock_shadow_bolt', 'warlock_corruption', 'warlock_siphon_soul'],
   },
@@ -102,7 +102,7 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_aoe',
-    name: 'Fel Cleanse',
+    name: 'Scorched Moor',
     cardClass: 'warlock',
     cardIds: ['warlock_hellfire', 'warlock_twisting_nether', 'fire_elemental'],
   },
@@ -113,18 +113,18 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_draw',
-    name: 'Dark Knowledge',
+    name: 'Red Ink',
     cardClass: 'warlock',
     cardIds: ['warlock_hand_of_guldan', 'warlock_blood_queen_lanathel', 'gnomish_inventor'],
   },
 
   /**
-   * Big Demon finishers — late-game powerhouses that end the game
-   * with massive stats or board-warping battlecries.
+   * Big Fae finishers — late-game powerhouses that end the game
+   * with massive stats or board-warping Omens.
    */
   {
     id: 'bucket_warlock_finishers',
-    name: 'Demonic Finale',
+    name: 'The Final Bargain',
     cardClass: 'warlock',
     cardIds: ['warlock_malganis', 'warlock_lord_jaraxxus', 'war_golem'],
   },
@@ -135,7 +135,7 @@ export const warlockBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_warlock_neutral_value',
-    name: 'Fel Muscle',
+    name: 'Hired Muscle',
     cardClass: 'warlock',
     cardIds: ['chillwind_yeti', 'boulderfist_ogre', 'stormwind_champion'],
   },

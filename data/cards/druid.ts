@@ -1,30 +1,32 @@
 import type { CardDef } from '../../game/types'
 
 /**
- * Druid class cards — exactly 20 ids as specified in CONTENT.md.
+ * Hedgewitch class cards — exactly 20 ids as specified in CONTENT.md.
  * Encoded per EFFECTSPEC.md conventions.
  */
 export const druidCards: CardDef[] = [
   // --- 0-cost ---
   {
     id: 'innervate',
-    name: 'Innervate',
+    name: "A Nip o' Something Strong",
     cost: 0,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Gain 2 Mana Stones this turn only.',
+    flavor: 'Granny\'s own recipe. Warms the chest, loosens the tongue, and by the second cup, the laces.',
     spell: [{ kind: 'gainManaThisTurn', amount: 2 }],
     art: undefined,
   },
   {
     id: 'moonfire',
-    name: 'Moonfire',
+    name: 'Corpse-Candle',
     cost: 0,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Deal 1 damage.',
+    flavor: 'Follow it into the bog, lovey. Everyone does, sooner or later.',
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [{ kind: 'damage', amount: 1, target: 'chosenTarget' }],
@@ -34,12 +36,13 @@ export const druidCards: CardDef[] = [
   // --- 1-cost ---
   {
     id: 'claw',
-    name: 'Claw',
+    name: 'A Fistful of Thorns',
     cost: 1,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Give your hero +2 Attack this turn. Gain 2 Armor.',
+    flavor: 'The last lad who reached into her hedge uninvited came home singing a good deal higher.',
     spell: [
       { kind: 'heroAttackThisTurn', amount: 2 },
       { kind: 'gainArmor', amount: 2 },
@@ -48,12 +51,13 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'living_roots',
-    name: 'Living Roots',
+    name: 'Mandrake Bed',
     cost: 1,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'common',
     text: 'Choose One - Deal 2 damage; or Summon two 1/1 Saplings.',
+    flavor: 'Sown beneath the gallows and watered with — well. Ask the hangman\'s widow, she keeps the bucket.',
     targeted: true,
     targetFilter: 'allCharacters',
     chooseOne: [
@@ -72,12 +76,13 @@ export const druidCards: CardDef[] = [
   // --- 2-cost ---
   {
     id: 'mark_of_the_wild',
-    name: 'Mark of the Wild',
+    name: "The Witch's Mark",
     cost: 2,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Give a friendly minion **Ward** and +2/+2.',
+    flavor: 'Everyone in the parish bears one somewhere. The miller\'s wife charges a penny a look at hers.',
     targeted: true,
     targetFilter: 'friendlyMinions',
     spell: [
@@ -88,23 +93,25 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'wild_growth',
-    name: 'Wild Growth',
+    name: 'Overnight Briar',
     cost: 2,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Gain an empty Mana Stone.',
+    flavor: 'Prune it at dusk and by dawn it\'s at your bedroom window, asking after your daughter.',
     spell: [{ kind: 'gainManaCrystal', count: 1, empty: true }],
     art: undefined,
   },
   {
     id: 'wrath',
-    name: 'Wrath',
+    name: 'A Woman Scorned',
     cost: 2,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'common',
     text: 'Choose One - Deal 3 damage to a minion; or 1 damage and draw a card.',
+    flavor: 'Hell hath nothing on her.',
     targeted: true,
     targetFilter: 'allMinions',
     chooseOne: [
@@ -124,12 +131,13 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'power_of_the_wild',
-    name: 'Power of the Wild',
+    name: 'Call of the Crooked Wood',
     cost: 2,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'common',
     text: 'Choose One - Give your minions +1/+1; or Summon a 3/2 Panther.',
+    flavor: 'The wood provides. The wood also collects, come Michaelmas.',
     chooseOne: [
       {
         text: 'Give your minions +1/+1.',
@@ -146,12 +154,13 @@ export const druidCards: CardDef[] = [
   // --- 3-cost ---
   {
     id: 'savage_roar',
-    name: 'Savage Roar',
+    name: 'Beat the Bounds',
     cost: 3,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'common',
     text: 'Give your characters +2 Attack this turn.',
+    flavor: 'A cherished parish custom: walk the boundary line and thrash whatever stands on the wrong side of it.',
     spell: [
       { kind: 'buffThisTurn', atk: 2, target: 'friendlyMinions' },
       { kind: 'heroAttackThisTurn', amount: 2 },
@@ -160,12 +169,13 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'mulch',
-    name: 'Mulch',
+    name: 'Peat-Bog Burial',
     cost: 3,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'epic',
     text: 'Destroy a minion. Add a random minion to your opponent\'s hand.',
+    flavor: 'The bog keeps what it\'s given and sends back something else entirely. No refunds, no questions.',
     targeted: true,
     targetFilter: 'allMinions',
     scriptId: 'mulch',
@@ -175,12 +185,13 @@ export const druidCards: CardDef[] = [
   // --- 4-cost ---
   {
     id: 'keeper_of_the_grove',
-    name: 'Keeper of the Grove',
+    name: 'Crone of the Crossroads',
     cost: 4,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'rare',
     text: 'Choose One - Deal 2 damage; or Silence a minion.',
+    flavor: 'For a penny she\'ll hex your rival. For two she\'ll stop his mouth. The vicar pays weekly.',
     attack: 2,
     health: 4,
     tribe: 'none',
@@ -200,12 +211,13 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'swipe',
-    name: 'Swipe',
+    name: 'The Long Scythe',
     cost: 4,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Deal 4 damage to an enemy and 1 damage to all other enemies.',
+    flavor: 'One clean stroke for the tall fellow, and a nick apiece for the gawkers.',
     targeted: true,
     targetFilter: 'allEnemyCharacters',
     spell: [
@@ -218,12 +230,13 @@ export const druidCards: CardDef[] = [
   // --- 5-cost ---
   {
     id: 'nourish',
-    name: 'Nourish',
+    name: "Granny's Restorative",
     cost: 5,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'rare',
     text: 'Choose One - Gain 2 Mana Stones; or Draw 3 cards.',
+    flavor: 'Cures gout, grief and shyness. Side effects include vigour, visions and twins.',
     chooseOne: [
       {
         text: 'Gain 2 Mana Stones.',
@@ -238,23 +251,25 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'force_of_nature',
-    name: 'Force of Nature',
+    name: 'The Wood Walks',
     cost: 5,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'epic',
     text: 'Summon three 2/2 Treants.',
+    flavor: 'Some nights the orchard pulls up its roots and goes calling on the man with the axe.',
     spell: [{ kind: 'summon', token: 'treant', count: 3 }],
     art: undefined,
   },
   {
     id: 'druid_of_the_claw',
-    name: 'Druid of the Claw',
+    name: 'Skin-Turner',
     cost: 5,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'common',
     text: 'Choose One - 4/4 with Charge; or 4/6 with Ward.',
+    flavor: 'Wears the wolf to a fight and the shepherd to a wake. Wears nothing at all in between, as the dairy maids will attest.',
     attack: 4,
     health: 4,
     tribe: 'beast',
@@ -276,12 +291,13 @@ export const druidCards: CardDef[] = [
   // --- 6-cost ---
   {
     id: 'starfire',
-    name: 'Starfire',
+    name: 'The Falling Star',
     cost: 6,
     type: 'spell',
     cardClass: 'druid',
     rarity: 'free',
     text: 'Deal 5 damage. Draw a card.',
+    flavor: 'When a star falls on Hollowmoor, somebody\'s name is written on it.',
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [
@@ -294,12 +310,13 @@ export const druidCards: CardDef[] = [
   // --- 7-cost ---
   {
     id: 'ancient_of_lore',
-    name: 'Ancient of Lore',
+    name: 'Elder of the Hollow Lane',
     cost: 7,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'epic',
     text: 'Choose One - Draw 2 cards; or Restore 5 Health.',
+    flavor: 'Old as the parish stones and twice as gossipy. It knows who you walked out with on Lammas night.',
     attack: 5,
     health: 5,
     tribe: 'ancient',
@@ -319,12 +336,13 @@ export const druidCards: CardDef[] = [
   },
   {
     id: 'ancient_of_war',
-    name: 'Ancient of War',
+    name: 'Gallows-Hill Elder',
     cost: 7,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'epic',
     text: 'Choose One - +5 Attack; or +5 Health and Ward.',
+    flavor: 'Grew stout on what the hangman planted. Still sour about the year they took its arm for lumber.',
     attack: 5,
     health: 5,
     tribe: 'ancient',
@@ -345,12 +363,13 @@ export const druidCards: CardDef[] = [
   // --- 8-cost ---
   {
     id: 'ironbark_protector',
-    name: 'Ironbark Protector',
+    name: 'Old Man Hawthorn',
     cost: 8,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'free',
     text: '**Ward**',
+    flavor: 'He has stood at the village gate a thousand years and lifts his roots for no man. For the widow Crabtree, twice.',
     attack: 8,
     health: 8,
     tribe: 'none',
@@ -361,12 +380,13 @@ export const druidCards: CardDef[] = [
   // --- 9-cost ---
   {
     id: 'cenarius',
-    name: 'Cenarius',
+    name: "Jack o' the Briar",
     cost: 9,
     type: 'minion',
     cardClass: 'druid',
     rarity: 'legendary',
     text: 'Choose One - Give your other minions +2/+2; or Summon two 2/2 Treants with Ward.',
+    flavor: 'The Briar\'s bridegroom. Half the maypoles in the county are his doing, and half the christenings nine months after.',
     attack: 5,
     health: 8,
     tribe: 'none',

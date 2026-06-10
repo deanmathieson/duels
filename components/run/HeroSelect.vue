@@ -93,23 +93,23 @@ const selectedId = ref<string | undefined>(heroDefs.length === 1 ? heroDefs[0].i
 /** Per-hero flavour text shown under the portrait. */
 const LORE: Record<string, string> = {
   forest_warden_omu:
-    'A revered druid of the Gilnean wilds, Omu channels the raw renewal of the forest — summoning treants, ramping mana, and bending the cycle of seasons to his will.',
+    'The Hedgewitch of Hollowmoor. Four husbands buried — three of them properly dead — and a standing bargain with the Briar. Her garden grows overnight, and so do her grudges.',
   hero_hunter:
-    'A master marksman of the Alterac peaks, Tavish leads packs of beasts and never misses a killing shot.',
+    "The poacher matriarch of the moor. Never lost a dog, never missed a shot, never paid the gamekeeper in anything he could bank. Her snares catch dinner; her smile catches everything else.",
   hero_mage:
-    'An arcane duelist who bends raw spellpower to her will — out-burn your foe before they can draw breath.',
+    'A scandalous hedge-astrologer who reads ruin in the night sky and sells the good news at a markup. Burn bright, burn fast, and bill the survivors.',
   hero_paladin:
-    'A redeemed commander of the Light, calling forth ranks of Recruits and shielding them in holy radiance.',
+    'Captain of the lantern processions. Half the parish owes her protection money; the other half owes her apologies. Light every wick, shield every debtor — collection comes later.',
   hero_priest:
-    'A shadow-touched priest who mends her own and unravels the minds of her enemies.',
+    'Shepherd of the crookedest parish in the county. Mends his flock with one hand, unravels their secrets with the other, and drinks the communion cellar dry in between.',
   hero_rogue:
-    'A shadow operative trading in cheap tricks, swift blades and stolen spells.',
+    'The most-acquitted woman in Hollowmoor: smuggler, fence, and dealer in the corpse trade. Knives cheap, silence extra, no refunds.',
   hero_shaman:
-    'A primalist who plants totems and calls down lightning and elemental fury.',
+    'The bog-witch who reads tomorrow in entrails and stakes carved Effigies in the marsh. The weather owes her favors. So does half the drowned.',
   hero_warlock:
-    'She pays in her own lifeblood to flood the board with demons and drain her foes.',
+    'The crossroads creditor. She pays in her own blood, lends at ruinous interest, and the Fae who hold her notes are always, always hungry.',
   hero_warrior:
-    'An unkillable bone colossus — stack armor, swing massive weapons, and outlast everything.'
+    'The last Banneret of a mortgaged keep — rusting plate, tavern debts, and a tourney title nobody dares ask him to defend. Stack armor, swing iron, outlast the county.'
 }
 
 /** Lore for a hero, with a graceful fallback. */

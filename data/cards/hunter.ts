@@ -1,7 +1,7 @@
 import type { CardDef } from '../../game/types'
 
 /**
- * Hunter (Beaststalker Tavish) class cards.
+ * Trapper (Widow Bracken) class cards.
  * ~18 collectible cards spanning the curve (1-9 mana) plus token cards.
  * Theme: Beasts and aggression — cheap beasts, beast buffs, face damage, summon tokens.
  */
@@ -12,8 +12,8 @@ export const hunterCards: CardDef[] = [
   // =========================================================================
 
   /**
-   * Hound — 1/1 Beast token with Charge summoned by Unleash the Hounds and
-   * other effects (matches the classic Hound token).
+   * Hound — 1/1 Beast token with Charge summoned by Slip the Leash and
+   * other effects.
    */
   {
     id: 'hunter_hound',
@@ -31,13 +31,12 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Timber Wolf — 1/1 Beast token (used by Animal Companion variant).
-   * While in play it would buff other beasts, but as a basic summon token
-   * it is just a 1/1 Beast.
+   * Runt — 1/1 Beast token (one of the widow's three companions).
+   * The runt of the litter leads the pack: buffs other beasts while in play.
    */
   {
     id: 'hunter_timber_wolf',
-    name: 'Timber Wolf',
+    name: 'Runt',
     cost: 1,
     type: 'minion',
     cardClass: 'hunter',
@@ -51,12 +50,12 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Leokk — 2/4 Beast token (Animal Companion companion).
-   * Gives friendly minions +1 Attack.
+   * Hexfeather — 2/4 Beast token (one of the widow's three companions).
+   * A moor-harrier; gives friendly minions +1 Attack.
    */
   {
     id: 'hunter_leokk',
-    name: 'Leokk',
+    name: 'Hexfeather',
     cost: 2,
     type: 'minion',
     cardClass: 'hunter',
@@ -70,11 +69,11 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Misha — 4/4 Beast token with Taunt (Animal Companion companion).
+   * Old Gristle — 4/4 Beast token with Ward (one of the widow's three companions).
    */
   {
     id: 'hunter_misha',
-    name: 'Misha',
+    name: 'Old Gristle',
     cost: 3,
     type: 'minion',
     cardClass: 'hunter',
@@ -88,7 +87,7 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Hyena — 2/1 Beast Rush token summoned by Scavenging Hyena-style effects.
+   * Hyena — 2/1 Beast Rush token summoned by carrion-scavenger effects.
    */
   {
     id: 'hunter_hyena',
@@ -112,48 +111,51 @@ export const hunterCards: CardDef[] = [
   // --- 1-cost ---
 
   /**
-   * Arcane Shot — deal 2 damage for 1 mana. Simple, efficient removal/face.
+   * Quiet Word — deal 2 damage for 1 mana. Simple, efficient removal/face.
    */
   {
     id: 'hunter_arcane_shot',
-    name: 'Arcane Shot',
+    name: 'Quiet Word',
     cost: 1,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
     text: 'Deal 2 damage.',
+    flavor: 'How the widow ends an argument. The vicar ends his with prayer, which is why he loses.',
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [{ kind: 'damage', amount: 2, target: 'chosenTarget' }],
   },
 
   /**
-   * Tracking — look at the top 3 cards of your deck, keep one.
+   * Read the Droppings — pick what the trail offers.
    * Approximated as a Discover: the engine has no "from your deck" pool, so this
-   * discovers from the class-locked (Hunter + neutral) card pool instead.
+   * discovers from the class-locked (Trapper + neutral) card pool instead.
    */
   {
     id: 'hunter_tracking',
-    name: 'Tracking',
+    name: 'Read the Droppings',
     cost: 1,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
     text: 'Discover a card.',
+    flavor: "Tells you a beast's weight, diet and intentions. Works at the tavern too.",
     spell: [{ kind: 'discover', pool: 'any' }],
   },
 
   /**
-   * Jeweled Macaw — 1/1 Beast. Battlecry: add a random Beast to your hand.
+   * Tattling Magpie — 1/1 Beast. Omen: add a random Beast to your hand.
    */
   {
     id: 'hunter_jeweled_macaw',
-    name: 'Jeweled Macaw',
+    name: 'Tattling Magpie',
     cost: 1,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'common',
     text: '**Omen:** Add a random Beast to your hand.',
+    flavor: "Knows who's poaching whose wife. Sells the names a feather at a time.",
     attack: 1,
     health: 1,
     tribe: 'beast',
@@ -163,21 +165,22 @@ export const hunterCards: CardDef[] = [
   // --- 2-cost ---
 
   /**
-   * Scavenging Hyena — 2/1 Beast.
+   * Wake-Eater — 2/1 Beast.
    * Whenever a friendly Beast dies, gain +2/+1.
    * Approximated via onFriendlyMinionDeath trigger with condition cardIsBeast.
-   * NOTE: triggerSource is the dead minion; self is Scavenging Hyena.
+   * NOTE: triggerSource is the dead minion; self is the Wake-Eater.
    * Engine buffs 'self' when a friendly beast dies (condition: cardIsBeast matches
    * the dead minion's tribe — closest available approximation).
    */
   {
     id: 'hunter_scavenging_hyena',
-    name: 'Scavenging Hyena',
+    name: 'Wake-Eater',
     cost: 2,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Whenever a friendly Beast dies, gain +2/+1.',
+    flavor: 'Attends every funeral in the parish. Leaves fatter than the priest.',
     attack: 2,
     health: 1,
     tribe: 'beast',
@@ -191,103 +194,106 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Hunter's Mark — reduce a minion to 1 Health.
+   * Marked for the Pot — reduce a minion to 1 Health.
    * Approximated as setStats (health: 1).
    */
   {
     id: 'hunter_hunters_mark',
-    name: "Hunter's Mark",
+    name: 'Marked for the Pot',
     cost: 2,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
     text: "Change a minion's Health to 1.",
+    flavor: "Lord or hare, it all fits in the pot once she's done with it.",
     targeted: true,
     targetFilter: 'allMinions',
     spell: [{ kind: 'setStats', health: 1, target: 'chosenTarget' }],
   },
 
   /**
-   * Explosive Trap — Secret approximation:
-   * Deal 2 damage to all enemies. (Secrets not in engine; modelled as direct damage.)
-   * Costed at 4: an immediate "2 to all enemies" is Consecration, not a delayed
-   * Secret — at the original 2 mana it was ~2 mana under-costed.
+   * Trespassers' Welcome — powder under the doormat:
+   * Deal 2 damage to all enemies. (Modelled as immediate direct damage.)
+   * Costed at 4: an immediate "2 to all enemies" board-wide burn — at the
+   * original 2 mana it was ~2 mana under-costed.
    */
   {
     id: 'hunter_explosive_trap',
-    name: 'Explosive Trap',
+    name: "Trespassers' Welcome",
     cost: 4,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Deal 2 damage to all enemies.',
+    flavor: 'The mat says WELCOME. The mat is a liar.',
     spell: [{ kind: 'damage', amount: 2, target: 'allEnemyCharacters' }],
   },
 
   // --- 3-cost ---
 
   /**
-   * Animal Companion — summon one of Misha, Leokk, or Timber Wolf.
+   * Old Friends — summon one of Old Gristle, Hexfeather, or Runt.
    * The engine has no "summon a random token from a fixed set" effect, so this is
    * encoded as a Choose One among the three companions (player-chosen rather than
    * random — slightly stronger than the original, still reasonable at 3 mana).
    */
   {
     id: 'hunter_animal_companion',
-    name: 'Animal Companion',
+    name: 'Old Friends',
     cost: 3,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
-    text: 'Choose One - Summon Misha (4/4, Ward); or Leokk (2/4, your other minions have +1 Attack); or Timber Wolf (1/1, your other Beasts have +1 Attack).',
+    text: 'Choose One - Summon Old Gristle (4/4, Ward); or Hexfeather (2/4, your other minions have +1 Attack); or Runt (1/1, your other Beasts have +1 Attack).',
+    flavor: 'She buried four husbands and never once lost a dog. Priorities.',
     chooseOne: [
       {
-        text: 'Summon Misha, a 4/4 with Ward.',
+        text: 'Summon Old Gristle, a 4/4 with Ward.',
         effects: [{ kind: 'summon', token: 'hunter_misha', count: 1 }],
       },
       {
-        text: 'Summon Leokk, a 2/4 that gives your other minions +1 Attack.',
+        text: 'Summon Hexfeather, a 2/4 that gives your other minions +1 Attack.',
         effects: [{ kind: 'summon', token: 'hunter_leokk', count: 1 }],
       },
       {
-        text: 'Summon Timber Wolf, a 1/1 that gives your other Beasts +1 Attack.',
+        text: 'Summon Runt, a 1/1 that gives your other Beasts +1 Attack.',
         effects: [{ kind: 'summon', token: 'hunter_timber_wolf', count: 1 }],
       },
     ],
   },
 
   /**
-   * Kill Command — deal 3 damage (5 if you control a Beast).
+   * Sic 'Em — the widow's word, the pack's work.
    * The engine has no conditional damage, so this is the unconditional version,
-   * re-tuned to 4 damage at 3 mana (between Frostbolt's 2-mana 3 and Fireball's
-   * 4-mana 6) — an always-on 5 would be ~1 mana under-costed.
+   * re-tuned to 4 damage at 3 mana — an always-on 5 would be ~1 mana under-costed.
    */
   {
     id: 'hunter_kill_command',
-    name: 'Kill Command',
+    name: "Sic 'Em",
     cost: 3,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
     text: 'Deal 4 damage.',
+    flavor: "She says it sweetly, the way you'd call a cat in for cream.",
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [{ kind: 'damage', amount: 4, target: 'chosenTarget' }],
   },
 
   /**
-   * Bearshark — 4/3 Beast with Rush.
-   * The real card's "Can't be targeted by spells or Hero Powers" (Elusive) is not
-   * in the engine; Rush stands in as the keyword tax on the above-vanilla body.
+   * Peatmaw — 4/3 Beast with Rush.
+   * Rush stands in as the keyword tax on the above-vanilla body.
    */
   {
     id: 'hunter_bearshark',
-    name: 'Bearshark',
+    name: 'Peatmaw',
     cost: 3,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'common',
     text: '**Rush**',
+    flavor: 'Half bear, half eel, all appetite. The bog makes do with what sinks.',
     attack: 4,
     health: 3,
     tribe: 'beast',
@@ -297,18 +303,19 @@ export const hunterCards: CardDef[] = [
   // --- 4-cost ---
 
   /**
-   * Houndmaster — 4-mana. Battlecry: give a friendly minion +2/+2 and Taunt.
-   * The real card is Beast-only, but there is no beast-restricted target filter,
-   * so the buff targets any friendly minion (text matches the implementation).
+   * Kennel-Mistress — 4-mana. Omen: give a friendly minion +2/+2 and Ward.
+   * There is no beast-restricted target filter, so the buff targets any
+   * friendly minion (text matches the implementation).
    */
   {
     id: 'hunter_houndmaster',
-    name: 'Houndmaster',
+    name: 'Kennel-Mistress',
     cost: 4,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'free',
     text: '**Omen:** Give a friendly minion +2/+2 and **Ward**.',
+    flavor: 'The hounds sleep in the bed. Suitors take the kennel, and thank her for it.',
     attack: 4,
     health: 3,
     tribe: 'none',
@@ -321,37 +328,38 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Unleash the Hounds — summon a 1/1 Hound with Charge for each enemy minion.
+   * Slip the Leash — summon 1/1 Hounds with Charge.
    * The engine has no per-enemy-minion scaling, so this summons a fixed 3 Hounds;
-   * re-costed to 3 mana to match the fixed output (4 was ~1.5 mana over for
-   * three 1/1 Charge bodies).
+   * costed at 3 mana to match the fixed output.
    */
   {
     id: 'hunter_unleash_the_hounds',
-    name: 'Unleash the Hounds',
+    name: 'Slip the Leash',
     cost: 3,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Summon three 1/1 Hounds with **Charge**.',
+    flavor: 'Three hounds, one trespasser. The arithmetic entertains the whole village.',
     spell: [{ kind: 'summon', token: 'hunter_hound', count: 3 }],
   },
 
   /**
-   * Bestial Wrath — give a Beast Immune and +2 Attack this turn.
-   * Approximated as buffThisTurn +2 atk and giveKeyword rush (no Immune in engine).
+   * Moon-Mad — give a friendly minion +2 Attack this turn and Rush.
+   * Approximated as buffThisTurn +2 atk and giveKeyword rush.
    * Beast-only targeting is not representable (no beast target filter) so it hits
    * any friendly minion; the Rush grant is permanent (giveKeyword has no duration),
    * which only matters the turn the target was summoned anyway.
    */
   {
     id: 'hunter_bestial_wrath',
-    name: 'Bestial Wrath',
+    name: 'Moon-Mad',
     cost: 1,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'epic',
     text: 'Give a friendly minion +2 Attack this turn and **Rush**.',
+    flavor: "Come full moon the kennels howl all night. So does the smith's wife, but that's her business.",
     targeted: true,
     targetFilter: 'friendlyMinions',
     spell: [
@@ -363,19 +371,20 @@ export const hunterCards: CardDef[] = [
   // --- 5-cost ---
 
   /**
-   * Tundra Rhino — 2/5 Beast. Your Beasts have Charge.
+   * Mire-Ox — 2/5 Beast. Your other Beasts have Charge.
    * Approximated as an aura giving Beasts Charge. Minion-sourced auras exclude
-   * their own source, so unlike the real card the Rhino itself does not gain
-   * Charge — text says "other Beasts" to match.
+   * their own source, so the Ox itself does not gain Charge — text says
+   * "other Beasts" to match.
    */
   {
     id: 'hunter_tundra_rhino',
-    name: 'Tundra Rhino',
+    name: 'Mire-Ox',
     cost: 5,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Your other Beasts have **Charge**.',
+    flavor: 'Slow as a sermon himself, but when he bellows the whole pack finds its legs.',
     attack: 2,
     health: 5,
     tribe: 'beast',
@@ -383,18 +392,19 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Savannah Highmane — 6/5 Beast. Deathrattle: summon two 2/1 Hyenas with Rush.
-   * Costed at 6 like the real card — at 5 the vanilla-stat body plus ~2 mana of
+   * The Moor-Sow — 6/5 Beast. Haunt: summon two 2/1 Hyenas with Rush.
+   * Costed at 6 — at 5 the vanilla-stat body plus ~2 mana of
    * deathrattle value was well over budget.
    */
   {
     id: 'hunter_savannah_highmane',
-    name: 'Savannah Highmane',
+    name: 'The Moor-Sow',
     cost: 6,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'rare',
     text: '**Haunt:** Summon two 2/1 Hyenas with **Rush**.',
+    flavor: 'Her litters outnumber the parish. So do her widowers.',
     attack: 6,
     health: 5,
     tribe: 'beast',
@@ -404,18 +414,19 @@ export const hunterCards: CardDef[] = [
   // --- 6-cost ---
 
   /**
-   * Starving Buzzard — 3/2 Beast. Whenever you play a Beast, draw a card.
+   * Famished Moor-Kite — 3/2 Beast. Whenever you play a Beast, draw a card.
    * Approximated: triggers on onPlayBeast, so Beasts summoned by other effects
-   * (Unleash the Hounds tokens, deathrattles) do NOT draw — text says "play".
+   * (Slip the Leash tokens, deathrattles) do NOT draw — text says "play".
    */
   {
     id: 'hunter_starving_buzzard',
-    name: 'Starving Buzzard',
+    name: 'Famished Moor-Kite',
     cost: 5,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'free',
     text: 'Whenever you play a Beast, draw a card.',
+    flavor: "Circles weddings as keenly as battlefields. In Hollowmoor it's usually the same crowd.",
     attack: 3,
     health: 2,
     tribe: 'beast',
@@ -429,16 +440,17 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Multi-Shot — deal 3 damage to two random enemies.
+   * Two for the Pot — deal 3 damage to two random enemies.
    */
   {
     id: 'hunter_multi_shot',
-    name: 'Multi-Shot',
+    name: 'Two for the Pot',
     cost: 4,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'free',
     text: 'Deal 3 damage to two random enemies.',
+    flavor: 'One for the squire, one for the larder, and the taxman can whistle.',
     spell: [
       { kind: 'damage', amount: 3, target: 'randomEnemy' },
       { kind: 'damage', amount: 3, target: 'randomEnemy' },
@@ -446,19 +458,20 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Gladiator's Longbow — 5/2 weapon. Real card: your hero is Immune while
-   * attacking. Immune is not in the engine, so the protection is approximated
-   * as a Battlecry granting 6 Armor (roughly two attacks' worth of retaliation),
-   * keeping the 7-mana cost honest for the 5/2 body.
+   * Gallows-Yew Longbow — 5/2 weapon. The original's Immune-while-attacking is
+   * not in the engine, so the protection is approximated as an Omen granting
+   * 6 Armor (roughly two attacks' worth of retaliation), keeping the 7-mana
+   * cost honest for the 5/2 body.
    */
   {
     id: 'hunter_gladiators_longbow',
-    name: "Gladiator's Longbow",
+    name: 'Gallows-Yew Longbow',
     cost: 7,
     type: 'weapon',
     cardClass: 'hunter',
     rarity: 'epic',
     text: '**Omen:** Gain 6 Armor.',
+    flavor: "Cut from the hanging tree. Pulls a little left, like everyone who's swung from it.",
     attack: 5,
     durability: 2,
     battlecry: [{ kind: 'gainArmor', amount: 6 }],
@@ -467,16 +480,17 @@ export const hunterCards: CardDef[] = [
   // --- 7-cost ---
 
   /**
-   * Call of the Wild — summon all three Animal Companions (Misha, Leokk, Timber Wolf).
+   * The Widow's Whistle — summon all three companions (Old Gristle, Hexfeather, Runt).
    */
   {
     id: 'hunter_call_of_the_wild',
-    name: 'Call of the Wild',
+    name: "The Widow's Whistle",
     cost: 8,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'epic',
-    text: 'Summon all three Animal Companions.',
+    text: 'Summon Old Gristle, Hexfeather, and Runt.',
+    flavor: 'Two notes means supper. Three notes means run.',
     spell: [
       { kind: 'summon', token: 'hunter_misha', count: 1 },
       { kind: 'summon', token: 'hunter_leokk', count: 1 },
@@ -487,16 +501,17 @@ export const hunterCards: CardDef[] = [
   // --- 9-cost ---
 
   /**
-   * King Krush — 8/8 Beast with Charge. The definitive Hunter finisher.
+   * The Parish-Eater — 8/8 Beast with Charge. The definitive Trapper finisher.
    */
   {
     id: 'hunter_king_krush',
-    name: 'King Krush',
+    name: 'The Parish-Eater',
     cost: 9,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'legendary',
     text: '**Charge**',
+    flavor: 'Ate three vicars, one bishop, and the entire harvest fair. A blessed appetite, says the widow.',
     attack: 8,
     health: 8,
     tribe: 'beast',
@@ -510,7 +525,7 @@ export const hunterCards: CardDef[] = [
   // --- tokens for new cards ---
 
   /**
-   * Wolf — 3/3 Beast token summoned by Flanking Strike.
+   * Wolf — 3/3 Beast token summoned by Hedge Ambush.
    */
   {
     id: 'hunter_wolf',
@@ -527,7 +542,7 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Rat — 1/1 Beast token summoned by Rat Pack deathrattle.
+   * Rat — 1/1 Beast token summoned by The Rat King's Haunt.
    */
   {
     id: 'hunter_rat',
@@ -544,12 +559,12 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Webspinner — 1/1 Beast token summoned by Ball of Spiders.
-   * Deathrattle: add a random Beast (Hunter/neutral pool) to your hand.
+   * Gallows Spinner — 1/1 Beast token summoned by Bride's Bouquet.
+   * Haunt: add a random Beast (Trapper/neutral pool) to your hand.
    */
   {
     id: 'hunter_webspinner',
-    name: 'Webspinner',
+    name: 'Gallows Spinner',
     cost: 1,
     type: 'minion',
     cardClass: 'hunter',
@@ -563,20 +578,21 @@ export const hunterCards: CardDef[] = [
   },
 
   // --- 1-cost new ---
-  // (Stonetusk Boar lives in neutral.ts — hunters draft the neutral copy.)
+  // (The 1-cost charge boar lives in neutral.ts — trappers draft the neutral copy.)
 
   /**
-   * Springpaw — 1/1 Beast. Battlecry: add a 1/1 Lynx with Rush to your hand.
+   * Larder Lynx — 1/1 Beast. Omen: add a 1/1 Lynx with Rush to your hand.
    * Approximated as battlecry: add hunter_lynx to hand.
    */
   {
     id: 'hunter_springpaw',
-    name: 'Springpaw',
+    name: 'Larder Lynx',
     cost: 1,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'common',
     text: '**Omen:** Add a 1/1 Lynx with **Rush** to your hand.',
+    flavor: 'Caught stealing sausages. Kept on for the same talent.',
     attack: 1,
     health: 1,
     tribe: 'beast',
@@ -584,7 +600,7 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Lynx — 1/1 Beast Rush token added to hand by Springpaw.
+   * Lynx — 1/1 Beast Rush token added to hand by Larder Lynx.
    */
   {
     id: 'hunter_lynx',
@@ -604,21 +620,20 @@ export const hunterCards: CardDef[] = [
   // --- 2-cost new ---
 
   /**
-   * Freezing Trap — originally: return an enemy minion to its owner's hand and
-   * increase its cost by (2). Approximated as destroy target enemy minion
-   * (the "return" mechanic cannot be represented; destroy is the best approximation).
-   * Costed at 5 like Assassinate — an unconditional targeted destroy at 2 mana
-   * was ~3 mana under-costed once the Secret/return downside was dropped.
-   * Flavour: classic Hunter trap removal.
+   * The Long Drop — destroy target enemy minion.
+   * Costed at 5 — an unconditional targeted destroy at 2 mana
+   * was ~3 mana under-costed once the delayed-trap downside was dropped.
+   * Flavour: gallows justice, Hollowmoor style.
    */
   {
     id: 'hunter_freezing_trap',
-    name: 'Freezing Trap',
+    name: 'The Long Drop',
     cost: 5,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Destroy an enemy minion.',
+    flavor: 'Hollowmoor justice: short rope, long drop, no appeal.',
     targeted: true,
     targetFilter: 'enemyMinions',
     spell: [{ kind: 'destroy', target: 'chosenTarget' }],
@@ -627,34 +642,35 @@ export const hunterCards: CardDef[] = [
   // --- 3-cost new ---
 
   /**
-   * Eaglehorn Bow — 3-cost 3/2 weapon.
-   * The real card's Secret synergy ("gain +1 Durability when a friendly Secret is
-   * revealed") is dropped — Secrets are not in the engine — leaving an on-budget
-   * vanilla 3/2 weapon.
+   * Hedgerow Bow — 3-cost 3/2 weapon.
+   * An on-budget vanilla 3/2 weapon (the original's Secret synergy is dropped —
+   * Secrets are not in the engine).
    */
   {
     id: 'hunter_eaglehorn_bow',
-    name: 'Eaglehorn Bow',
+    name: 'Hedgerow Bow',
     cost: 3,
     type: 'weapon',
     cardClass: 'hunter',
     rarity: 'rare',
     text: '',
+    flavor: 'Kept strung behind the chimney, between the good knife and the bad intentions.',
     attack: 3,
     durability: 2,
   },
 
   /**
-   * Flanking Strike — 3-cost spell: deal 3 damage to a minion and summon a 3/3 Wolf.
+   * Hedge Ambush — 3-cost spell: deal 3 damage to a minion and summon a 3/3 Wolf.
    */
   {
     id: 'hunter_flanking_strike',
-    name: 'Flanking Strike',
+    name: 'Hedge Ambush',
     cost: 3,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'common',
     text: 'Deal 3 damage to a minion. Summon a 3/3 Wolf.',
+    flavor: 'Round here, even the shrubbery holds a grudge.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -666,19 +682,22 @@ export const hunterCards: CardDef[] = [
   // --- 4-cost new ---
 
   /**
-   * Dire Frenzy — originally: give a Beast +3/+3 and shuffle 3 buffed copies of it
-   * into your deck. The engine cannot shuffle copies of an arbitrary target, so the
-   * deck-stuffing is approximated with three fixed River Crocolisks; the buff hits
-   * any friendly minion (no beast-only target filter). Text matches the implementation.
+   * Fed Something Foul — give a minion +3/+3 and stuff the deck.
+   * The engine cannot shuffle copies of an arbitrary target, so the
+   * deck-stuffing is approximated with three fixed 2/3 Beasts (river_crocolisk);
+   * the buff hits any friendly minion (no beast-only target filter). Text matches
+   * the implementation; the shuffled card is named generically so it tracks the
+   * neutral card's display name.
    */
   {
     id: 'hunter_dire_frenzy',
-    name: 'Dire Frenzy',
+    name: 'Fed Something Foul',
     cost: 4,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'common',
-    text: 'Give a friendly minion +3/+3. Shuffle three 2/3 River Crocolisks into your deck.',
+    text: 'Give a friendly minion +3/+3. Shuffle three 2/3 Beasts into your deck.',
+    flavor: "Don't ask what's in the pail. The dog didn't, and look at the size of him now.",
     targeted: true,
     targetFilter: 'friendlyMinions',
     spell: [
@@ -688,17 +707,18 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Rat Pack — 4-cost 2/2 Beast. Deathrattle: summon 3 Rats.
-   * Flavour: when this rat dies, its pack swarms out.
+   * The Rat King — 4-cost 2/2 Beast. Haunt: summon 3 Rats.
+   * Flavour: kill the king and the court comes calling.
    */
   {
     id: 'hunter_rat_pack',
-    name: 'Rat Pack',
+    name: 'The Rat King',
     cost: 4,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'epic',
     text: '**Haunt:** Summon three 1/1 Rats.',
+    flavor: "Long live the king. And his court. And his court's fleas.",
     attack: 2,
     health: 2,
     tribe: 'beast',
@@ -708,17 +728,18 @@ export const hunterCards: CardDef[] = [
   // --- 5-cost new ---
 
   /**
-   * Master of the Wild Hunt — 5-cost 4/4 Beast. Deathrattle: add a random Beast to your hand.
+   * The Pale Stag — 5-cost 4/4 Beast. Haunt: add a random Beast to your hand.
    * A value-oriented beast that replaces itself on death.
    */
   {
     id: 'hunter_master_of_the_wild_hunt',
-    name: 'Master of the Wild Hunt',
+    name: 'The Pale Stag',
     cost: 5,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'rare',
     text: '**Haunt:** Add a random Beast to your hand.',
+    flavor: "Every poacher shoots it once. Whatever steps out of the fog after, they don't shoot twice.",
     attack: 4,
     health: 4,
     tribe: 'beast',
@@ -726,38 +747,38 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Ball of Spiders — 6-cost spell: summon three 1/1 Webspinners, each with
-   * "Deathrattle: Add a random Beast to your hand" (faithful via the Webspinner
-   * token — the previous three-plain-Hounds version was ~3 mana under-value).
+   * Bride's Bouquet — 6-cost spell: summon three 1/1 Gallows Spinners, each with
+   * "Haunt: Add a random Beast to your hand" (via the Gallows Spinner token).
    */
   {
     id: 'hunter_ball_of_spiders',
-    name: 'Ball of Spiders',
+    name: "Bride's Bouquet",
     cost: 6,
     type: 'spell',
     cardClass: 'hunter',
     rarity: 'rare',
-    text: 'Summon three 1/1 Webspinners with "**Haunt:** Add a random Beast to your hand."',
+    text: 'Summon three 1/1 Gallows Spinners with "**Haunt:** Add a random Beast to your hand."',
+    flavor: 'Tossed at every Hollowmoor wedding. The bridesmaids have learned to duck.',
     spell: [{ kind: 'summon', token: 'hunter_webspinner', count: 3 }],
   },
 
   // --- 6-cost new ---
 
   /**
-   * Professor Slate — 5-cost 4/2 legendary minion.
-   * Real card: "Your spells are Poisonous." Spell-poison is not representable, so
-   * this is approximated as an aura giving your OTHER friendly minions Poisonous
+   * Goodwife Henbane — 5-cost 4/2 legendary minion.
+   * Aura giving your OTHER friendly minions Poisonous
    * (minion-sourced auras exclude their own source). Text matches the aura.
-   * Flavour: the mad scientist who laces every bullet with toxin.
+   * Flavour: the village apothecary; every remedy has a kick.
    */
   {
     id: 'hunter_professor_slate',
-    name: 'Professor Slate',
+    name: 'Goodwife Henbane',
     cost: 5,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'legendary',
     text: 'Your other minions have **Poisonous**.',
+    flavor: 'Her tonics cure gout, grief, and inconvenient heirs. Ask for the special.',
     attack: 4,
     health: 2,
     tribe: 'none',
@@ -765,18 +786,19 @@ export const hunterCards: CardDef[] = [
   },
 
   /**
-   * Deathstalker Rexxar — 7-cost 3/3 legendary minion.
-   * **Battlecry:** Deal 2 damage to all enemy minions. Also draw a card.
-   * Flavour: the undead hunter commanding the army of beasts in undeath.
+   * The Gallows Huntsman — 7-cost 3/3 legendary minion.
+   * **Omen:** Deal 2 damage to all enemy minions. Also draw a card.
+   * Flavour: a hanged poacher who never stopped working the squire's land.
    */
   {
     id: 'hunter_deathstalker_rexxar',
-    name: 'Deathstalker Rexxar',
+    name: 'The Gallows Huntsman',
     cost: 7,
     type: 'minion',
     cardClass: 'hunter',
     rarity: 'legendary',
     text: '**Omen:** Deal 2 damage to all enemy minions. Draw a card.',
+    flavor: "Hanged for taking the squire's deer. These nights he takes whatever the squire loves best.",
     attack: 3,
     health: 3,
     tribe: 'none',

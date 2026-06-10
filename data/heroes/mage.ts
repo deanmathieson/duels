@@ -1,12 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Mozaki, Master Duelist — Mage hero definition.
- * Theme: burn and spell damage. Hero powers amplify spell output.
+ * Hespera Quill, the Comet-Wife — Stargazer hero definition.
+ * A scandalous hedge-astrologer who reads ruin in the night sky and sells the
+ * good news at a markup. Theme: burn and spell damage — hero powers amplify
+ * spell output.
  */
 export const mageHero: HeroDef = {
   id: 'hero_mage',
-  name: 'Mozaki, Master Duelist',
+  name: 'Hespera Quill, the Comet-Wife',
   cardClass: 'mage',
   heroPowers: ['hp_mage_arcane_surge', 'hp_mage_open_the_portal', 'hp_mage_frigid_blast'],
   signatureTreasures: [
@@ -21,16 +23,16 @@ export const mageHero: HeroDef = {
 }
 
 /**
- * Hero powers for Mozaki, Master Duelist.
+ * Hero powers for Hespera Quill, the Comet-Wife.
  */
 export const mageHeroPowers: HeroPowerDef[] = [
   /**
-   * Arcane Surge — cost 2.
+   * Bad Horoscope — cost 2.
    * Choose One — Deal 2 damage to an enemy; or gain Spell Damage +2 this turn.
    */
   {
     id: 'hp_mage_arcane_surge',
-    name: 'Arcane Surge',
+    name: 'Bad Horoscope',
     cost: 2,
     text: 'Choose One - Deal 2 damage to an enemy; or gain Spell Damage +2 this turn.',
     targeted: true,
@@ -49,12 +51,12 @@ export const mageHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Open the Portal — cost 2.
+   * Crack the Almanac — cost 2.
    * Add a random spell to your hand and reduce its cost by (2).
    */
   {
     id: 'hp_mage_open_the_portal',
-    name: 'Open the Portal',
+    name: 'Crack the Almanac',
     cost: 2,
     text: 'Add a random spell to your hand. It costs (2) less.',
     effects: [{ kind: 'addRandomCardToHand', pool: 'spell', count: 1, costReduction: 2 }],
@@ -62,15 +64,14 @@ export const mageHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Frigid Blast — cost 3.
+   * Killing Frost — cost 3.
    * Deal 1 damage to all enemies.
-   * (Freeze is approximated as pure damage — the engine has no Freeze mechanic.
-   * Was 3 damage to all enemies: a repeatable ~4-5 mana AoE on a 3-cost hero
-   * power; toned down to 1 to fit the ~half-cost hero-power budget.)
+   * (Toned to 1 damage to fit the ~half-cost hero-power budget on a
+   * repeatable 3-cost power.)
    */
   {
     id: 'hp_mage_frigid_blast',
-    name: 'Frigid Blast',
+    name: 'Killing Frost',
     cost: 3,
     text: 'Deal 1 damage to all enemies.',
     effects: [{ kind: 'damage', amount: 1, target: 'allEnemyCharacters' }],

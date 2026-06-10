@@ -1,12 +1,15 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Archwitch Willow — Warlock hero definition.
- * Theme: Demons, self-damage value, Life Tap draw, board flood with Imps.
+ * Mistress Maundy — Bargainer hero definition.
+ * The crossroads creditor of Hollowmoor: every debt in the county passes
+ * through her ledger, and the interest is always paid in red.
+ * Theme: Fae creditors, self-damage value, blood-bought draw, board flood
+ * with Pennywisps.
  */
 export const warlockHero: HeroDef = {
   id: 'hero_warlock',
-  name: 'Archwitch Willow',
+  name: 'Mistress Maundy',
   cardClass: 'warlock',
   heroPowers: [
     'hp_warlock_life_tap',
@@ -25,16 +28,16 @@ export const warlockHero: HeroDef = {
 }
 
 /**
- * Warlock hero powers — 3 thematic options for Archwitch Willow.
+ * Bargainer hero powers — 3 thematic options for Mistress Maundy.
  */
 export const warlockHeroPowers: HeroPowerDef[] = [
   /**
-   * Life Tap — the classic Warlock hero power.
-   * Cost 2: Draw a card and take 2 damage.
+   * Open a Vein — the classic Bargainer hero power.
+   * Cost 2: Draw a card and take 2 damage. Knowledge is paid for in blood.
    */
   {
     id: 'hp_warlock_life_tap',
-    name: 'Life Tap',
+    name: 'Open a Vein',
     cost: 2,
     text: 'Draw a card and take 2 damage.',
     effects: [
@@ -45,18 +48,18 @@ export const warlockHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Imp Summoner — Cost 2.
-   * Summon a 1/1 Imp Demon.
-   * (Flood the board with cheap Demons.)
+   * Whistle Up a Wisp — Cost 2.
+   * Summon a 1/1 Pennywisp.
+   * (Flood the board with cheap fae.)
    * The former "deal 1 damage to your hero" rider was a pure downside that
-   * left this strictly below the Reinforce anchor (2 mana: summon a 1/1), so
-   * it was trimmed; the hero power now matches that anchor exactly.
+   * left this strictly below the 2-mana summon-a-1/1 anchor, so it was
+   * trimmed; the hero power now matches that anchor exactly.
    */
   {
     id: 'hp_warlock_imp_summoner',
-    name: 'Imp Summoner',
+    name: 'Whistle Up a Wisp',
     cost: 2,
-    text: 'Summon a 1/1 Imp.',
+    text: 'Summon a 1/1 Pennywisp.',
     effects: [
       { kind: 'summon', token: 'warlock_imp', count: 1 },
     ],
@@ -64,13 +67,13 @@ export const warlockHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Drain Soul — Cost 3. Targeted.
+   * Collect the Debt — Cost 3. Targeted.
    * Deal 3 damage to a minion. Restore 3 Health to your hero.
-   * (Removal that fuels your life total — sacrifice and reclaim.)
+   * (Removal that feeds your life total — the ledger always balances.)
    */
   {
     id: 'hp_warlock_drain_soul',
-    name: 'Drain Soul',
+    name: 'Collect the Debt',
     cost: 3,
     text: 'Deal 3 damage to a minion. Restore 3 Health to your hero.',
     targeted: true,

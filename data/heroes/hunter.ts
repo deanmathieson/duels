@@ -1,11 +1,12 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Beaststalker Tavish hero definition for the Hunter class.
+ * Widow Bracken hero definition for the Trapper class.
+ * The poacher matriarch of Hollowmoor: four husbands buried, never lost a dog.
  */
 export const hunterHero: HeroDef = {
   id: 'hero_hunter',
-  name: 'Beaststalker Tavish',
+  name: 'Widow Bracken',
   cardClass: 'hunter',
   heroPowers: [
     'hp_hunter_steady_shot',
@@ -25,20 +26,20 @@ export const hunterHero: HeroDef = {
 }
 
 /**
- * Beaststalker Tavish's three hero powers.
+ * Widow Bracken's three hero powers.
  *
- * - Steady Shot: the classic Hunter hero power — deal 2 damage to the enemy hero.
- * - Beast Within: add a random Beast (Hunter/neutral pool) to hand at a discount.
- * - Pack Tactics: buff all friendly minions and draw a card.
+ * - Pick a Quarrel: deal 2 damage to the enemy hero.
+ * - Check the Snares: add a random Beast (Trapper/neutral pool) to hand at a discount.
+ * - Feed the Pack: buff all friendly minions and draw a card.
  */
 export const hunterHeroPowers: HeroPowerDef[] = [
   /**
-   * Steady Shot — 2 mana. Deal 2 damage to the enemy hero.
-   * The iconic Hunter hero power.
+   * Pick a Quarrel — 2 mana. Deal 2 damage to the enemy hero.
+   * The widow settles arguments with a crossbow bolt.
    */
   {
     id: 'hp_hunter_steady_shot',
-    name: 'Steady Shot',
+    name: 'Pick a Quarrel',
     cost: 2,
     text: 'Deal 2 damage to the enemy hero.',
     effects: [{ kind: 'damage', amount: 2, target: 'enemyHero' }],
@@ -46,12 +47,12 @@ export const hunterHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Beast Within — 2 mana. Add a random Beast to your hand that costs (2) less.
-   * Synergises with the Beast-heavy Hunter gameplan.
+   * Check the Snares — 2 mana. Add a random Beast to your hand that costs (2) less.
+   * Synergises with the Beast-heavy Trapper gameplan.
    */
   {
     id: 'hp_hunter_beast_within',
-    name: 'Beast Within',
+    name: 'Check the Snares',
     cost: 2,
     text: 'Add a random Beast to your hand that costs (2) less.',
     effects: [{ kind: 'addRandomCardToHand', pool: 'beast', count: 1, costReduction: 2 }],
@@ -59,13 +60,13 @@ export const hunterHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Pack Tactics — 3 mana. Give your minions +1/+1 and draw a card.
+   * Feed the Pack — 3 mana. Give your minions +1/+1 and draw a card.
    * Rewards a wide board. (There is no beast-only buff selector, so unlike the
    * flavour this buffs ALL friendly minions — text matches the implementation.)
    */
   {
     id: 'hp_hunter_pack_tactics',
-    name: 'Pack Tactics',
+    name: 'Feed the Pack',
     cost: 3,
     text: 'Give your minions +1/+1. Draw a card.',
     effects: [

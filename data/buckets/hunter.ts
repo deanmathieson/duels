@@ -11,7 +11,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_face_aggro',
-    name: 'Face Pressure',
+    name: 'No Warning Shots',
     cardClass: 'hunter',
     cardIds: ['hunter_arcane_shot', 'hunter_kill_command', 'hunter_multi_shot'],
   },
@@ -21,7 +21,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_early_beasts',
-    name: 'Pack of Hunters',
+    name: 'Out of the Kennels',
     cardClass: 'hunter',
     cardIds: ['stonetusk_boar', 'hunter_jeweled_macaw', 'hunter_springpaw'],
   },
@@ -31,7 +31,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_beast_synergy',
-    name: 'Beast Bond',
+    name: 'Thick as Fleas',
     cardClass: 'hunter',
     cardIds: ['hunter_scavenging_hyena', 'hunter_houndmaster', 'hunter_tundra_rhino'],
   },
@@ -41,7 +41,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_traps',
-    name: 'Trap Master',
+    name: 'Teeth in the Grass',
     cardClass: 'hunter',
     cardIds: ['hunter_explosive_trap', 'hunter_freezing_trap', 'hunter_hunters_mark'],
   },
@@ -51,7 +51,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_weapons',
-    name: 'Armed and Dangerous',
+    name: 'Strung and Ready',
     cardClass: 'hunter',
     cardIds: ['hunter_eaglehorn_bow', 'hunter_gladiators_longbow', 'elven_archer'],
   },
@@ -61,7 +61,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_token_swarm',
-    name: 'Unleash the Pack',
+    name: 'The Whole Litter',
     cardClass: 'hunter',
     cardIds: ['hunter_unleash_the_hounds', 'hunter_rat_pack', 'hunter_ball_of_spiders'],
   },
@@ -71,7 +71,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_mid_curve',
-    name: 'Wild Companions',
+    name: 'Moor-Bred',
     cardClass: 'hunter',
     cardIds: ['hunter_bearshark', 'hunter_animal_companion', 'hunter_savannah_highmane'],
   },
@@ -81,7 +81,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_beast_buffs',
-    name: 'Feral Fury',
+    name: 'Raised on Red Meat',
     cardClass: 'hunter',
     cardIds: ['hunter_dire_frenzy', 'hunter_flanking_strike', 'hunter_bestial_wrath'],
   },
@@ -91,7 +91,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_value',
-    name: 'Hunter\'s Quarry',
+    name: 'Full Game-Bag',
     cardClass: 'hunter',
     cardIds: ['hunter_tracking', 'hunter_starving_buzzard', 'hunter_master_of_the_wild_hunt'],
   },
@@ -101,7 +101,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_taunts',
-    name: 'Defensive Line',
+    name: 'Hold the Hedgerow',
     cardClass: 'hunter',
     cardIds: ['hunter_houndmaster', 'sen_jin_shieldmasta', 'ironfur_grizzly'],
   },
@@ -111,7 +111,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_big_beasts',
-    name: 'Apex Predators',
+    name: 'What the Moor Keeps',
     cardClass: 'hunter',
     cardIds: ['hunter_savannah_highmane', 'hunter_king_krush', 'boulderfist_ogre'],
   },
@@ -143,7 +143,7 @@ export const hunterBuckets: BucketDef[] = [
    */
   {
     id: 'bucket_hunter_finishers',
-    name: 'Hunt\'s End',
+    name: 'Gallows Hour',
     cardClass: 'hunter',
     cardIds: [
       'hunter_call_of_the_wild',

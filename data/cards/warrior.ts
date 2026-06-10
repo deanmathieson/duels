@@ -1,8 +1,8 @@
 import type { CardDef } from '../../game/types'
 
 /**
- * Warrior class cards for Rattlegore — Armor, weapons, big minions, board control.
- * ~30 collectible cards spanning the 1-9 mana curve, plus token cards.
+ * Banneret class cards for Ser Wystan Crowmarch — Armor, weapons, big minions,
+ * board control. ~30 collectible cards spanning the 1-9 mana curve, plus token cards.
  */
 export const warriorCards: CardDef[] = [
 
@@ -11,7 +11,7 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Warrior Recruit — 1/1 token summoned by various warrior effects.
+   * Recruit — 1/1 token summoned by various Banneret effects (the militia levy).
    */
   {
     id: 'warrior_recruit',
@@ -30,7 +30,8 @@ export const warriorCards: CardDef[] = [
 
   /**
    * Damaged Golem — 2/1 Rush token kept available for warrior effects.
-   * (Not currently summoned by any collectible card.)
+   * (Not currently summoned by any collectible card. Name matches the
+   * neutral 'Damaged Golem' token for consistency.)
    */
   {
     id: 'warrior_damaged_golem',
@@ -53,19 +54,19 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Shield Slam — Deal 1 damage to a minion for each Armor you have.
-   * Approximated as: deal 3 damage to a chosen minion + gain 2 Armor (on-theme).
-   * (True Shield Slam scales off armor — no per-armor engine primitive, so we use
-   *  a fixed strong value and pair it with small armor gain.)
+   * Shieldwife's Greeting — a shield-bash answer to unwanted suitors.
+   * (Scaling-off-armor isn't an engine primitive, so this is a fixed strong
+   *  hit paired with small armor gain.)
    */
   {
     id: 'warrior_shield_slam',
-    name: 'Shield Slam',
+    name: "Shieldwife's Greeting",
     cost: 1,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'epic',
     text: 'Gain 2 Armor. Deal 3 damage to a minion.',
+    flavor: 'She greets every suitor the same way: shield first, teeth after. The lucky ones limp home by lauds.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -76,16 +77,17 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Heroic Strike — Give your hero +4 Attack this turn.
+   * Pot-Valour — Give your hero +4 Attack this turn.
    */
   {
     id: 'warrior_heroic_strike',
-    name: 'Heroic Strike',
+    name: 'Pot-Valour',
     cost: 1,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Give your hero +4 Attack this turn.',
+    flavor: 'Four pints make any man a champion. The fifth is strictly for aiming.',
     spell: [{ kind: 'heroAttackThisTurn', amount: 4 }],
     art: undefined,
   },
@@ -95,43 +97,45 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Whirlwind — Deal 1 damage to all minions.
+   * Threshing Season — Deal 1 damage to all minions.
    */
   {
     id: 'warrior_whirlwind',
-    name: 'Whirlwind',
+    name: 'Threshing Season',
     cost: 2,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Deal 1 damage to all minions.',
+    flavor: "Come autumn, everything on the moor gets beaten — the barley, the hedges, and whoever's still standing in the barn.",
     spell: [{ kind: 'damage', amount: 1, target: 'allMinions' }],
     art: undefined,
   },
 
   /**
-   * Fiery War Axe — Equip a 3/2 weapon.
-   * Costed at 3 (post-nerf rate): a 3/2 weapon at 2 mana is above the
+   * Rent Collector's Axe — Equip a 3/2 weapon.
+   * Costed at 3: a 3/2 weapon at 2 mana is above the
    * attack×durability ≈ 2.2×cost weapon budget.
    */
   {
     id: 'warrior_fiery_war_axe',
-    name: 'Fiery War Axe',
+    name: "Rent Collector's Axe",
     cost: 3,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Equip a 3/2 Weapon.',
+    flavor: 'She accepts payment in coin, kindling, or knuckles. Mostly knuckles.',
     spell: [{ kind: 'equipWeapon', cardId: 'warrior_fiery_war_axe_token' }],
     art: undefined,
   },
 
   /**
-   * Fiery War Axe weapon token.
+   * Rent Collector's Axe weapon token.
    */
   {
     id: 'warrior_fiery_war_axe_token',
-    name: 'Fiery War Axe',
+    name: "Rent Collector's Axe",
     cost: 3,
     type: 'weapon',
     cardClass: 'warrior',
@@ -148,16 +152,17 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Shield Block — Gain 5 Armor. Draw a card.
+   * Coffin-Lid Buckler — Gain 5 Armor. Draw a card.
    */
   {
     id: 'warrior_shield_block',
-    name: 'Shield Block',
+    name: 'Coffin-Lid Buckler',
     cost: 3,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Gain 5 Armor. Draw a card.',
+    flavor: "The previous owner lodged no complaints. None you'd repeat in church, anyway.",
     spell: [
       { kind: 'gainArmor', amount: 5 },
       { kind: 'draw', count: 1 },
@@ -166,18 +171,19 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Frothing Berserker — 2/4. Whenever a minion takes damage, gain +1 Attack
-   * (the authentic effect, via the onMinionDamaged trigger — fires for minions
-   * on both sides, including itself).
+   * Red-Eyed Reveler — 2/4. Whenever a minion takes damage, gain +1 Attack
+   * (via the onMinionDamaged trigger — fires for minions on both sides,
+   * including itself).
    */
   {
     id: 'warrior_frothing_berserker',
-    name: 'Frothing Berserker',
+    name: 'Red-Eyed Reveler',
     cost: 3,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: 'Whenever a minion takes damage, gain +1 Attack.',
+    flavor: "Every spilled drop gets him going — ale, blood, he's long stopped asking which.",
     attack: 2,
     health: 4,
     tribe: 'none',
@@ -191,16 +197,17 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Kor'kron Elite — 4/3 with Charge.
+   * Debt-Spurred Lancer — 4/3 with Charge.
    */
   {
     id: 'warrior_korkron_elite',
-    name: "Kor'kron Elite",
+    name: 'Debt-Spurred Lancer',
     cost: 4,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: '**Charge**',
+    flavor: 'Nothing puts spurs to a knight like two creditors and one angry husband.',
     attack: 4,
     health: 3,
     tribe: 'none',
@@ -213,17 +220,18 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Armorsmith — 1/4. Whenever a friendly minion takes damage, gain 1 Armor
-   * (the authentic effect, via onFriendlyMinionDamaged — includes itself).
+   * Village Dentwright — 1/4. Whenever a friendly minion takes damage, gain
+   * 1 Armor (via onFriendlyMinionDamaged — includes itself).
    */
   {
     id: 'warrior_armorsmith',
-    name: 'Armorsmith',
+    name: 'Village Dentwright',
     cost: 2,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: 'Whenever a friendly minion takes damage, gain 1 Armor.',
+    flavor: 'She hammers the dents from breastplates and the shame from husbands. Same rates, same grunting.',
     attack: 1,
     health: 4,
     tribe: 'none',
@@ -237,19 +245,19 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Execute — Destroy a damaged minion.
+   * Gallows-Hill Verdict — Destroy a minion.
    * The engine has no "damaged minion" conditional, so this is an unconditional
-   * destroy — re-costed to 5 (Assassinate rate); the original 2-mana price
-   * assumed the damaged-minion condition.
+   * destroy — costed at 5, the going rate for unconditional removal.
    */
   {
     id: 'warrior_execute',
-    name: 'Execute',
+    name: 'Gallows-Hill Verdict',
     cost: 5,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Destroy a minion.',
+    flavor: 'Hollowmoor justice is famously fair: everybody hangs.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [{ kind: 'destroy', target: 'chosenTarget' }],
@@ -261,18 +269,19 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Shieldmaiden — 5/5 with Taunt. Battlecry: Gain 5 Armor.
-   * Costed at 6 (real-card rate): a budget 5/5 Taunt body plus ~2 mana of armor
+   * Dame Ironbodice — 5/5 with Ward. Omen: Gain 5 Armor.
+   * Costed at 6: a budget 5/5 Ward body plus ~2 mana of armor
    * was well over curve at 5.
    */
   {
     id: 'warrior_shieldmaiden',
-    name: 'Shieldmaiden',
+    name: 'Dame Ironbodice',
     cost: 6,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: '**Ward**. **Omen:** Gain 5 Armor.',
+    flavor: 'Many have tried to get past her defenses. The survivors still send flowers.',
     attack: 5,
     health: 5,
     tribe: 'none',
@@ -282,26 +291,27 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Arcanite Reaper — Equip a 5/2 weapon.
+   * The Widowing Scythe — Equip a 5/2 weapon.
    */
   {
     id: 'warrior_arcanite_reaper',
-    name: 'Arcanite Reaper',
+    name: 'The Widowing Scythe',
     cost: 5,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Equip a 5/2 Weapon.',
+    flavor: "It has made more widows than the war and the winter together — and unlike either, it's cheerful about it.",
     spell: [{ kind: 'equipWeapon', cardId: 'warrior_arcanite_reaper_token' }],
     art: undefined,
   },
 
   /**
-   * Arcanite Reaper weapon token.
+   * The Widowing Scythe weapon token.
    */
   {
     id: 'warrior_arcanite_reaper_token',
-    name: 'Arcanite Reaper',
+    name: 'The Widowing Scythe',
     cost: 5,
     type: 'weapon',
     cardClass: 'warrior',
@@ -318,36 +328,37 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Brawl — Destroy all minions except one. (Randomly chosen survivor.)
-   * Approximated as: deal 4 damage to all minions (board-wide AoE that clears most
-   * things, keeps the Brawl fantasy without a per-minion random-survivor primitive).
+   * Closing Time — board-wide AoE that clears most things.
+   * (A tavern-brawl wipe; no per-minion random-survivor primitive, so it's a
+   *  flat 4 damage to all minions.)
    */
   {
     id: 'warrior_brawl',
-    name: 'Brawl',
+    name: 'Closing Time',
     cost: 5,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'epic',
     text: 'Deal 4 damage to all minions.',
+    flavor: 'The Stuck Pig has three house rules. No one has ever stayed sober long enough to learn the third.',
     spell: [{ kind: 'damage', amount: 4, target: 'allMinions' }],
     art: undefined,
   },
 
   /**
-   * Grommash Hellscream — 4/9 Charge. Battlecry: deal 1 damage to all enemy minions.
-   * (Classic: "Enrage: +6 Attack" — no enrage in the engine, approximated as a
-   *  small whirlwind battlecry. Trimmed from 2 damage to all enemies: a 4/9
-   *  Charge body leaves under a mana of battlecry budget at 8.)
+   * Hobnail Meg — 4/9 Charge. Omen: deal 1 damage to all enemy minions.
+   * (A 4/9 Charge body leaves under a mana of battlecry budget at 8, hence
+   *  the small board ping.)
    */
   {
     id: 'warrior_grommash_hellscream',
-    name: 'Grommash Hellscream',
+    name: 'Hobnail Meg',
     cost: 8,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'legendary',
     text: '**Charge**. **Omen:** Deal 1 damage to all enemy minions.',
+    flavor: 'She has kicked open the church doors, the castle gate, and four marriages.',
     attack: 4,
     health: 9,
     tribe: 'none',
@@ -360,21 +371,22 @@ export const warriorCards: CardDef[] = [
   // 7-cost
   // -------------------------------------------------------------------------
 
-  // (War Golem lives in neutral.ts — warriors draft the neutral copy.)
+  // (War Golem lives in neutral.ts — Bannerets draft the neutral copy.)
 
   /**
-   * Alley Armorsmith — 2/7 Taunt. Whenever this minion takes damage, gain
-   * 2 Armor (real card grants "that much Armor"; trigger effects have no
-   * dynamic damage amount, so a fixed 2 — the typical hit — stands in).
+   * Back-Lane Tinker — 2/7 Ward. Whenever this minion takes damage, gain
+   * 2 Armor (trigger effects have no dynamic damage amount, so a fixed 2 —
+   * the typical hit — stands in).
    */
   {
     id: 'warrior_alley_armorsmith',
-    name: 'Alley Armorsmith',
+    name: 'Back-Lane Tinker',
     cost: 5,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: '**Ward**. Whenever this minion takes damage, gain 2 Armor.',
+    flavor: "He'll patch your hauberk, your kettle, and — for a penny extra — your reputation.",
     attack: 2,
     health: 7,
     tribe: 'none',
@@ -393,19 +405,18 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Ironforge Portal — Gain 4 Armor and summon a 1/1 Recruit.
-   * (Original summons a random 4-cost minion — no random-summon primitive, so
-   *  the fixed 1/1 Recruit stands in and the card is re-costed to 2: 4 Armor
-   *  plus a 1/1 is ~2.4 mana of value, nowhere near the original 5.)
+   * The Muster-Drum — Gain 4 Armor and summon a 1/1 Recruit.
+   * (4 Armor plus a 1/1 is ~2.4 mana of value, hence the cost of 2.)
    */
   {
     id: 'warrior_ironforge_portal',
-    name: 'Ironforge Portal',
+    name: 'The Muster-Drum',
     cost: 2,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Gain 4 Armor. Summon a 1/1 Recruit.',
+    flavor: 'One beat raises the militia. Two raises their wives, demanding to know whose idea this was.',
     spell: [
       { kind: 'gainArmor', amount: 4 },
       { kind: 'summon', token: 'warrior_recruit', count: 1 },
@@ -414,29 +425,28 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Gorehowl — Equip a 7/1 weapon. Attacking a minion costs no durability.
-   * Approximated as a simple 7/1 weapon (hero attacks for huge burst). The
-   * original 7-mana price assumed the no-durability-vs-minions mechanic; a
-   * plain one-swing 7/1 is worth ~5 (Fireball-plus with retaliation risk).
+   * Grandmother Ruin — Equip a 7/1 weapon. A plain one-swing 7/1 for huge
+   * hero burst, worth ~5 with retaliation risk.
    */
   {
     id: 'warrior_gorehowl',
-    name: 'Gorehowl',
+    name: 'Grandmother Ruin',
     cost: 5,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'epic',
     text: 'Equip a 7/1 Weapon.',
+    flavor: 'The old poleaxe hangs above the bar. Once a generation, some fool takes her down. Once a generation is plenty.',
     spell: [{ kind: 'equipWeapon', cardId: 'warrior_gorehowl_token' }],
     art: undefined,
   },
 
   /**
-   * Gorehowl weapon token — 7/1 weapon.
+   * Grandmother Ruin weapon token — 7/1 weapon.
    */
   {
     id: 'warrior_gorehowl_token',
-    name: 'Gorehowl',
+    name: 'Grandmother Ruin',
     cost: 5,
     type: 'weapon',
     cardClass: 'warrior',
@@ -453,19 +463,19 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Rattlegore — 9/9. Deathrattle: resummon this minion with -1/-1.
-   * Approximated: deathrattle deals 1 damage to all enemies and summons two 1/1 Recruits
-   * (re-summon chain is unavailable without per-card scripts; we keep some value and
-   *  flavor — trimmed from 2 damage since a 9/9 body is already near vanilla budget).
+   * The Gallowsfather — 9/9. Haunt: deal 1 damage to all enemies and summon
+   * two 1/1 Recruits. (A 9/9 body is already near vanilla budget, hence the
+   * modest death effect.)
    */
   {
     id: 'warrior_rattlegore',
-    name: 'Rattlegore',
+    name: 'The Gallowsfather',
     cost: 9,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'legendary',
     text: '**Haunt:** Deal 1 damage to all enemies and summon two 1/1 Recruits.',
+    flavor: 'Every rope on the hill is his apron string, and every hanged lad calls him Da.',
     attack: 9,
     health: 9,
     tribe: 'none',
@@ -481,17 +491,18 @@ export const warriorCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Cruel Taskmaster — 2/2. Battlecry: deal 1 damage to a friendly minion and give it +2 Attack.
-   * Classic enrage enabler / cheap curve play.
+   * Sergeant Thistlewhip — 2/2. Omen: deal 1 damage to a friendly minion and
+   * give it +2 Attack. Cheap curve play and damage-trigger enabler.
    */
   {
     id: 'warrior_cruel_taskmaster',
-    name: 'Cruel Taskmaster',
+    name: 'Sergeant Thistlewhip',
     cost: 2,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'common',
     text: '**Omen:** Deal 1 damage to a friendly minion. Give it +2 Attack.',
+    flavor: 'His motivational method is a stick. The stick is also named Sergeant Thistlewhip.',
     attack: 2,
     health: 2,
     tribe: 'none',
@@ -505,18 +516,19 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Slam — 2-mana spell: deal 2 damage to a minion. If it survives, draw a card.
-   * Approximated as: deal 2 damage + draw a card (the "if it survives" condition
-   * is folded in by keeping cost low and drawing always — preserves the feel).
+   * Pewter Persuasion — 2-mana spell: deal 2 damage to a minion. Draw a card.
+   * (The "if it survives" style condition is folded in by keeping cost low and
+   * drawing always.)
    */
   {
     id: 'warrior_slam',
-    name: 'Slam',
+    name: 'Pewter Persuasion',
     cost: 2,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Deal 2 damage to a minion. Draw a card.',
+    flavor: 'An honest Hollowmoor handshake: tankard first, questions after.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -527,17 +539,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Bash — 3-mana spell: deal 3 damage and gain 3 Armor.
+   * The Bailiff's Knock — 3-mana spell: deal 3 damage and gain 3 Armor.
    * Flexible spell that covers removal and armor building simultaneously.
    */
   {
     id: 'warrior_bash',
-    name: 'Bash',
+    name: "The Bailiff's Knock",
     cost: 3,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Deal 3 damage. Gain 3 Armor.',
+    flavor: 'Once for courtesy. Twice for the debt. The third knock opens the door whether you do or not.',
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [
@@ -548,17 +561,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Ravaging Ghoul — 3/3. Battlecry: deal 1 damage to all minions.
-   * Pairs with Frothing Berserker and other enrage cards.
+   * The Knackerman — 3/3. Omen: deal 1 damage to all minions.
+   * Pairs with Red-Eyed Reveler and other damage-trigger cards.
    */
   {
     id: 'warrior_ravaging_ghoul',
-    name: 'Ravaging Ghoul',
+    name: 'The Knackerman',
     cost: 3,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'common',
     text: '**Omen:** Deal 1 damage to all minions.',
+    flavor: "He carts away the dead, and he's never been fussy about how recent.",
     attack: 3,
     health: 3,
     tribe: 'none',
@@ -567,35 +581,36 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Battle Rage — draw a card for each damaged friendly character.
-   * Approximated as an unconditional draw 2; re-costed to 3 (Arcane Intellect
-   * rate) since the original 2-mana price assumed the damaged-characters
-   * condition.
+   * Counsel of the Cask — draw 2 cards.
+   * (Unconditional draw 2 at the standard 3-mana rate; the original
+   * damaged-characters condition isn't an engine primitive.)
    */
   {
     id: 'warrior_battle_rage',
-    name: 'Battle Rage',
+    name: 'Counsel of the Cask',
     cost: 3,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Draw 2 cards.',
+    flavor: 'The third tankard knows things the first two were too shy to mention.',
     spell: [{ kind: 'draw', count: 2 }],
     art: undefined,
   },
 
   /**
-   * Cleave — 2-mana spell: deal 2 damage to two random enemies.
-   * Efficient early-game AoE that synergises with weapon archetype.
+   * The Wide Swathe — 2-mana spell: deal 2 damage to two random enemies.
+   * Efficient early-game AoE that synergises with the weapon archetype.
    */
   {
     id: 'warrior_cleave',
-    name: 'Cleave',
+    name: 'The Wide Swathe',
     cost: 2,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Deal 2 damage to two random enemies.',
+    flavor: 'Aim is a luxury for sober men.',
     spell: [
       { kind: 'damage', amount: 2, target: 'randomEnemy' },
       { kind: 'damage', amount: 2, target: 'randomEnemy' },
@@ -604,28 +619,29 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Death's Bite — 4-mana weapon: 4/2. Equip a powerful mid-game weapon.
-   * The Deathrattle whirlwind is approximated as a direct whirlwind on the weapon card
-   * (using a trigger is unavailable for weapons; we just offer a strong stat line).
+   * The Sexton's Spade — 4-mana weapon spell: equip a 4/2 mid-game weapon.
+   * (Weapons can't carry death-trigger effects, so it's a strong plain
+   * stat line.)
    */
   {
     id: 'warrior_deaths_bite',
-    name: "Death's Bite",
+    name: "The Sexton's Spade",
     cost: 4,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Equip a 4/2 Weapon.',
+    flavor: 'It digs graves coming and going.',
     spell: [{ kind: 'equipWeapon', cardId: 'warrior_deaths_bite_token' }],
     art: undefined,
   },
 
   /**
-   * Death's Bite weapon token — 4/2 weapon.
+   * The Sexton's Spade weapon token — 4/2 weapon.
    */
   {
     id: 'warrior_deaths_bite_token',
-    name: "Death's Bite",
+    name: "The Sexton's Spade",
     cost: 4,
     type: 'weapon',
     cardClass: 'warrior',
@@ -638,17 +654,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Commanding Shout — 3-mana spell: give all friendly minions +1 Attack this turn
-   * and Rush. (Approximated as buff +1 attack this turn + give rush to all friendlies.)
+   * Forward, You Sots! — 3-mana spell: give all friendly minions +1 Attack
+   * this turn and Rush.
    */
   {
     id: 'warrior_commanding_shout',
-    name: 'Commanding Shout',
+    name: 'Forward, You Sots!',
     cost: 3,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'rare',
     text: 'Give your minions +1 Attack this turn and **Rush**.',
+    flavor: "The sergeant's eloquence is legendary, unprintable, and astonishingly effective.",
     spell: [
       { kind: 'buffThisTurn', atk: 1, target: 'friendlyMinions' },
       { kind: 'giveKeyword', keyword: 'rush', target: 'friendlyMinions' },
@@ -657,19 +674,19 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Siege Engine — 5/5 Taunt. Whenever you gain Armor, gain +1 Attack.
-   * Approximated: 5/5 Taunt with a trigger that buffs when friendly minion dies
-   * (closest ongoing board-event; the armour-link flavour is preserved by pairing
-   * with armour cards in the same bucket).
+   * The Rolling Belfry — 5/5 Ward. At the end of your turn, gain +1 Attack.
+   * (A siege relic that grinds ever forward; pairs naturally with the armor
+   * buckets.)
    */
   {
     id: 'warrior_siege_engine',
-    name: 'Siege Engine',
+    name: 'The Rolling Belfry',
     cost: 5,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: '**Ward**. At the end of your turn, gain +1 Attack.',
+    flavor: 'A siege tower from a war nobody remembers winning. It creaks toward the enemy out of pure habit.',
     attack: 5,
     health: 5,
     tribe: 'none',
@@ -684,17 +701,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Militia Commander — 2/5 Rush. At the start of your turn, gain +3 Attack this turn.
-   * Strong Rush minion that keeps threatening each subsequent turn.
+   * Captain of the Muster — 2/5 Rush. At the start of your turn, gain
+   * +3 Attack this turn. Keeps threatening each subsequent turn.
    */
   {
     id: 'warrior_militia_commander',
-    name: 'Militia Commander',
+    name: 'Captain of the Muster',
     cost: 4,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'rare',
     text: '**Rush**. At the start of your turn, gain +3 Attack this turn.',
+    flavor: 'All spit and thunder at dawn. By dusk, mostly spit.',
     attack: 2,
     health: 5,
     tribe: 'none',
@@ -709,29 +727,29 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Upgrade! — 1-mana spell: give your weapon +1/+1, or equip a 1/3 weapon.
-   * Approximated as: equip a 1/3 weapon (the real card's no-weapon mode; the
-   * "+1/+1 to your weapon" branch has no engine primitive). A 2/3 weapon at 1
-   * mana was well over the weapon budget.
+   * Pawnbroker's Special — 1-mana spell: equip a 1/3 weapon.
+   * (A 2/3 weapon at 1 mana was well over the weapon budget, so the
+   *  secondhand blade stays humble.)
    */
   {
     id: 'warrior_upgrade',
-    name: 'Upgrade!',
+    name: "Pawnbroker's Special",
     cost: 1,
     type: 'spell',
     cardClass: 'warrior',
     rarity: 'common',
     text: 'Equip a 1/3 Weapon.',
+    flavor: 'Previous owner: deceased. The owner before that: also deceased. Lovely heft, though.',
     spell: [{ kind: 'equipWeapon', cardId: 'warrior_upgrade_token' }],
     art: undefined,
   },
 
   /**
-   * Upgrade! weapon token — 1/3 weapon.
+   * Pawnbroker's Special weapon token — 1/3 weapon.
    */
   {
     id: 'warrior_upgrade_token',
-    name: 'Upgrade!',
+    name: "Pawnbroker's Special",
     cost: 1,
     type: 'weapon',
     cardClass: 'warrior',
@@ -744,18 +762,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Bloodhoof Brave — 2/6 Taunt. Whenever this minion takes damage, gain
-   * +3 Attack (the authentic enrage-style effect via onSelfDamaged; unlike
-   * real Enrage it stacks per hit rather than toggling while damaged).
+   * The Goaded Drover — 2/6 Ward. Whenever this minion takes damage, gain
+   * +3 Attack (via onSelfDamaged; stacks per hit).
    */
   {
     id: 'warrior_bloodhoof_brave',
-    name: 'Bloodhoof Brave',
+    name: 'The Goaded Drover',
     cost: 4,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'common',
     text: '**Ward**. Whenever this minion takes damage, gain +3 Attack.',
+    flavor: 'Twenty years of mud, oxen, and his mother-in-law. Go on. Hit him. See what happens.',
     attack: 2,
     health: 6,
     tribe: 'none',
@@ -770,18 +788,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Varian Wrynn — 10-mana 7/7 legendary. Battlecry: draw 3 cards.
-   * (True effect: fill your board with minions drawn; approximated as draw 3 + summon
-   * two 1/1 Recruits to partially fill the board.)
+   * The Old Margrave — 10-mana 7/7 legendary. Omen: draw 3 cards and summon
+   * two 1/1 Recruits — the county rides with him.
    */
   {
     id: 'warrior_varian_wrynn',
-    name: 'Varian Wrynn',
+    name: 'The Old Margrave',
     cost: 10,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'legendary',
     text: '**Omen:** Draw 3 cards and summon two 1/1 Recruits.',
+    flavor: 'He rides to war with three debts, two mistresses, and the whole county at his back.',
     attack: 7,
     health: 7,
     tribe: 'none',
@@ -793,18 +811,18 @@ export const warriorCards: CardDef[] = [
   },
 
   /**
-   * Warsong Commander — 3/3. Your minions have +1 Attack.
-   * (Original buffs only Rush minions; aura filters can't key off Rush, so the
-   *  aura applies to all friendly minions — board-wide Raid Leader effect.)
+   * Bawdy Balladeer — 3/3. Your minions have +1 Attack.
+   * (Board-wide attack aura; aura filters can't key off Rush.)
    */
   {
     id: 'warrior_warsong_commander',
-    name: 'Warsong Commander',
+    name: 'Bawdy Balladeer',
     cost: 3,
     type: 'minion',
     cardClass: 'warrior',
     rarity: 'free',
     text: 'Your minions have +1 Attack.',
+    flavor: 'Her marching song has three hundred verses, each filthier than the last. Morale has never been higher.',
     attack: 3,
     health: 3,
     tribe: 'none',

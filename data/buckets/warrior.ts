@@ -16,7 +16,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_weapons',
-    name: 'Weapons Forge',
+    name: 'The Pawnshop Arsenal',
     cardClass: 'warrior',
     cardIds: ['warrior_fiery_war_axe', 'warrior_deaths_bite', 'warrior_gorehowl'],
   },
@@ -26,7 +26,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_armor',
-    name: 'Iron Fortress',
+    name: 'Rust and Ramparts',
     cardClass: 'warrior',
     cardIds: ['warrior_shield_block', 'warrior_shieldmaiden', 'warrior_alley_armorsmith'],
   },
@@ -36,7 +36,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_enrage',
-    name: 'Enrage Engine',
+    name: 'Bad Blood Rising',
     cardClass: 'warrior',
     cardIds: ['warrior_whirlwind', 'warrior_frothing_berserker', 'warrior_ravaging_ghoul'],
   },
@@ -46,7 +46,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_rush',
-    name: 'Rush Attack',
+    name: 'The Drunken Charge',
     cardClass: 'warrior',
     cardIds: ['warrior_korkron_elite', 'warrior_militia_commander', 'warrior_commanding_shout'],
   },
@@ -56,7 +56,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_taunts',
-    name: 'Taunt Wall',
+    name: 'Hold the Lych-Gate',
     cardClass: 'warrior',
     cardIds: ['warrior_bloodhoof_brave', 'warrior_siege_engine', 'sen_jin_shieldmasta'],
   },
@@ -66,7 +66,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_removal',
-    name: 'Removal Package',
+    name: 'Gallows Justice',
     cardClass: 'warrior',
     cardIds: ['warrior_execute', 'warrior_shield_slam', 'warrior_bash'],
   },
@@ -76,7 +76,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_big_minions',
-    name: 'Big Bodies',
+    name: 'The Heavy Levy',
     cardClass: 'warrior',
     cardIds: ['war_golem', 'boulderfist_ogre', 'chillwind_yeti'],
   },
@@ -86,7 +86,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_value',
-    name: 'War Council',
+    name: 'The Tavern Council',
     cardClass: 'warrior',
     cardIds: ['warrior_slam', 'warrior_battle_rage', 'gnomish_inventor'],
   },
@@ -96,7 +96,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_early_game',
-    name: 'Early Aggression',
+    name: 'Cheap Shots',
     cardClass: 'warrior',
     cardIds: ['warrior_upgrade', 'warrior_heroic_strike', 'elven_archer'],
   },
@@ -106,7 +106,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_tempo',
-    name: 'Tempo Warrior',
+    name: 'March of the Banneret',
     cardClass: 'warrior',
     cardIds: ['warrior_cruel_taskmaster', 'warrior_warsong_commander', 'warrior_cleave'],
   },
@@ -116,7 +116,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_finishers',
-    name: 'For the Alliance!',
+    name: 'For the County!',
     cardClass: 'warrior',
     cardIds: ['warrior_grommash_hellscream', 'warrior_varian_wrynn', 'warrior_rattlegore'],
   },
@@ -126,7 +126,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_board_wipe',
-    name: 'Board Wipe',
+    name: 'Clear the Common',
     cardClass: 'warrior',
     cardIds: ['warrior_brawl', 'warrior_whirlwind', 'warrior_arcanite_reaper'],
   },

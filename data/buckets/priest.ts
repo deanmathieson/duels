@@ -10,7 +10,7 @@ export const priestBuckets: BucketDef[] = [
   // ── HEAL SYNERGY ─────────────────────────────────────────────────────────
   {
     id: 'bucket_priest_heal_synergy',
-    name: 'Sacred Restoration',
+    name: 'Physick & Prayer',
     cardClass: 'priest',
     cardIds: ['priest_lesser_heal', 'priest_divine_hymn', 'priest_northshire_cleric'],
   },
@@ -18,7 +18,7 @@ export const priestBuckets: BucketDef[] = [
   // ── SHADOW REMOVAL ───────────────────────────────────────────────────────
   {
     id: 'bucket_priest_shadow_removal',
-    name: 'Shadow Word Package',
+    name: "The Vicar's Black Book",
     cardClass: 'priest',
     cardIds: ['priest_shadow_word_pain', 'priest_shadow_word_death', 'priest_mind_blast'],
   },
@@ -26,7 +26,7 @@ export const priestBuckets: BucketDef[] = [
   // ── SPELL VALUE / DRAW ───────────────────────────────────────────────────
   {
     id: 'bucket_priest_spell_value',
-    name: 'Arcane Scripture',
+    name: 'Hollowmoor Apocrypha',
     cardClass: 'priest',
     cardIds: ['priest_shadow_visions', 'priest_thoughtsteal', 'priest_entomb'],
   },
@@ -34,7 +34,7 @@ export const priestBuckets: BucketDef[] = [
   // ── CHEAP / EARLY GAME ───────────────────────────────────────────────────
   {
     id: 'bucket_priest_early_game',
-    name: 'Early Ministry',
+    name: 'Matins on the Moor',
     cardClass: 'priest',
     cardIds: ['priest_storecroom_helper', 'priest_fanatical_acolyte', 'priest_power_word_shield'],
   },
@@ -42,7 +42,7 @@ export const priestBuckets: BucketDef[] = [
   // ── BUFF / POWER WORD ────────────────────────────────────────────────────
   {
     id: 'bucket_priest_buffs',
-    name: 'Empowered Faithful',
+    name: 'Fatten the Flock',
     cardClass: 'priest',
     cardIds: ['priest_power_word_fortitude', 'priest_velens_chosen', 'priest_injured_blademaster'],
   },
@@ -50,7 +50,7 @@ export const priestBuckets: BucketDef[] = [
   // ── STICKY HIGH-HEALTH MINIONS ────────────────────────────────────────────
   {
     id: 'bucket_priest_sticky_minions',
-    name: 'Enduring Congregation',
+    name: 'Stubborn Congregation',
     cardClass: 'priest',
     cardIds: ['priest_injured_blademaster', 'priest_temple_enforcer', 'sen_jin_shieldmasta'],
   },
@@ -58,7 +58,7 @@ export const priestBuckets: BucketDef[] = [
   // ── DIVINE SHIELD ─────────────────────────────────────────────────────────
   {
     id: 'bucket_priest_divine_shields',
-    name: 'Hallowed Aegis',
+    name: 'Blessings for Sale',
     cardClass: 'priest',
     cardIds: ['priest_holy_champion', 'priest_zerek', 'sunwalker'],
   },
@@ -66,7 +66,7 @@ export const priestBuckets: BucketDef[] = [
   // ── TAUNT WALL ────────────────────────────────────────────────────────────
   {
     id: 'bucket_priest_taunts',
-    name: 'Fortified Sanctuary',
+    name: 'Bar the Church Door',
     cardClass: 'priest',
     cardIds: ['priest_devout_chaplain', 'priest_draenei_totem', 'ironfur_grizzly'],
   },
@@ -74,7 +74,7 @@ export const priestBuckets: BucketDef[] = [
   // ── LIFESTEAL / SUSTAIN ───────────────────────────────────────────────────
   {
     id: 'bucket_priest_lifesteal',
-    name: 'Vital Essence',
+    name: 'Drink Deep',
     cardClass: 'priest',
     cardIds: ['priest_high_inquisitor', 'priest_devout_chaplain', 'priest_circle_of_healing'],
   },
@@ -82,7 +82,7 @@ export const priestBuckets: BucketDef[] = [
   // ── BOARD CLEAR / CONTROL ─────────────────────────────────────────────────
   {
     id: 'bucket_priest_control',
-    name: 'Divine Reckoning',
+    name: 'Brimstone Sunday',
     cardClass: 'priest',
     cardIds: ['priest_holy_nova', 'priest_lightbomb', 'priest_mass_dispel'],
   },
@@ -90,7 +90,7 @@ export const priestBuckets: BucketDef[] = [
   // ── BIG MINIONS ────────────────────────────────────────────────────────────
   {
     id: 'bucket_priest_big_minions',
-    name: 'Towering Saints',
+    name: 'Pillars of the Parish',
     cardClass: 'priest',
     cardIds: ['priest_cabal_shadow_priest', 'boulderfist_ogre', 'war_golem'],
   },
@@ -98,7 +98,7 @@ export const priestBuckets: BucketDef[] = [
   // ── FINISHERS / LEGENDARIES ────────────────────────────────────────────────
   {
     id: 'bucket_priest_finishers',
-    name: 'Divine Ascension',
+    name: 'The Last Bell Tolls',
     cardClass: 'priest',
     cardIds: ['priest_prophet_velen', 'priest_catrina_muerte', 'priest_shadowreaper_anduin'],
   },

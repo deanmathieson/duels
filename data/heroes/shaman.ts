@@ -1,12 +1,13 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Instructor Fireheart — Shaman hero definition.
- * Theme: Totems, Elementals, Lightning damage, board buffs.
+ * Granny Mireweather — Augur hero definition.
+ * A bog-witch and weather-reader of Hollowmoor: carved Effigies staked in the
+ * marsh, entrail-readings, and storms bartered from things under the water.
  */
 export const shamanHero: HeroDef = {
   id: 'hero_shaman',
-  name: 'Instructor Fireheart',
+  name: 'Granny Mireweather',
   cardClass: 'shaman',
   heroPowers: ['hp_shaman_totemic_call', 'hp_shaman_storm_strike', 'hp_shaman_ancestral_mending'],
   signatureTreasures: [
@@ -21,29 +22,29 @@ export const shamanHero: HeroDef = {
 }
 
 /**
- * Shaman hero powers for Instructor Fireheart.
+ * Augur hero powers for Granny Mireweather.
  */
 export const shamanHeroPowers: HeroPowerDef[] = [
   /**
-   * Totemic Call — 2 mana. Choose One: Summon a Searing Totem (1/1);
-   * or a Stoneskin Totem (0/2 Taunt); or a Wrath of Air Totem (0/2 Spell Damage +1).
+   * Stake an Effigy — 2 mana. Choose One: Summon a Candlewick Effigy (1/1);
+   * or a Gallowstone Effigy (0/2 Ward); or a Weathervane Effigy (0/2 Spell Damage +1).
    */
   {
     id: 'hp_shaman_totemic_call',
-    name: 'Totemic Call',
+    name: 'Stake an Effigy',
     cost: 2,
-    text: 'Choose One - Summon a 1/1 Searing Effigy; or a 0/2 Stoneskin Effigy with Ward; or a 0/2 Wrath of Air Effigy with Spell Damage +1.',
+    text: 'Choose One - Summon a 1/1 Candlewick Effigy; or a 0/2 Gallowstone Effigy with Ward; or a 0/2 Weathervane Effigy with Spell Damage +1.',
     chooseOne: [
       {
-        text: 'Summon a 1/1 Searing Effigy.',
+        text: 'Summon a 1/1 Candlewick Effigy.',
         effects: [{ kind: 'summon', token: 'shaman_token_searing_totem', count: 1 }],
       },
       {
-        text: 'Summon a 0/2 Stoneskin Effigy with Ward.',
+        text: 'Summon a 0/2 Gallowstone Effigy with Ward.',
         effects: [{ kind: 'summon', token: 'shaman_token_stoneskin_totem', count: 1 }],
       },
       {
-        text: 'Summon a 0/2 Wrath of Air Effigy with Spell Damage +1.',
+        text: 'Summon a 0/2 Weathervane Effigy with Spell Damage +1.',
         effects: [{ kind: 'summon', token: 'shaman_token_wrath_of_air_totem', count: 1 }],
       },
     ],
@@ -51,14 +52,14 @@ export const shamanHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Storm Strike — 2 mana. Deal 2 damage to the enemy hero.
-   * Channelling raw lightning to pressure the opponent.
-   * (Reduced from 3 to 2 damage to match the Steady Shot hero-power anchor —
-   * repeatable face damage compounds every turn.)
+   * Ill Wind — 2 mana. Deal 2 damage to the enemy hero.
+   * A bartered gust of spite, spent straight at the opponent's face.
+   * (2 damage to match the repeatable face-damage hero-power anchor —
+   * it compounds every turn.)
    */
   {
     id: 'hp_shaman_storm_strike',
-    name: 'Storm Strike',
+    name: 'Ill Wind',
     cost: 2,
     text: 'Deal 2 damage to the enemy hero.',
     effects: [{ kind: 'damage', amount: 2, target: 'enemyHero' }],
@@ -66,12 +67,12 @@ export const shamanHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Ancestral Mending — 3 mana. Restore 5 Health to your hero and gain 2 Armor.
-   * Represents the Shaman's healing connection to the ancestors.
+   * Peat Poultice — 3 mana. Restore 5 Health to your hero and gain 2 Armor.
+   * Grave-mud and moss, slapped on warm. Smells worse than it works.
    */
   {
     id: 'hp_shaman_ancestral_mending',
-    name: 'Ancestral Mending',
+    name: 'Peat Poultice',
     cost: 3,
     text: 'Restore 5 Health to your hero. Gain 2 Armor.',
     effects: [

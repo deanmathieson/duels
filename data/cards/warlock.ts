@@ -1,9 +1,10 @@
 import type { CardDef } from '../../game/types'
 
 /**
- * Warlock class cards — 28 collectible cards spanning the mana curve (1-10),
- * plus token cards for Imps and other summoned minions.
- * Theme: Demons, self-damage value, board flood, sacrifice for power.
+ * Bargainer class cards — 28 collectible cards spanning the mana curve (1-10),
+ * plus token cards for Pennywisps and other summoned minions.
+ * Theme: Fae creditors, debts paid in lifeblood, board flood, predatory
+ * contracts signed at the crossroads.
  * Encoded per EFFECTSPEC.md conventions.
  */
 export const warlockCards: CardDef[] = [
@@ -12,15 +13,16 @@ export const warlockCards: CardDef[] = [
   // Tokens (token: true — not collectible)
   // -------------------------------------------------------------------------
 
-  /** 1/1 Demon token summoned by several Warlock cards. */
+  /** 1/1 Fae token summoned by several Bargainer cards. */
   {
     id: 'warlock_imp',
-    name: 'Imp',
+    name: 'Pennywisp',
     cost: 1,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'free',
     text: '',
+    flavor: 'The smallest coin the fae mint. It bites.',
     attack: 1,
     health: 1,
     tribe: 'demon',
@@ -28,15 +30,16 @@ export const warlockCards: CardDef[] = [
     art: undefined,
   },
 
-  /** 3/2 Demon token summoned by Doomguard's board-flood variant. */
+  /** 3/2 Fae token (board-flood variant summon). */
   {
     id: 'warlock_flame_imp_token',
-    name: 'Flame Imp',
+    name: 'Wickfinger',
     cost: 1,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'free',
     text: '',
+    flavor: 'Lights your pipe for a penny, your hearth for a kiss, and your breeches free of charge.',
     attack: 3,
     health: 2,
     tribe: 'demon',
@@ -44,15 +47,16 @@ export const warlockCards: CardDef[] = [
     art: undefined,
   },
 
-  /** 1/3 Taunt Demon — Voidwalker token for signature use. */
+  /** 1/3 Ward Fae — token twin of the collectible, for signature use. */
   {
     id: 'warlock_voidwalker_token',
-    name: 'Voidwalker',
+    name: 'Bogbound Surety',
     cost: 1,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'free',
     text: '**Ward**',
+    flavor: 'Stands surety for your soul. Smells like the underside of a promise.',
     attack: 1,
     health: 3,
     tribe: 'demon',
@@ -61,15 +65,16 @@ export const warlockCards: CardDef[] = [
     art: undefined,
   },
 
-  /** 5/5 Demon token summoned by Twisting Nether partial effect. */
+  /** 5/5 Fae token summoned by several Bargainer effects. */
   {
     id: 'warlock_void_terror_token',
-    name: 'Void Terror',
+    name: 'Crooked Gentleman',
     cost: 5,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
     text: '',
+    flavor: 'All smiles. Far too many of them.',
     attack: 5,
     health: 5,
     tribe: 'demon',
@@ -82,17 +87,18 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Flame Imp — 3/2 Demon.
-   * Battlecry: Deal 3 damage to your hero.
+   * Wickfinger — 3/2 Fae.
+   * Omen: Deal 3 damage to your hero.
    */
   {
     id: 'warlock_flame_imp',
-    name: 'Flame Imp',
+    name: 'Wickfinger',
     cost: 1,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: '**Omen:** Deal 3 damage to your hero.',
+    flavor: 'Lights your pipe for a penny, your hearth for a kiss, and your breeches free of charge.',
     attack: 3,
     health: 2,
     tribe: 'demon',
@@ -101,19 +107,19 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Mortal Coil — 1-mana Warlock spell.
-   * Deal 1 damage to a minion. If that kills it, draw a card.
-   * Approximated: deal 1 damage + draw 1 (on-theme; engine cannot gate draw
-   * on kill, so we always draw — equivalent flavour, slight upside).
+   * Parting Words — 1-mana Bargainer spell.
+   * Deal 1 damage to a minion. Draw a card.
+   * (The dead never stop talking — a last whisper that pays for itself.)
    */
   {
     id: 'warlock_mortal_coil',
-    name: 'Mortal Coil',
+    name: 'Parting Words',
     cost: 1,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
     text: 'Deal 1 damage to a minion. Draw a card.',
+    flavor: 'The dead always have one last thing to say. It is usually about your wife.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -128,17 +134,18 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Voidwalker — 1/3 Demon with Taunt.
-   * Battlecry: none (vanilla Taunt body).
+   * Bogbound Surety — 1/3 Fae with Ward.
+   * (Vanilla Ward body — a guarantor that stands between you and the debt.)
    */
   {
     id: 'warlock_voidwalker',
-    name: 'Voidwalker',
+    name: 'Bogbound Surety',
     cost: 2,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'free',
     text: '**Ward**',
+    flavor: 'Stands surety for your soul. Smells like the underside of a promise.',
     attack: 1,
     health: 3,
     tribe: 'demon',
@@ -147,18 +154,19 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Dark Pact — 2-mana spell.
+   * First Taste Free — 2-mana spell.
    * Deal 4 damage to your hero. Restore 8 Health to it.
-   * (Warlock self-damage + heal combo card)
+   * (Self-damage + heal combo — the introductory offer of every fae creditor.)
    */
   {
     id: 'warlock_dark_pact',
-    name: 'Dark Pact',
+    name: 'First Taste Free',
     cost: 2,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
     text: 'Deal 4 damage to your hero. Restore 8 Health to your hero.',
+    flavor: 'Every creditor in Hollowmoor offers it. Not one of them has ever meant it.',
     spell: [
       { kind: 'damage', amount: 4, target: 'friendlyHero' },
       { kind: 'heal', amount: 8, target: 'friendlyHero' },
@@ -171,18 +179,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Imp Gang Boss — 2/4 Demon. Whenever this minion takes damage, summon a
-   * 1/1 Imp (the authentic effect, via the onSelfDamaged trigger; fires even
-   * on lethal damage, and not when Divine Shield absorbs the hit).
+   * Wisp-House Madam — 2/4 Fae. Whenever this minion takes damage, summon a
+   * 1/1 Pennywisp (via the onSelfDamaged trigger; fires even on lethal damage,
+   * and not when Divine Shield absorbs the hit).
    */
   {
     id: 'warlock_imp_gang_boss',
-    name: 'Imp Gang Boss',
+    name: 'Wisp-House Madam',
     cost: 3,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
-    text: 'Whenever this minion takes damage, summon a 1/1 Imp.',
+    text: 'Whenever this minion takes damage, summon a 1/1 Pennywisp.',
+    flavor: 'Strike her and she rings the bell, and down the stairs come more girls than you can afford.',
     attack: 2,
     health: 4,
     tribe: 'demon',
@@ -196,17 +205,18 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Shadow Bolt — 3-mana Warlock spell (Shadow).
+   * The Crooked Finger — 3-mana Bargainer spell.
    * Deal 4 damage to a minion.
    */
   {
     id: 'warlock_shadow_bolt',
-    name: 'Shadow Bolt',
+    name: 'The Crooked Finger',
     cost: 3,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'free',
     text: 'Deal 4 damage to a minion.',
+    flavor: 'Point it at a man and a bell tolls. Point it at a husband and a widow starts baking.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [{ kind: 'damage', amount: 4, target: 'chosenTarget' }],
@@ -214,20 +224,21 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Imp-losion — 3-mana Warlock spell.
-   * Deal 2 damage to a minion. Summon a 1/1 Imp for each damage dealt.
-   * Approximated: deal 2 damage to a minion + summon 2 Imps (fixed 2 damage = 2 Imps).
-   * Cost 4 → 3: the fixed version (~0.7 mana of damage + ~1.6 mana of Imps) was
-   * ~1.5 mana under rate at 4; the variable-payoff upside that justified 4 is gone.
+   * Burst Purse — 3-mana Bargainer spell.
+   * Deal 2 damage to a minion. Summon two 1/1 Pennywisps.
+   * Cost 4 → 3: the fixed version (~0.7 mana of damage + ~1.6 mana of tokens)
+   * was ~1.5 mana under rate at 4; the variable-payoff upside that justified
+   * 4 is gone.
    */
   {
     id: 'warlock_imp_losion',
-    name: 'Imp-losion',
+    name: 'Burst Purse',
     cost: 3,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'rare',
-    text: 'Deal 2 damage to a minion. Summon two 1/1 Imps.',
+    text: 'Deal 2 damage to a minion. Summon two 1/1 Pennywisps.',
+    flavor: 'Squeeze anything in Hollowmoor hard enough and the fae come tumbling out.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -242,17 +253,18 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Hellfire — 4-mana Warlock spell (Fire).
+   * The Parish Burns — 4-mana Bargainer spell.
    * Deal 3 damage to ALL characters.
    */
   {
     id: 'warlock_hellfire',
-    name: 'Hellfire',
+    name: 'The Parish Burns',
     cost: 4,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'free',
     text: 'Deal 3 damage to ALL characters.',
+    flavor: 'It began as a midsummer dance. It ended the way most midsummer dances do.',
     spell: [{ kind: 'damage', amount: 3, target: 'allCharacters' }],
     art: undefined,
   },
@@ -262,19 +274,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Doomguard — 5/7 Demon with Charge.
-   * Original battlecry discards two cards; the engine has no discard mechanic,
-   * so the drawback is approximated as 4 damage to your own hero (the warlock
-   * self-damage idiom), which keeps the Charge body honestly paid for.
+   * The Bog Bailiff — 5/7 Fae with Charge.
+   * The drawback is 4 damage to your own hero (the Bargainer self-damage
+   * idiom), which keeps the Charge body honestly paid for.
    */
   {
     id: 'warlock_doomguard',
-    name: 'Doomguard',
+    name: 'The Bog Bailiff',
     cost: 5,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
     text: '**Charge**. **Omen:** Deal 4 damage to your hero.',
+    flavor: 'Arrives before the ink dries, takes his fee in flesh, and leaves the door in splinters.',
     attack: 5,
     health: 7,
     tribe: 'demon',
@@ -284,20 +296,19 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Felguard — 3/5 Demon with Taunt.
-   * Battlecry: Gain a Mana Crystal (empty).
-   * Approximated: original destroys a Mana Crystal; here it grants one empty crystal
-   * (opposing flavour using available effect — self-sacrifice for power).
-   * Re-themed as: sacrifice your life total for future mana (deal 3 self + gain empty crystal).
+   * Marrow Pawnbroker — 3/5 Fae with Ward.
+   * Omen: Deal 3 damage to your hero. Gain an empty Mana Stone.
+   * (Pawn your lifeblood today for spending power tomorrow.)
    */
   {
     id: 'warlock_felguard',
-    name: 'Felguard',
+    name: 'Marrow Pawnbroker',
     cost: 5,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
     text: '**Ward**. **Omen:** Deal 3 damage to your hero. Gain an empty Mana Stone.',
+    flavor: 'Lends against anything: heirlooms, teeth, your good name, your better leg.',
     attack: 3,
     health: 5,
     tribe: 'demon',
@@ -314,17 +325,18 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Siphon Soul — 6-mana Warlock spell.
+   * Foreclosure — 6-mana Bargainer spell.
    * Destroy a minion. Restore 3 Health to your hero.
    */
   {
     id: 'warlock_siphon_soul',
-    name: 'Siphon Soul',
+    name: 'Foreclosure',
     cost: 6,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'rare',
     text: 'Destroy a minion. Restore 3 Health to your hero.',
+    flavor: 'The house always collects. In Hollowmoor, the house is a bog.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -339,22 +351,22 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Abyssal Enforcer — 6/6 Demon.
-   * Battlecry: Deal 3 damage to ALL characters.
-   * Approximated: the original hits "all other characters", but the targeting
-   * vocabulary has no all-but-self selector, so 'allCharacters' includes the
-   * Enforcer itself (it arrives as a 6/3). Cost 6 → 7: at 6 it was Hellfire
-   * (a 4-mana effect) plus a 6/6 body for only 2 extra mana — ~1.5-2 mana over
-   * rate; 7 matches the real-card anchor.
+   * The Wedding Crasher — 6/6 Fae.
+   * Omen: Deal 3 damage to ALL characters.
+   * Approximated: the targeting vocabulary has no all-but-self selector, so
+   * 'allCharacters' includes the Crasher itself (it arrives as a 6/3).
+   * Cost 6 → 7: at 6 it was a 4-mana AoE plus a 6/6 body for only 2 extra
+   * mana — ~1.5-2 mana over rate; 7 matches the anchor.
    */
   {
     id: 'warlock_abyssal_enforcer',
-    name: 'Abyssal Enforcer',
+    name: 'The Wedding Crasher',
     cost: 7,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: '**Omen:** Deal 3 damage to ALL characters.',
+    flavor: 'Kissed the bride, brained the groom, drank the font dry.',
     attack: 6,
     health: 6,
     tribe: 'demon',
@@ -363,18 +375,19 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Blood-Queen Lana'thel — 5/5 Demon Legendary.
-   * Battlecry: Deal 3 damage to your hero. Draw 3 cards.
-   * (Self-damage draw — iconic Warlock resource engine)
+   * Hespera of the Red Quill — 5/5 Fae Legendary.
+   * Omen: Deal 3 damage to your hero. Draw 3 cards.
+   * (Self-damage draw — the Bargainer's resource engine, notarised in blood.)
    */
   {
     id: 'warlock_blood_queen_lanathel',
-    name: "Blood-Queen Lana'thel",
+    name: 'Hespera of the Red Quill',
     cost: 7,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'legendary',
     text: '**Omen:** Deal 3 damage to your hero. Draw 3 cards.',
+    flavor: "She'll witness your contract, consummate the deal, and notarise the regret — all in your own red.",
     attack: 5,
     health: 5,
     tribe: 'demon',
@@ -390,18 +403,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Twisting Nether — 8-mana Warlock spell.
-   * Destroy all minions. Summon a 5/5 Void Terror.
-   * (Original: destroy all minions. Here we add a compensating Demon to avoid total board wipe loss.)
+   * The Mire Takes All — 8-mana Bargainer spell.
+   * Destroy all minions. Summon a 5/5 Crooked Gentleman.
+   * (Full board wipe with a compensating Fae so the caster isn't left empty.)
    */
   {
     id: 'warlock_twisting_nether',
-    name: 'Twisting Nether',
+    name: 'The Mire Takes All',
     cost: 8,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'epic',
-    text: 'Destroy all minions. Summon a 5/5 Void Terror.',
+    text: 'Destroy all minions. Summon a 5/5 Crooked Gentleman.',
+    flavor: 'Whatever the bog swallows, it sends back one gentleman to say thank you.',
     spell: [
       { kind: 'destroy', target: 'allMinions' },
       { kind: 'summon', token: 'warlock_void_terror_token', count: 1 },
@@ -414,21 +428,21 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Lord Jaraxxus — Legendary Warlock finisher. 3/15 Demon.
-   * Battlecry: Deal 5 damage to ALL characters. Give your hero +5 Attack this turn.
-   * (Original replaces hero — approximated as a massive Demon with board-warping battlecry.)
+   * Old Scratch of the Crossroads — Legendary Bargainer finisher. 3/15 Fae.
+   * Omen: Deal 5 damage to ALL characters. Give your hero +5 Attack this turn.
    * Approximated: no all-but-self selector exists, so 'allCharacters' includes
-   * Jaraxxus himself (he arrives as a 3/10). Cost 9 → 10: a one-card board
+   * Old Scratch himself (he arrives as a 3/10). Cost 9 → 10: a one-card board
    * reset + 10 potential face damage + a sticky 3/10 was ~2 mana over rate at 9.
    */
   {
     id: 'warlock_lord_jaraxxus',
-    name: 'Lord Jaraxxus',
+    name: 'Old Scratch of the Crossroads',
     cost: 10,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'legendary',
     text: '**Omen:** Deal 5 damage to ALL characters. Give your hero +5 Attack this turn.',
+    flavor: 'Every bargain in the county bears his thumbprint. Usually somewhere unmentionable.',
     attack: 3,
     health: 15,
     tribe: 'demon',
@@ -444,20 +458,21 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Kobold Librarian — 2/1 Demon.
-   * Battlecry: Draw a card. Deal 2 damage to your hero.
-   * Classic cheap Warlock draw engine at the cost of life.
+   * Quill-Licker — 2/1 Fae.
+   * Omen: Draw a card. Deal 2 damage to your hero.
+   * Classic cheap draw engine at the cost of life.
    * 2/3 → 2/1: a 1-mana 2/3 PLUS a free cantrip was ~2 mana of value over
-   * band; 2/1 matches the real-card anchor.
+   * band; 2/1 matches the anchor.
    */
   {
     id: 'warlock_kobold_librarian',
-    name: 'Kobold Librarian',
+    name: 'Quill-Licker',
     cost: 1,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: '**Omen:** Draw a card. Deal 2 damage to your hero.',
+    flavor: 'Fetches any paper you please. Best not to ask what it does to the quills.',
     attack: 2,
     health: 1,
     tribe: 'demon',
@@ -473,18 +488,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Drain Soul — 2-mana Warlock spell (Shadow).
+   * Leech-Kiss — 2-mana Bargainer spell.
    * Deal 3 damage to a minion. Restore 3 Health to your hero.
-   * The quintessential Warlock drain effect.
+   * The quintessential drain effect.
    */
   {
     id: 'warlock_drain_soul',
-    name: 'Drain Soul',
+    name: 'Leech-Kiss',
     cost: 2,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
     text: 'Deal 3 damage to a minion. Restore 3 Health to your hero.',
+    flavor: 'The barber prescribes leeches. The fae prescribe themselves, and they do linger.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
@@ -495,18 +511,19 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Vulgar Homunculus — 2/4 Demon with Taunt.
-   * Battlecry: Deal 2 damage to your hero.
-   * Great stats with Taunt at the cost of self-damage.
+   * Lewd Hob — 2/4 Fae with Ward.
+   * Omen: Deal 2 damage to your hero.
+   * Great stats with Ward at the cost of self-damage.
    */
   {
     id: 'warlock_vulgar_homunculus',
-    name: 'Vulgar Homunculus',
+    name: 'Lewd Hob',
     cost: 2,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: '**Ward**. **Omen:** Deal 2 damage to your hero.',
+    flavor: 'Guards the threshold and flashes the milkmaids. The village keeps him for both reasons.',
     attack: 2,
     health: 4,
     tribe: 'demon',
@@ -520,21 +537,20 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Void Terror — 2/2 Demon.
-   * Battlecry: Gain +2/+2 (approximation of consuming adjacent minions).
-   * Original eats adjacent Demons for their combined stats; approximated as a fixed
-   * stat boost to keep the "hungry Demon" flavour without a dedicated ScriptId.
+   * Tithe-Glutton — 2/2 Fae.
+   * Omen: Gain +2/+2 (the "hungry fae" flavour as a fixed stat boost).
    * 3/3 → 2/2: the unconditional self-buff made it a vanilla 5/5 for 3 mana
    * (~1.5 mana over band); a 4/4-on-play sits just above the vanilla 3/4 line.
    */
   {
     id: 'warlock_void_terror',
-    name: 'Void Terror',
+    name: 'Tithe-Glutton',
     cost: 3,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
     text: '**Omen:** Gain +2/+2.',
+    flavor: 'Started on the communion bread. Worked its way up to the congregation.',
     attack: 2,
     health: 2,
     tribe: 'demon',
@@ -543,21 +559,21 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Darkshire Councilman — 1/5 Demon.
+   * Crooked Alderman — 1/5 Fae.
    * After you play a minion, gain +1 Attack.
    * Board-flood payoff: grows as you play more minions.
-   * Approximated: the trigger vocabulary has no Demon condition, so the
-   * onPlayMinion trigger fires for ANY minion you play (matching the real
-   * card's any-minion text rather than a Demon-only version).
+   * The trigger vocabulary has no tribe condition, so the onPlayMinion
+   * trigger fires for ANY minion you play (matching the any-minion text).
    */
   {
     id: 'warlock_darkshire_councilman',
-    name: 'Darkshire Councilman',
+    name: 'Crooked Alderman',
     cost: 3,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: 'After you play a minion, gain +1 Attack.',
+    flavor: 'Every soul that settles in the parish fattens his purse. Every soul that leaves fattens the bog.',
     attack: 1,
     health: 5,
     tribe: 'demon',
@@ -571,22 +587,23 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Sense Demons — 3-mana Warlock spell.
-   * Add two random Warlock minions to your hand.
-   * Tutor effect to fuel the Demon synergy package.
-   * Approximated: there is no Demon-tribe generation pool, so the minion pool
-   * is locked to the Warlock class via fromClass (every collectible Warlock
-   * minion in this set is a Demon). Cost 4 → 3: two random cards are worth
-   * ~2-3 mana of generation; 3 also matches the real-card anchor.
+   * Whistle at the Crossroads — 3-mana Bargainer spell.
+   * Add two random Bargainer minions to your hand.
+   * Tutor effect to fuel the Fae synergy package.
+   * Approximated: there is no tribe generation pool, so the minion pool is
+   * locked to the class via fromClass (every collectible Bargainer minion in
+   * this set is a Fae). Cost 4 → 3: two random cards are worth ~2-3 mana of
+   * generation.
    */
   {
     id: 'warlock_sense_demons',
-    name: 'Sense Demons',
+    name: 'Whistle at the Crossroads',
     cost: 3,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
-    text: 'Add two random Warlock minions to your hand.',
+    text: 'Add two random Bargainer minions to your hand.',
+    flavor: 'Whistle after dark and something always answers. Rarely what you hoped. Never alone.',
     spell: [
       { kind: 'addRandomCardToHand', pool: 'minion', count: 2, fromClass: 'warlock' },
     ],
@@ -598,18 +615,18 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Felhunter — 2/4 Demon with Rush.
-   * Battlecry: Gain +1/+1 for each card in your hand.
-   * Approximated as a fixed +2/+2 battlecry (on-curve for hand-size synergy).
+   * Bog-Lurcher — 2/4 Fae with Rush.
+   * Omen: Gain +2/+2 (a fixed battlecry, on-curve for hand-size synergy).
    */
   {
     id: 'warlock_felhunter',
-    name: 'Felhunter',
+    name: 'Bog-Lurcher',
     cost: 4,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'common',
     text: '**Rush**. **Omen:** Gain +2/+2.',
+    flavor: "A poacher's best friend: eats the evidence, the gamekeeper, and on lean weeks the poacher.",
     attack: 2,
     health: 4,
     tribe: 'demon',
@@ -623,18 +640,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Void Caller — 3/4 Demon.
-   * Deathrattle: Summon a 5/5 Void Terror.
-   * Generates a large Demon threat on death — Demon package payoff.
+   * Matchmaker of the Mire — 3/4 Fae.
+   * Haunt: Summon a 5/5 Crooked Gentleman.
+   * Generates a large Fae threat on death — Fae package payoff.
    */
   {
     id: 'warlock_void_caller',
-    name: 'Void Caller',
+    name: 'Matchmaker of the Mire',
     cost: 5,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
-    text: '**Haunt:** Summon a 5/5 Void Terror.',
+    text: '**Haunt:** Summon a 5/5 Crooked Gentleman.',
+    flavor: "Give her your hand and she'll introduce you to a gentleman of her acquaintance. The wedding doubles as the wake.",
     attack: 3,
     health: 4,
     tribe: 'demon',
@@ -643,18 +661,18 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Bane of Doom — 5-mana Warlock spell (Shadow).
-   * Deal 2 damage to a character. Summon a 5/5 Void Terror.
-   * Original summons a random Demon if it kills; approximated as damage + fixed Demon summon.
+   * A Gentleman Calls — 5-mana Bargainer spell.
+   * Deal 2 damage to a character. Summon a 5/5 Crooked Gentleman.
    */
   {
     id: 'warlock_bane_of_doom',
-    name: 'Bane of Doom',
+    name: 'A Gentleman Calls',
     cost: 5,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'epic',
-    text: 'Deal 2 damage to a character. Summon a 5/5 Void Terror.',
+    text: 'Deal 2 damage to a character. Summon a 5/5 Crooked Gentleman.',
+    flavor: 'He knocks twice, very politely, then asks after the contents of your ribcage.',
     targeted: true,
     targetFilter: 'allCharacters',
     spell: [
@@ -665,21 +683,20 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Corruption — 5-mana Warlock spell (Shadow).
+   * Repossession — 5-mana Bargainer spell.
    * Destroy an enemy minion.
-   * Approximated: the original destroys the minion at the start of YOUR NEXT
-   * turn; the engine has no delayed-destroy, so it resolves immediately and is
-   * priced at the unconditional targeted-destroy anchor (Assassinate, 5 mana).
-   * It was previously 1 mana — ~4 mana under band with the delay dropped.
+   * Priced at the unconditional targeted-destroy anchor (5 mana); the engine
+   * has no delayed-destroy, so it resolves immediately.
    */
   {
     id: 'warlock_corruption',
-    name: 'Corruption',
+    name: 'Repossession',
     cost: 5,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
     text: 'Destroy an enemy minion.',
+    flavor: 'Read clause nine again, slowly. You signed away rather more than the cow.',
     targeted: true,
     targetFilter: 'enemyMinions',
     spell: [{ kind: 'destroy', target: 'chosenTarget' }],
@@ -687,20 +704,21 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Hand of Gul'dan — 5-mana Warlock spell (Shadow).
+   * Sign in Red — 5-mana Bargainer spell.
    * Draw 3 cards. Deal 3 damage to your hero.
    * Iconic heavy draw at life cost.
-   * Cost 6 → 5: draw 3 is ~4.5 mana at the Arcane Intellect rate, and warlock
+   * Cost 6 → 5: draw 3 is ~4.5 mana at the standard rate, and the Bargainer
    * pays health ON TOP here — at 6 the card was ~2 mana over fair cost.
    */
   {
     id: 'warlock_hand_of_guldan',
-    name: "Hand of Gul'dan",
+    name: 'Sign in Red',
     cost: 5,
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'rare',
     text: 'Draw 3 cards. Deal 3 damage to your hero.',
+    flavor: 'Three pages, three drops. The pen is provided. The vein is yours.',
     spell: [
       { kind: 'draw', count: 3 },
       { kind: 'damage', amount: 3, target: 'friendlyHero' },
@@ -713,18 +731,19 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Enhanced Dreadlord — 5/7 Demon with Lifesteal.
-   * Battlecry: Summon a 1/1 Imp.
-   * High-impact Lifesteal body that also floods the board.
+   * The Velvet Creditor — 5/7 Fae with Leeching.
+   * Omen: Summon a 1/1 Pennywisp.
+   * High-impact Leeching body that also floods the board.
    */
   {
     id: 'warlock_enhanced_dreadlord',
-    name: 'Enhanced Dreadlord',
+    name: 'The Velvet Creditor',
     cost: 7,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'rare',
-    text: '**Leeching**. **Omen:** Summon a 1/1 Imp.',
+    text: '**Leeching**. **Omen:** Summon a 1/1 Pennywisp.',
+    flavor: 'Such generous terms, such soft hands. The interest is collected nightly, by mouth.',
     attack: 5,
     health: 7,
     tribe: 'demon',
@@ -738,20 +757,20 @@ export const warlockCards: CardDef[] = [
   // -------------------------------------------------------------------------
 
   /**
-   * Mal'Ganis — 9/7 Demon Legendary.
+   * Mister Teeth, the Magnanimous — 9/7 Fae Legendary.
    * Aura: Your other minions have +2/+2.
-   * Approximated: the aura vocabulary has no Demon CardFilter, so the buff
-   * applies to ALL your other minions (the engine excludes the aura's own
-   * source). Text widened from "Demons" to match the implemented behaviour.
+   * The aura vocabulary has no tribe CardFilter, so the buff applies to ALL
+   * your other minions (the engine excludes the aura's own source).
    */
   {
     id: 'warlock_malganis',
-    name: "Mal'Ganis",
+    name: 'Mister Teeth, the Magnanimous',
     cost: 8,
     type: 'minion',
     cardClass: 'warlock',
     rarity: 'legendary',
     text: 'Your other minions have +2/+2.',
+    flavor: 'So generous with his gifts. So very precise about the repayment schedule.',
     attack: 9,
     health: 7,
     tribe: 'demon',

@@ -24,9 +24,9 @@ export const enemies: EnemyDef[] = [
   // =========================================================================
   {
     id: 'enemy_aggro_hunter',
-    name: "Rexxar's Apprentice",
+    name: 'The Moorland Poacher',
     tier: 1,
-    heroName: 'Rexxar',
+    heroName: 'Black Wat Snarrow',
     heroClass: 'hunter',
     heroPowerId: 'hp_steady_shot',
     aiProfile: 'aggro',
@@ -109,9 +109,9 @@ export const enemies: EnemyDef[] = [
   // =========================================================================
   {
     id: 'enemy_tempo_mage',
-    name: "Khadgar's Disciple",
+    name: 'The Starfall Scholar',
     tier: 2,
-    heroName: 'Khadgar',
+    heroName: 'Magister Fenwick',
     heroClass: 'mage',
     heroPowerId: 'hp_fireblast',
     aiProfile: 'tempo',
@@ -137,9 +137,9 @@ export const enemies: EnemyDef[] = [
   },
   {
     id: 'enemy_zoo_warlock',
-    name: "Gul'dan's Servant",
+    name: 'The Fae-Debtor',
     tier: 2,
-    heroName: "Gul'dan",
+    heroName: 'Hapless Hob Farthing',
     heroClass: 'warlock',
     heroPowerId: 'hp_life_tap',
     aiProfile: 'aggro',
@@ -197,9 +197,9 @@ export const enemies: EnemyDef[] = [
   // =========================================================================
   {
     id: 'enemy_midrange_paladin',
-    name: "Uther's Champion",
+    name: 'The Lantern Captain',
     tier: 3,
-    heroName: 'Uther',
+    heroName: 'Captain Aldous Wick',
     heroClass: 'paladin',
     heroPowerId: 'hp_reinforce',
     aiProfile: 'midrange',
@@ -283,9 +283,9 @@ export const enemies: EnemyDef[] = [
   // =========================================================================
   {
     id: 'enemy_control_warrior',
-    name: "Garrosh's Warlord",
+    name: 'The Old Siegebreaker',
     tier: 4,
-    heroName: 'Garrosh',
+    heroName: 'Roderick the Wall',
     heroClass: 'warrior',
     heroPowerId: 'hp_armor_up',
     aiProfile: 'control',
@@ -460,9 +460,9 @@ export const enemies: EnemyDef[] = [
   // =========================================================================
   {
     id: 'boss_arcane_amalgam',
-    name: 'The Arcane Amalgam',
+    name: 'The Gloaming Amalgam',
     tier: 6,
-    heroName: 'The Arcane Amalgam',
+    heroName: 'The Gloaming Amalgam',
     heroClass: 'mage',
     heroPowerId: 'hp_fireblast',
     startingHealth: 35,

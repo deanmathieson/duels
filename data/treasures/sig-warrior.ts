@@ -1,23 +1,24 @@
 import type { CardDef, TreasureDef } from '../../game/types'
 
 // ---------------------------------------------------------------------------
-// Warrior signature treasure cards
+// Banneret (warrior) signature treasure cards
 // ---------------------------------------------------------------------------
 
 /**
- * Rattlegore's Rage — 7-mana legendary warrior spell.
+ * Crowmarch's Reckoning — 7-mana legendary warrior spell.
  * Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.
- * (Re-costed from 6: ~8 mana of raw effect was beyond even signature-treasure
+ * (Costed at 7: ~8 mana of raw effect was beyond even signature-treasure
  *  push; at 7 it sits ~1 above curve, in line with other signatures.)
  */
 const rattlegoreChainCard: CardDef = {
   id: 'sig_warrior_rattlegore_chain',
-  name: "Rattlegore's Rage",
+  name: "Crowmarch's Reckoning",
   cost: 7,
   type: 'spell',
   cardClass: 'warrior',
   rarity: 'legendary',
   text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
+  flavor: 'The bill comes due, and Ser Wystan pays in full — with the flat, the edge, and the pommel.',
   spell: [
     { kind: 'damage', amount: 3, target: 'allEnemyCharacters' },
     { kind: 'gainArmor', amount: 3 },
@@ -28,20 +29,20 @@ const rattlegoreChainCard: CardDef = {
 }
 
 /**
- * Death Wish — 6-mana legendary warrior spell.
- * Destroy a minion. Gain Armor equal to its Attack.
- * Approximated: destroy chosen minion and gain 6 Armor (fixed strong value,
- * per-minion stat read not supported by EffectSpec). Re-costed from 4:
- * unconditional destroy alone is worth 5 (Assassinate rate).
+ * Headsman's Bargain — 6-mana legendary warrior spell.
+ * Destroy a minion and gain 6 Armor.
+ * (Fixed armor value — per-minion stat reads aren't supported by EffectSpec.
+ *  Costed at 6: unconditional destroy alone is worth 5.)
  */
 const deathWishCard: CardDef = {
   id: 'sig_warrior_death_wish',
-  name: 'Death Wish',
+  name: "Headsman's Bargain",
   cost: 6,
   type: 'spell',
   cardClass: 'warrior',
   rarity: 'legendary',
   text: 'Destroy a minion and gain 6 Armor.',
+  flavor: 'Every duel in Hollowmoor is a bargain. This one has mercifully short terms.',
   targeted: true,
   targetFilter: 'allMinions',
   spell: [
@@ -53,20 +54,21 @@ const deathWishCard: CardDef = {
 }
 
 /**
- * Iron Colossus — 9/9 legendary warrior minion with Taunt.
- * Battlecry: Gain 5 Armor.
- * (Was 8 mana / 7 Armor: a 9/9 Taunt is ~a full 9-mana body on its own, so the
+ * The Forgotten Engine — 9/9 legendary warrior minion with Ward.
+ * Omen: Gain 5 Armor.
+ * (Was 8 mana / 7 Armor: a 9/9 Ward is ~a full 9-mana body on its own, so the
  *  old version was ~3 mana over even with signature push. Now 9 mana / 5 Armor,
  *  ~1 above curve.)
  */
 const colossusCard: CardDef = {
   id: 'sig_warrior_colossus',
-  name: 'Iron Colossus',
+  name: 'The Forgotten Engine',
   cost: 9,
   type: 'minion',
   cardClass: 'warrior',
   rarity: 'legendary',
   text: '**Ward**. **Omen:** Gain 5 Armor.',
+  flavor: 'Nobody remembers building it, nobody remembers winning with it, and nobody knows how to make it stop.',
   attack: 9,
   health: 9,
   tribe: 'none',
@@ -77,17 +79,18 @@ const colossusCard: CardDef = {
 }
 
 /**
- * Bladestorm — 5-mana legendary warrior spell.
+ * The Reaping Gale — 5-mana legendary warrior spell.
  * Deal 2 damage to all minions. Equip a 4/2 weapon.
  */
 const bladestormCard: CardDef = {
   id: 'sig_warrior_bladestorm',
-  name: 'Bladestorm',
+  name: 'The Reaping Gale',
   cost: 5,
   type: 'spell',
   cardClass: 'warrior',
   rarity: 'legendary',
   text: 'Deal 2 damage to all minions. Equip a 4/2 Weapon.',
+  flavor: 'When the wind comes off the gallows-hill, the wise lie flat and sinners lie flatter.',
   spell: [
     { kind: 'damage', amount: 2, target: 'allMinions' },
     { kind: 'equipWeapon', cardId: 'sig_warrior_bladestorm_axe' },
@@ -97,12 +100,12 @@ const bladestormCard: CardDef = {
 }
 
 /**
- * Bladestorm Axe weapon token — 4/2.
+ * The Reaping Gale weapon token — 4/2.
  * Defined here, also referenced in warriorCards via the sig card only.
  */
 const bladestormAxeToken: CardDef = {
   id: 'sig_warrior_bladestorm_axe',
-  name: 'Bladestorm Axe',
+  name: 'The Reaping Gale',
   cost: 5,
   type: 'weapon',
   cardClass: 'warrior',
@@ -119,10 +122,10 @@ const bladestormAxeToken: CardDef = {
 // ---------------------------------------------------------------------------
 
 /**
- * Bulwark of Azzinoth — Passive.
- * Your minions have +0/+1 and Taunt. (Was +1/+1 and Taunt — a free Demonic
- * Tide with Taunt stapled on; the attack half is gone. As a static effect the
- * granted Taunt still feeds Taunt-conditional buffs like Hold the Line.)
+ * The Boneyard Bulwark — Passive.
+ * Your minions have +0/+1 and Ward. (Was +1/+1 and Ward — the attack half is
+ * gone. As a static effect the granted Ward still feeds Ward-conditional
+ * buffs.)
  */
 
 // ---------------------------------------------------------------------------
@@ -130,12 +133,12 @@ const bladestormAxeToken: CardDef = {
 // ---------------------------------------------------------------------------
 
 /**
- * All signature treasures for Rattlegore (Warrior).
+ * All signature treasures for Ser Wystan Crowmarch (the Banneret).
  */
 export const warriorSignatureTreasures: TreasureDef[] = [
   {
     id: 'sig_warrior_rattlegore_chain',
-    name: "Rattlegore's Rage",
+    name: "Crowmarch's Reckoning",
     kind: 'signature',
     text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
     card: rattlegoreChainCard,
@@ -143,7 +146,7 @@ export const warriorSignatureTreasures: TreasureDef[] = [
   },
   {
     id: 'sig_warrior_death_wish',
-    name: 'Death Wish',
+    name: "Headsman's Bargain",
     kind: 'signature',
     text: 'Destroy a minion and gain 6 Armor.',
     card: deathWishCard,
@@ -151,7 +154,7 @@ export const warriorSignatureTreasures: TreasureDef[] = [
   },
   {
     id: 'sig_warrior_colossus',
-    name: 'Iron Colossus',
+    name: 'The Forgotten Engine',
     kind: 'signature',
     text: '9/9 Ward. Omen: Gain 5 Armor.',
     card: colossusCard,
@@ -159,7 +162,7 @@ export const warriorSignatureTreasures: TreasureDef[] = [
   },
   {
     id: 'sig_warrior_bladestorm',
-    name: 'Bladestorm',
+    name: 'The Reaping Gale',
     kind: 'signature',
     text: 'Deal 2 damage to all minions. Equip a 4/2 Weapon.',
     card: bladestormCard,
@@ -167,7 +170,7 @@ export const warriorSignatureTreasures: TreasureDef[] = [
   },
   {
     id: 'sig_warrior_bulwark',
-    name: 'Bulwark of Azzinoth',
+    name: 'The Boneyard Bulwark',
     kind: 'signature',
     text: 'Your minions have +0/+1 and Ward.',
     auras: [
@@ -179,8 +182,8 @@ export const warriorSignatureTreasures: TreasureDef[] = [
 ]
 
 /**
- * Extra token cards generated by warrior signature cards (Bladestorm Axe).
- * Export so the registry can register them.
+ * Extra token cards generated by warrior signature cards (The Reaping Gale's
+ * weapon). Export so the registry can register them.
  */
 export const warriorSignatureTreasureTokens: CardDef[] = [
   bladestormAxeToken,

@@ -16,7 +16,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_burn',
-    name: 'Burn Package',
+    name: 'Falling Stars',
     cardClass: 'mage',
     cardIds: ['mage_fireball', 'mage_frostbolt', 'mage_ice_lance'],
   },
@@ -26,7 +26,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_spell_damage',
-    name: 'Spell Damage',
+    name: 'Star-Touched',
     cardClass: 'mage',
     cardIds: ['mage_dalaran_mage', 'mage_archmage', 'mage_nexus_champion'],
   },
@@ -36,7 +36,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_tempo',
-    name: 'Tempo Curve',
+    name: 'Quick Bargains',
     cardClass: 'mage',
     cardIds: ['mage_mana_wyrm', 'mage_flamewaker', 'mage_ethereal_arcanist'],
   },
@@ -46,7 +46,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_board_clear',
-    name: 'Board Clear',
+    name: 'Killing Frosts',
     cardClass: 'mage',
     cardIds: ['mage_arcane_explosion', 'mage_frost_nova', 'mage_flamestrike'],
   },
@@ -56,7 +56,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_removal',
-    name: 'Hard Removal',
+    name: 'Unmakings',
     cardClass: 'mage',
     cardIds: ['mage_polymorph', 'mage_vaporize', 'mage_blizzard'],
   },
@@ -66,7 +66,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_spell_synergy',
-    name: 'Spell Synergy',
+    name: 'Candle-Magic',
     cardClass: 'mage',
     cardIds: ['mage_sorcerers_apprentice', 'mage_flamewaker', 'mage_antonidas'],
   },
@@ -76,7 +76,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_value',
-    name: 'Card Draw & Value',
+    name: 'Forbidden Almanacs',
     cardClass: 'mage',
     cardIds: ['mage_arcane_intellect', 'mage_counterspell', 'mage_cabalists_tome'],
   },
@@ -86,7 +86,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_big_spells',
-    name: 'Big Spells',
+    name: 'Great Omens',
     cardClass: 'mage',
     cardIds: ['mage_cone_of_cold', 'mage_glacial_mysteries', 'mage_pyroblast'],
   },
@@ -96,7 +96,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_elementals',
-    name: 'Elementals',
+    name: 'Restless Spirits',
     cardClass: 'mage',
     cardIds: ['mage_water_elemental', 'mage_nexus_champion', 'fire_elemental'],
   },
@@ -106,7 +106,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_finishers',
-    name: 'Finishers',
+    name: 'The Reckoning',
     cardClass: 'mage',
     cardIds: ['mage_antonidas', 'mage_medivh', 'mage_pyroblast'],
   },
@@ -116,7 +116,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_defensive',
-    name: 'Defensive Shell',
+    name: 'Wards & Wax',
     cardClass: 'mage',
     cardIds: ['mage_mirror_image', 'mage_ice_block_scroll', 'sen_jin_shieldmasta'],
   },
@@ -126,7 +126,7 @@ export const mageBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_mage_early_game',
-    name: 'Early Game',
+    name: 'First Candles',
     cardClass: 'mage',
     cardIds: ['mage_arcane_missiles', 'elven_archer', 'mage_leyline_manipulator'],
   },

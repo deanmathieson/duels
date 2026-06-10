@@ -1,12 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Lothraxion the Redeemed — Paladin hero definition.
- * Theme: Go-wide Recruit tokens, buff synergies, healing, Divine Shield.
+ * Tallow Meg, the Lamplighter — paladin-slot hero definition.
+ * Head of the Hollowmoor parish watch: lantern processions, wax and oaths,
+ * candle-lit vigils against the dark — equal parts piety and protection racket.
+ * Theme: go-wide Wickling tokens, buff synergies, healing, Blessing.
  */
 export const paladinHero: HeroDef = {
   id: 'hero_paladin',
-  name: 'Lothraxion the Redeemed',
+  name: 'Tallow Meg, the Lamplighter',
   cardClass: 'paladin',
   heroPowers: [
     'hp_paladin_reinforce',
@@ -25,37 +27,37 @@ export const paladinHero: HeroDef = {
 }
 
 /**
- * Hero power definitions for Lothraxion the Redeemed.
+ * Hero power definitions for Tallow Meg, the Lamplighter.
  *
- * - Reinforce: classic 2-mana summon a 1/1 Recruit.
- * - The Silver Hand: 3-mana — summon two 1/1 Recruits. (Was a Choose One whose
- *   first option duplicated Reinforce exactly; reworked into the go-wide
- *   variant so the two powers read as a real choice: steady single token vs
- *   paying more for double the flood.)
- * - Blessing of Wisdom: 3-mana — give a friendly minion +1/+1 and Divine Shield.
- *   (Trimmed from +2/+2: a repeatable Blessing of Kings-half plus a Hand of
- *   Protection every turn was well above the ~1 mana of effect per 2 mana line.)
+ * - Light the Wick: classic 2-mana summon a 1/1 Wickling.
+ * - The Midnight Procession: 3-mana — summon two 1/1 Wicklings. (Was a
+ *   Choose One whose first option duplicated Light the Wick exactly;
+ *   reworked into the go-wide variant so the two powers read as a real
+ *   choice: steady single token vs paying more for double the flood.)
+ * - Tallow Anointing: 3-mana — give a friendly minion +1/+1 and Blessing.
+ *   (Trimmed from +2/+2: a repeatable half-Accolade plus a Wax Seal every
+ *   turn was well above the ~1 mana of effect per 2 mana line.)
  */
 export const paladinHeroPowers: HeroPowerDef[] = [
   {
     id: 'hp_paladin_reinforce',
-    name: 'Reinforce',
+    name: 'Light the Wick',
     cost: 2,
-    text: 'Summon a 1/1 Recruit.',
+    text: 'Summon a 1/1 Wickling.',
     effects: [{ kind: 'summon', token: 'paladin_recruit', count: 1 }],
     art: undefined,
   },
   {
     id: 'hp_paladin_the_silver_hand',
-    name: 'The Silver Hand',
+    name: 'The Midnight Procession',
     cost: 3,
-    text: 'Summon two 1/1 Recruits.',
+    text: 'Summon two 1/1 Wicklings.',
     effects: [{ kind: 'summon', token: 'paladin_recruit', count: 2 }],
     art: undefined,
   },
   {
     id: 'hp_paladin_blessing_of_wisdom',
-    name: 'Blessing of Wisdom',
+    name: 'Tallow Anointing',
     cost: 3,
     text: 'Give a friendly minion +1/+1 and Blessing.',
     targeted: true,

@@ -1,12 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Mindrender Illucia — Priest hero definition.
- * Theme: heal and control, Shadow direct damage, sticky high-health minions.
+ * Vicar Hezekiah Marrow — Vicar hero definition.
+ * Shepherd of Hollowmoor's crookedest parish: mends the flock with one hand,
+ * unravels minds with the other, and bills the diocese for both.
+ * Theme: heal and control, shadow direct damage, sticky high-health minions.
  */
 export const priestHero: HeroDef = {
   id: 'hero_priest',
-  name: 'Mindrender Illucia',
+  name: 'Vicar Hezekiah Marrow',
   cardClass: 'priest',
   heroPowers: [
     'hp_priest_mending',
@@ -25,16 +27,16 @@ export const priestHero: HeroDef = {
 }
 
 /**
- * Mindrender Illucia's three hero powers.
+ * Vicar Hezekiah Marrow's three hero powers.
  */
 export const priestHeroPowers: HeroPowerDef[] = [
   /**
-   * Mending — 2 mana.
+   * Laying On of Hands — 2 mana.
    * Restore 4 Health to your hero.
    */
   {
     id: 'hp_priest_mending',
-    name: 'Mending',
+    name: 'Laying On of Hands',
     cost: 2,
     text: 'Restore 4 Health to your hero.',
     effects: [{ kind: 'heal', amount: 4, target: 'friendlyHero' }],
@@ -42,12 +44,12 @@ export const priestHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Shadowform — 2 mana.
+   * Fire & Brimstone — 2 mana.
    * Choose One - Deal 2 damage to a minion; or deal 1 damage to all enemies.
    */
   {
     id: 'hp_priest_shadowform',
-    name: 'Shadowform',
+    name: 'Fire & Brimstone',
     cost: 2,
     text: 'Choose One - Deal 2 damage to a minion; or deal 1 damage to all enemies.',
     targeted: true,
@@ -66,15 +68,15 @@ export const priestHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Holy Words — 3 mana.
+   * Hear Confession — 3 mana.
    * Choose One - Restore 4 Health to your hero; or draw a card.
    * (Draw is capped at 1; heal trimmed 6 -> 4: the flexibility IS the power —
-   * with the heal also beating Mending's rate, this mode-switching power
-   * dominated the other two picks outright.)
+   * with the heal also beating Laying On of Hands' rate, this mode-switching
+   * power dominated the other two picks outright.)
    */
   {
     id: 'hp_priest_holy_words',
-    name: 'Holy Words',
+    name: 'Hear Confession',
     cost: 3,
     text: 'Choose One - Restore 4 Health to your hero; or draw a card.',
     chooseOne: [

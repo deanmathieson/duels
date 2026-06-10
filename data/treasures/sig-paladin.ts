@@ -7,20 +7,21 @@ import type { CardDef, TreasureDef } from '../../game/types'
 // ---------------------------------------------------------------------------
 
 /**
- * Lightforged Blessing card — 2-mana Paladin spell.
- * Give a friendly minion Divine Shield and Lifesteal (the real card's
- * single-target identity). Was "all friendly minions +1/+1 and Divine Shield",
- * which overlapped Hand of Anyfin's mass-buff finisher almost exactly — now
- * it's the cheap one-minion protect-and-sustain tool instead.
+ * The Waxen Sacrament card — 2-mana Lamplighter spell.
+ * Give a friendly minion Blessing and Leeching (a single-target
+ * protect-and-sustain identity). Was "all friendly minions +1/+1 and
+ * Blessing", which overlapped The Long Vigil's mass-buff finisher almost
+ * exactly — now it's the cheap one-minion tool instead.
  */
-const lightforgedBlessingCard: CardDef = {
+const waxenSacramentCard: CardDef = {
   id: 'sig_paladin_lightforged_blessing',
-  name: 'Lightforged Blessing',
+  name: 'The Waxen Sacrament',
   cost: 2,
   type: 'spell',
   cardClass: 'paladin',
   rarity: 'legendary',
   text: 'Give a friendly minion **Blessing** and **Leeching**.',
+  flavor: 'Anointed in best bog-tallow by the Bog Bishop himself, hiccoughing the liturgy.',
   targeted: true,
   targetFilter: 'friendlyMinions',
   spell: [
@@ -32,17 +33,18 @@ const lightforgedBlessingCard: CardDef = {
 }
 
 /**
- * Rallying Banner card — 2-mana Paladin spell.
- * Summon three 1/1 Recruits. Give your hero +3 Attack this turn.
+ * The Vigil Banner card — 2-mana Lamplighter spell.
+ * Summon three 1/1 Wicklings. Give your hero +3 Attack this turn.
  */
-const rallyingBannerCard: CardDef = {
+const vigilBannerCard: CardDef = {
   id: 'sig_paladin_rallying_banner',
-  name: 'Rallying Banner',
+  name: 'The Vigil Banner',
   cost: 2,
   type: 'spell',
   cardClass: 'paladin',
   rarity: 'legendary',
-  text: 'Summon three 1/1 Recruits. Give your hero +3 Attack this turn.',
+  text: 'Summon three 1/1 Wicklings. Give your hero +3 Attack this turn.',
+  flavor: 'The watch would follow it into hell itself. In practice it mostly leads them into the Goose & Gibbet.',
   spell: [
     { kind: 'summon', token: 'paladin_recruit', count: 3 },
     { kind: 'heroAttackThisTurn', amount: 3 },
@@ -52,22 +54,22 @@ const rallyingBannerCard: CardDef = {
 }
 
 /**
- * Sacred Trial card — 5-mana Paladin spell.
- * Destroy a minion. Gain Armor equal to its Attack.
- * Approximated as: destroy a minion + gain 3 Armor (fixed amount, thematic).
- * (The real Libram of Justice / Trial by Fire mechanic is not in the engine;
- *  we approximate the feel with a destroy + armor gain. Costed at 5 with a
- *  trimmed armor rider — unconditional destroy alone anchors at 5 mana, so the
- *  old 4-mana destroy + 5 Armor was ~3 mana of value over the curve.)
+ * The Hanging Assizes card — 5-mana Lamplighter spell.
+ * Destroy a minion. Gain 3 Armor.
+ * (Approximated from a destroy-plus-scaling-armor design the engine can't
+ *  express; costed at 5 with a trimmed armor rider — unconditional destroy
+ *  alone anchors at 5 mana, so a 4-mana destroy + 5 Armor was ~3 mana of
+ *  value over the curve.)
  */
-const sacredTrialCard: CardDef = {
+const hangingAssizesCard: CardDef = {
   id: 'sig_paladin_sacred_trial',
-  name: 'Sacred Trial',
+  name: 'The Hanging Assizes',
   cost: 5,
   type: 'spell',
   cardClass: 'paladin',
   rarity: 'legendary',
   text: 'Destroy an enemy minion. Gain 3 Armor.',
+  flavor: 'Justice in Hollowmoor is swift, public, and tremendous fun for the whole family. Pies sold at the scaffold.',
   targeted: true,
   targetFilter: 'enemyMinions',
   spell: [
@@ -79,18 +81,19 @@ const sacredTrialCard: CardDef = {
 }
 
 /**
- * Hand of Anyfin card — 5-mana Paladin spell.
- * Give all friendly minions +2/+2, Taunt, and Divine Shield.
- * A powerful finisher buff reminiscent of the wide board payoffs in Paladin.
+ * The Long Vigil card — 5-mana Lamplighter spell.
+ * Give all friendly minions +2/+2, Ward, and Blessing.
+ * A powerful finisher buff for the go-wide watch.
  */
-const handOfAnyfin: CardDef = {
+const longVigilCard: CardDef = {
   id: 'sig_paladin_hand_of_anyfin',
-  name: 'Hand of Anyfin',
+  name: 'The Long Vigil',
   cost: 5,
   type: 'spell',
   cardClass: 'paladin',
   rarity: 'legendary',
   text: 'Give all friendly minions +2/+2, **Ward**, and **Blessing**.',
+  flavor: 'All night the watch stands vigil together, shoulder to shoulder for warmth. Nine months on, the christenings.',
   spell: [
     { kind: 'buff', atk: 2, health: 2, target: 'friendlyMinions' },
     { kind: 'giveKeyword', keyword: 'taunt', target: 'friendlyMinions' },
@@ -101,19 +104,21 @@ const handOfAnyfin: CardDef = {
 }
 
 /**
- * Lothraxion the Redeemed card — 7-mana legendary Paladin minion.
- * 5/5. Battlecry: Summon four 1/1 Recruits, then give your minions Divine Shield.
- * (The second battlecry effect shields ALL friendly minions — the Recruits, any
- *  existing board, and Lothraxion itself — there is no Recruit-only selector.)
+ * Our Lady of the Lanterns card — 7-mana legendary Lamplighter minion.
+ * 5/5. Omen: Summon four 1/1 Wicklings, then give your minions Blessing.
+ * (The second battlecry effect shields ALL friendly minions — the Wicklings,
+ *  any existing board, and the Lady herself — there is no Wickling-only
+ *  selector.)
  */
-const lothraxionCard: CardDef = {
+const ladyOfTheLanternsCard: CardDef = {
   id: 'sig_paladin_lothraxion',
-  name: 'Lothraxion the Redeemed',
+  name: 'Our Lady of the Lanterns',
   cost: 7,
   type: 'minion',
   cardClass: 'paladin',
   rarity: 'legendary',
-  text: '**Omen:** Summon four 1/1 Recruits, then give your minions **Blessing**.',
+  text: '**Omen:** Summon four 1/1 Wicklings, then give your minions **Blessing**.',
+  flavor: 'She appears at the bog\'s edge to the faithful, the lost, and the very, very drunk. Mostly the last.',
   attack: 5,
   health: 5,
   tribe: 'none',
@@ -126,47 +131,47 @@ const lothraxionCard: CardDef = {
 }
 
 /**
- * All signature treasures for Lothraxion the Redeemed (Paladin).
+ * All signature treasures for Tallow Meg, the Lamplighter (paladin).
  */
 export const paladinSignatureTreasures: TreasureDef[] = [
   {
     id: 'sig_paladin_lightforged_blessing',
-    name: 'Lightforged Blessing',
+    name: 'The Waxen Sacrament',
     kind: 'signature',
     text: 'Give a friendly minion **Blessing** and **Leeching**.',
-    card: lightforgedBlessingCard,
+    card: waxenSacramentCard,
     tags: ['paladin-buff', 'divine-shield'],
   },
   {
     id: 'sig_paladin_rallying_banner',
-    name: 'Rallying Banner',
+    name: 'The Vigil Banner',
     kind: 'signature',
-    text: 'Summon three 1/1 Recruits. Give your hero +3 Attack this turn.',
-    card: rallyingBannerCard,
+    text: 'Summon three 1/1 Wicklings. Give your hero +3 Attack this turn.',
+    card: vigilBannerCard,
     tags: ['paladin-wide', 'recruit'],
   },
   {
     id: 'sig_paladin_sacred_trial',
-    name: 'Sacred Trial',
+    name: 'The Hanging Assizes',
     kind: 'signature',
     text: 'Destroy an enemy minion. Gain 3 Armor.',
-    card: sacredTrialCard,
+    card: hangingAssizesCard,
     tags: ['paladin-removal', 'armor'],
   },
   {
     id: 'sig_paladin_hand_of_anyfin',
-    name: 'Hand of Anyfin',
+    name: 'The Long Vigil',
     kind: 'signature',
     text: 'Give all friendly minions +2/+2, **Ward**, and **Blessing**.',
-    card: handOfAnyfin,
+    card: longVigilCard,
     tags: ['paladin-buff', 'finisher'],
   },
   {
     id: 'sig_paladin_lothraxion',
-    name: 'Lothraxion the Redeemed',
+    name: 'Our Lady of the Lanterns',
     kind: 'signature',
-    text: '5/5. **Omen:** Summon four 1/1 Recruits, then give your minions **Blessing**.',
-    card: lothraxionCard,
+    text: '5/5. **Omen:** Summon four 1/1 Wicklings, then give your minions **Blessing**.',
+    card: ladyOfTheLanternsCard,
     tags: ['paladin-wide', 'divine-shield', 'finisher'],
   },
 ]

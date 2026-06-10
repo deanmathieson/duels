@@ -1,12 +1,15 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Infiltrator Lilian — Rogue hero definition.
- * Theme: tempo, weapons, cheap damage, draw, and SI:7 Battlecries.
+ * Nell Threefingers — Cutpurse hero definition.
+ * The most-acquitted woman in Hollowmoor: smuggler, fence, and the reason
+ * the Drowned Rat keeps a back door. (She lost the other two fingers to a
+ * job she still swears went fine.)
+ * Theme: tempo, weapons, cheap damage, draw, and back-alley Omens.
  */
 export const rogueHero: HeroDef = {
   id: 'hero_rogue',
-  name: 'Infiltrator Lilian',
+  name: 'Nell Threefingers',
   cardClass: 'rogue',
   heroPowers: [
     'hp_rogue_dagger_mastery',
@@ -26,17 +29,17 @@ export const rogueHero: HeroDef = {
 }
 
 /**
- * Rogue hero power definitions — 3 thematic options for Infiltrator Lilian.
+ * Cutpurse hero power definitions — 3 thematic options for Nell Threefingers.
  */
 export const rogueHeroPowers: HeroPowerDef[] = [
   /**
-   * Dagger Mastery — equip a 1/2 Dagger.
-   * The classic Rogue hero power. (Trimmed the "+2 Attack this turn" rider:
-   * a hero power should be ~1 mana of effect, and the dagger alone is that.)
+   * Knife-Work — equip a 1/2 Dagger.
+   * The classic Cutpurse hero power. (A hero power should be ~1 mana of
+   * effect, and the dagger alone is that.)
    */
   {
     id: 'hp_rogue_dagger_mastery',
-    name: 'Dagger Mastery',
+    name: 'Knife-Work',
     cost: 2,
     text: 'Equip a 1/2 Dagger.',
     effects: [
@@ -46,13 +49,13 @@ export const rogueHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Vanishing Act — deal 2 damage to a minion.
-   * Repeatable pinpoint removal. (Trimmed the "draw a card" rider: damage plus
-   * a draw every turn was ~2 mana of effect on a 2-mana hero power.)
+   * A Quiet Word — deal 2 damage to a minion.
+   * Repeatable pinpoint removal. (No draw rider: damage plus a draw every
+   * turn was ~2 mana of effect on a 2-mana hero power.)
    */
   {
     id: 'hp_rogue_shadow_step',
-    name: 'Vanishing Act',
+    name: 'A Quiet Word',
     cost: 2,
     text: 'Deal 2 damage to a minion.',
     targeted: true,
@@ -64,14 +67,14 @@ export const rogueHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Preparation — reduce the cost of expensive cards in your hand.
-   * Approximated as a sticky (2) discount on cards costing (5) or more.
-   * (Trimmed the "1 damage to all enemies" rider: a repeatable AoE ping plus
-   * the discount was ~3 mana of effect on a 3-mana hero power.)
+   * Five-Finger Discount — reduce the cost of expensive cards in your hand.
+   * A sticky (2) discount on cards costing (5) or more. (No AoE rider: a
+   * repeatable ping plus the discount was ~3 mana of effect on a 3-mana
+   * hero power.)
    */
   {
     id: 'hp_rogue_preparation',
-    name: 'Preparation',
+    name: 'Five-Finger Discount',
     cost: 3,
     text: 'Reduce the Cost of cards in your hand that cost (5) or more by (2).',
     effects: [

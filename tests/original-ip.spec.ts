@@ -15,14 +15,11 @@ const passiveOfferedIds = new Set(passiveTreasureIds)
 
 /**
  * Original-IP regression guard. All player-facing copy must use the Hollowmoor
- * dictionary (data/terms.ts) — no Hearthstone keyword/tribe vocabulary.
- *
- * Phase 1 scope: text/flavor fields. The creative-rename phase extends this
- * scan to `name` fields and Blizzard proper nouns once existing content has
- * been renamed.
+ * dictionary (data/terms.ts) — no Hearthstone keyword/tribe vocabulary, and no
+ * Blizzard proper nouns anywhere in names, text, or flavor.
  */
 
-/** Hearthstone-coined terms banned from card/treasure/hero-power text. */
+/** Hearthstone-coined mechanic terms banned from card/treasure/hero-power text. */
 const BANNED_TEXT_TERMS = [
   /\bBattlecry\b/,
   /\bBattlecries\b/,
@@ -40,6 +37,65 @@ const BANNED_TEXT_TERMS = [
   /\bPirates?\b/,
   /\bTotems?\b/,
   /\bHearthstone\b/i,
+]
+
+/** Blizzard proper nouns banned from ALL display fields (names included). */
+const BANNED_PROPER_NOUNS = [
+  /Hearthstone/i,
+  /Warcraft/i,
+  /Azeroth/i,
+  /Blizzard/i,
+  /Rexxar/i,
+  /Khadgar/i,
+  /\bUther\b/i,
+  /Garrosh/i,
+  /Gul'?dan/i,
+  /Ragnaros/i,
+  /Ysera/i,
+  /Cenarius/i,
+  /Medivh/i,
+  /Antonidas/i,
+  /Valeera/i,
+  /VanCleef/i,
+  /Tirion/i,
+  /Bolvar/i,
+  /\bVelen\b/i,
+  /Jaraxxus/i,
+  /Mal'?[Gg]anis/i,
+  /Al'?Akir/i,
+  /Hagatha/i,
+  /\bThrall\b/i,
+  /Grommash/i,
+  /\bVarian\b/i,
+  /\bAnduin\b/i,
+  /Shirvallah/i,
+  /Lothraxion/i,
+  /Togwaggle/i,
+  /\bTavish\b/i,
+  /\bOmu\b/,
+  /\bMisha\b/i,
+  /\bLeokk\b/i,
+  /Stormwind/i,
+  /Sen'?jin/i,
+  /Dalaran/i,
+  /\bNaaru\b/i,
+  /Ashbringer/i,
+  /Doomhammer/i,
+  /Gilnea/i,
+  /Alterac/i,
+  /Silver Hand/i,
+  /Kor'?kron/i,
+  /Lana'?thel/i,
+  /Atiesh/i,
+  /Kalimos/i,
+  /Saraad/i,
+  /\bZerek\b/i,
+  /Catrina/i,
+  /SI:7/i,
+  /Defias/i,
+  /Kingsbane/i,
+  /Lightlord/i,
+  /Deathstalker/i,
 ]
 
 interface TextSource {
@@ -68,11 +124,36 @@ function collectTextSources(): TextSource[] {
   return out
 }
 
+/** Every display NAME in the game (cards, treasures, heroes, powers, enemies, buckets). */
+function collectNameSources(): TextSource[] {
+  const out: TextSource[] = []
+  for (const c of allCards) out.push({ where: `card ${c.id} name`, text: c.name })
+  for (const t of allTreasures) out.push({ where: `treasure ${t.id} name`, text: t.name })
+  for (const h of heroes) out.push({ where: `hero ${h.id} name`, text: h.name })
+  for (const hp of heroPowers) out.push({ where: `heroPower ${hp.id} name`, text: hp.name })
+  for (const e of enemies) {
+    out.push({ where: `enemy ${e.id} name`, text: e.name })
+    out.push({ where: `enemy ${e.id} heroName`, text: e.heroName })
+  }
+  for (const b of buckets) out.push({ where: `bucket ${b.id} name`, text: b.name })
+  return out
+}
+
 describe('original-ip: banned terms', () => {
   it('no Hearthstone vocabulary in any content text', () => {
     const offenders: string[] = []
     for (const src of collectTextSources()) {
       for (const re of BANNED_TEXT_TERMS) {
+        if (re.test(src.text)) offenders.push(`${src.where}: "${src.text}" matches ${re}`)
+      }
+    }
+    expect(offenders, offenders.join('\n')).toEqual([])
+  })
+
+  it('no Blizzard proper nouns in any display field (names, text, flavor)', () => {
+    const offenders: string[] = []
+    for (const src of [...collectNameSources(), ...collectTextSources()]) {
+      for (const re of BANNED_PROPER_NOUNS) {
         if (re.test(src.text)) offenders.push(`${src.where}: "${src.text}" matches ${re}`)
       }
     }
