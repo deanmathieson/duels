@@ -119,10 +119,10 @@ export const priestCards: CardDef[] = [
     art: undefined,
   },
   /**
-   * Approximates Shadow Word: Pain ("destroy a minion with 3 or less Attack"):
-   * the engine cannot express an Attack-conditional destroy, and an
-   * unconditional destroy at 2 mana is far above curve, so it is modelled as
-   * 4 damage to a minion (kills the small minions the original targets).
+   * Shadow Word: Pain — destroy a minion with 3 or less Attack. The cap is
+   * checked against the minion's CURRENT attack (targetMaxAttack), so a 3/2
+   * buffed above 3 Attack by any spell, treasure or aura is no longer a legal
+   * target — and a big minion shrunk below the cap becomes one.
    */
   {
     id: 'priest_shadow_word_pain',
@@ -131,10 +131,11 @@ export const priestCards: CardDef[] = [
     type: 'spell',
     cardClass: 'priest',
     rarity: 'free',
-    text: 'Deal 4 damage to a minion.',
+    text: 'Destroy a minion with 3 or less Attack.',
     targeted: true,
     targetFilter: 'allMinions',
-    spell: [{ kind: 'damage', amount: 4, target: 'chosenTarget' }],
+    targetMaxAttack: 3,
+    spell: [{ kind: 'destroy', target: 'chosenTarget' }],
     art: undefined,
   },
 
@@ -370,8 +371,10 @@ export const priestCards: CardDef[] = [
 
   // ── 1-COST (new) ──────────────────────────────────────────────────────────
 
-  /** Give a minion +3 Health and draw a card. Cheap buff+draw (costed above
-   *  Power Word: Shield, which gives +2 Health for 1 mana). */
+  /** Power Word: Fortitude — give a minion +0/+4 and Taunt. (Was "+3 Health,
+   *  draw a card" — a near-copy of Power Word: Shield one slot up the curve.
+   *  Dropping the cantrip for a bigger buff plus Taunt gives it a distinct
+   *  defensive wall-builder role, and feeds Taunt-synergy passives.) */
   {
     id: 'priest_power_word_fortitude',
     name: 'Power Word: Fortitude',
@@ -379,12 +382,12 @@ export const priestCards: CardDef[] = [
     type: 'spell',
     cardClass: 'priest',
     rarity: 'common',
-    text: 'Give a minion +3 Health. Draw a card.',
+    text: 'Give a minion +4 Health and **Taunt**.',
     targeted: true,
     targetFilter: 'allMinions',
     spell: [
-      { kind: 'buff', atk: 0, health: 3, target: 'chosenTarget' },
-      { kind: 'draw', count: 1 },
+      { kind: 'buff', atk: 0, health: 4, target: 'chosenTarget' },
+      { kind: 'giveKeyword', keyword: 'taunt', target: 'chosenTarget' },
     ],
     art: undefined,
   },

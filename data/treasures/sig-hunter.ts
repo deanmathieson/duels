@@ -79,23 +79,24 @@ const tavishStormpike: CardDef = {
 }
 
 /**
- * Explosive Shot — 6-mana Hunter spell.
- * Deal 5 damage to a minion and 2 damage to adjacent ones.
- * Approximated as 5 damage to target + 2 damage to all other enemies (splash).
+ * Explosive Shot — 4-mana Hunter spell.
+ * Deal 5 damage to a minion and 2 damage to adjacent ones — the real card's
+ * adjacency splash (adjacentToTarget), distinct from Kill Command Barrage's
+ * face-reaching all-enemy spray and costed BELOW it (its targeting is narrower).
  */
 const explosiveShotCard: CardDef = {
   id: 'sig_hunter_explosive_shot',
   name: 'Explosive Shot',
-  cost: 6,
+  cost: 4,
   type: 'spell',
   cardClass: 'hunter',
   rarity: 'legendary',
-  text: 'Deal 5 damage to a minion and 2 damage to all other enemies.',
+  text: 'Deal 5 damage to a minion and 2 damage to adjacent ones.',
   targeted: true,
   targetFilter: 'allMinions',
   spell: [
     { kind: 'damage', amount: 5, target: 'chosenTarget' },
-    { kind: 'damage', amount: 2, target: 'otherEnemies' },
+    { kind: 'damage', amount: 2, target: 'adjacentToTarget' },
   ],
   token: true,
 }
@@ -135,7 +136,7 @@ export const hunterSignatureTreasures: TreasureDef[] = [
     id: 'sig_hunter_explosive_shot',
     name: 'Explosive Shot',
     kind: 'signature',
-    text: 'Deal 5 damage to a minion and 2 damage to all other enemies.',
+    text: 'Deal 5 damage to a minion and 2 damage to adjacent ones.',
     card: explosiveShotCard,
     tags: ['hunter-good', 'damage'],
   },

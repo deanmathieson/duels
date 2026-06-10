@@ -67,19 +67,20 @@ export const priestHeroPowers: HeroPowerDef[] = [
 
   /**
    * Holy Words — 3 mana.
-   * Choose One - Restore 6 Health to your hero; or draw a card.
-   * (Draw is capped at 1: a repeatable 3-mana "draw 2" outpaces the
-   * Arcane Intellect rate every single turn.)
+   * Choose One - Restore 4 Health to your hero; or draw a card.
+   * (Draw is capped at 1; heal trimmed 6 -> 4: the flexibility IS the power —
+   * with the heal also beating Mending's rate, this mode-switching power
+   * dominated the other two picks outright.)
    */
   {
     id: 'hp_priest_holy_words',
     name: 'Holy Words',
     cost: 3,
-    text: 'Choose One - Restore 6 Health to your hero; or draw a card.',
+    text: 'Choose One - Restore 4 Health to your hero; or draw a card.',
     chooseOne: [
       {
-        text: 'Restore 6 Health to your hero.',
-        effects: [{ kind: 'heal', amount: 6, target: 'friendlyHero' }],
+        text: 'Restore 4 Health to your hero.',
+        effects: [{ kind: 'heal', amount: 4, target: 'friendlyHero' }],
       },
       {
         text: 'Draw a card.',

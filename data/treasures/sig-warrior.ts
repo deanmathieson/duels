@@ -120,7 +120,9 @@ const bladestormAxeToken: CardDef = {
 
 /**
  * Bulwark of Azzinoth — Passive.
- * Your minions have +1/+1 and Taunt.
+ * Your minions have +0/+1 and Taunt. (Was +1/+1 and Taunt — a free Demonic
+ * Tide with Taunt stapled on; the attack half is gone. As a static effect the
+ * granted Taunt still feeds Taunt-conditional buffs like Hold the Line.)
  */
 
 // ---------------------------------------------------------------------------
@@ -167,9 +169,9 @@ export const warriorSignatureTreasures: TreasureDef[] = [
     id: 'sig_warrior_bulwark',
     name: 'Bulwark of Azzinoth',
     kind: 'signature',
-    text: 'Your minions have +1/+1 and Taunt.',
+    text: 'Your minions have +0/+1 and Taunt.',
     auras: [
-      { kind: 'minionStat', atk: 1, health: 1, filter: 'minion' },
+      { kind: 'minionStat', health: 1, filter: 'minion' },
       { kind: 'giveKeyword', keyword: 'taunt', filter: 'minion' },
     ],
     tags: ['warrior-good'],

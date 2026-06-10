@@ -110,11 +110,15 @@ export const activeTreasures: TreasureDef[] = [
   },
 
   // ---- 2-cost ----
+  // Blood Moon — reworked from "2 damage to all enemy minions + heal 6", which
+  // was Pure Cold's AoE role with a heal stapled on. Now a single-target drain
+  // so the two treasures answer different boards: Pure Cold sweeps wide, Blood
+  // Moon executes one big threat and refunds the damage as Health.
   {
     id: 'tr_blood_moon',
     name: 'Blood Moon',
     kind: 'active',
-    text: 'Deal 2 damage to all enemy minions. Restore 6 Health to your hero.',
+    text: 'Deal 5 damage to an enemy. Restore 5 Health to your hero.',
     card: {
       id: 'tr_blood_moon',
       name: 'Blood Moon',
@@ -122,10 +126,12 @@ export const activeTreasures: TreasureDef[] = [
       type: 'spell',
       cardClass: 'neutral',
       rarity: 'legendary',
-      text: 'Deal 2 damage to all enemy minions. Restore 6 Health to your hero.',
+      text: 'Deal 5 damage to an enemy. Restore 5 Health to your hero.',
+      targeted: true,
+      targetFilter: 'allEnemyCharacters',
       spell: [
-        { kind: 'damage', amount: 2, target: 'enemyMinions' },
-        { kind: 'heal', amount: 6, target: 'friendlyHero' },
+        { kind: 'damage', amount: 5, target: 'chosenTarget' },
+        { kind: 'heal', amount: 5, target: 'friendlyHero' },
       ],
       token: true,
     },

@@ -7,20 +7,25 @@ import type { CardDef, TreasureDef } from '../../game/types'
 // ---------------------------------------------------------------------------
 
 /**
- * Lightforged Blessing card — 3-mana Paladin spell.
- * Give all friendly minions Divine Shield and +1/+1.
+ * Lightforged Blessing card — 2-mana Paladin spell.
+ * Give a friendly minion Divine Shield and Lifesteal (the real card's
+ * single-target identity). Was "all friendly minions +1/+1 and Divine Shield",
+ * which overlapped Hand of Anyfin's mass-buff finisher almost exactly — now
+ * it's the cheap one-minion protect-and-sustain tool instead.
  */
 const lightforgedBlessingCard: CardDef = {
   id: 'sig_paladin_lightforged_blessing',
   name: 'Lightforged Blessing',
-  cost: 3,
+  cost: 2,
   type: 'spell',
   cardClass: 'paladin',
   rarity: 'legendary',
-  text: 'Give all friendly minions **Divine Shield** and +1/+1.',
+  text: 'Give a friendly minion **Divine Shield** and **Lifesteal**.',
+  targeted: true,
+  targetFilter: 'friendlyMinions',
   spell: [
-    { kind: 'giveDivineShield', target: 'friendlyMinions' },
-    { kind: 'buff', atk: 1, health: 1, target: 'friendlyMinions' },
+    { kind: 'giveDivineShield', target: 'chosenTarget' },
+    { kind: 'giveKeyword', keyword: 'lifesteal', target: 'chosenTarget' },
   ],
   token: true,
   art: undefined,
@@ -128,7 +133,7 @@ export const paladinSignatureTreasures: TreasureDef[] = [
     id: 'sig_paladin_lightforged_blessing',
     name: 'Lightforged Blessing',
     kind: 'signature',
-    text: 'Give all friendly minions **Divine Shield** and +1/+1.',
+    text: 'Give a friendly minion **Divine Shield** and **Lifesteal**.',
     card: lightforgedBlessingCard,
     tags: ['paladin-buff', 'divine-shield'],
   },

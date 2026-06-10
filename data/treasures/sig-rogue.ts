@@ -30,17 +30,16 @@ const shadowbladeWeapon: CardDef = {
 }
 
 /**
- * Thieves' Canvas — 3-mana spell.
+ * Thieves' Canvas — 2-mana spell.
  * Add 2 random spells from any class to your hand. Draw a card.
  * (Burgle flavour: the engine can't express "the opponent's class", so the
- * pool is fromClass 'any' and the text says "from any class". Recosted
- * 2 -> 3: two generated spells + a cantrip is ~4 mana of value — keeps it
- * at the ~1 mana signature push.)
+ * pool is fromClass 'any' and the text says "from any class". At 2 mana the
+ * value play is tempo-positive — at 3 it never beat just picking Shadowblade.)
  */
 const thievesCanvasCard: CardDef = {
   id: 'sig_rogue_thieves_canvas_card',
   name: "Thieves' Canvas",
-  cost: 3,
+  cost: 2,
   type: 'spell',
   cardClass: 'rogue',
   rarity: 'legendary',
@@ -53,16 +52,16 @@ const thievesCanvasCard: CardDef = {
 }
 
 /**
- * Cloak of Shadows — 3-mana spell.
+ * Cloak of Shadows — 2-mana spell.
  * Original gives your hero Stealth; hero-stealth isn't in the engine, so it is
  * approximated as 5 Armor plus a 1-damage AoE.
- * (Recosted 0 -> 3: ~4 mana of value for free was far past the ~1 mana
- * signature push.)
+ * (At 3 the armor+ping was exactly on curve — zero treasure push. 2 restores
+ * the ~1 mana signature premium.)
  */
 const cloakOfShadowsCard: CardDef = {
   id: 'sig_rogue_cloak_of_shadows_card',
   name: 'Cloak of Shadows',
-  cost: 3,
+  cost: 2,
   type: 'spell',
   cardClass: 'rogue',
   rarity: 'legendary',
@@ -75,15 +74,15 @@ const cloakOfShadowsCard: CardDef = {
 }
 
 /**
- * Pillage — 6-mana spell.
+ * Pillage — 5-mana spell.
  * Deal 2 damage to all enemies. Draw 2 cards.
- * (Was 4 mana for 3 damage + draw 2 — ~9 mana of value. Trimmed to 2 damage
- * and recosted to 6, keeping it ~1 mana above curve as a signature.)
+ * (2 AoE ≈ 3 mana + draw 2 ≈ 3 mana: at 6 it carried no treasure premium at
+ * all; 5 puts it ~1 above curve like the other signatures.)
  */
 const pillageCard: CardDef = {
   id: 'sig_rogue_pillage_card',
   name: 'Pillage',
-  cost: 6,
+  cost: 5,
   type: 'spell',
   cardClass: 'rogue',
   rarity: 'legendary',
@@ -134,7 +133,7 @@ export const rogueSignatureTreasures: TreasureDef[] = [
   },
 
   /**
-   * Thieves' Canvas — a 3-mana spell that adds 2 random spells from any class
+   * Thieves' Canvas — a 2-mana spell that adds 2 random spells from any class
    * and draws a card.
    */
   {
@@ -147,7 +146,7 @@ export const rogueSignatureTreasures: TreasureDef[] = [
   },
 
   /**
-   * Cloak of Shadows — 3-mana spell: gain 5 Armor and deal 1 damage to all enemies.
+   * Cloak of Shadows — 2-mana spell: gain 5 Armor and deal 1 damage to all enemies.
    */
   {
     id: 'sig_rogue_cloak_of_shadows',
@@ -159,7 +158,7 @@ export const rogueSignatureTreasures: TreasureDef[] = [
   },
 
   /**
-   * Pillage — 6-mana board clear + draw engine.
+   * Pillage — 5-mana board clear + draw engine.
    */
   {
     id: 'sig_rogue_pillage',

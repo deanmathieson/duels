@@ -403,6 +403,32 @@ export const applyAction: ApplyAction = (state, action): ApplyResult => {
  * Action handlers
  * ------------------------------------------------------------------------- */
 
+/** Find a board minion across both players (hero sentinels return undefined). */
+function findTargetMinion(state: GameState, instanceId: string) {
+  for (const p of [0, 1] as PlayerId[]) {
+    const m = state.players[p].board.find((x) => x.instanceId === instanceId)
+    if (m) return m
+  }
+  return undefined
+}
+
+/**
+ * Whether a targeted hero power actually consumes its chosen target for the
+ * given chooseOne pick — chooseOne options that resolve without a target
+ * (e.g. Shadowform's "deal 1 damage to all enemies") stay playable untargeted.
+ */
+function heroPowerNeedsTarget(
+  hp: ReturnType<typeof getHeroPower>,
+  chooseOneIndex: number | undefined
+): boolean {
+  if (hp.scriptId) return true
+  const effects =
+    hp.chooseOne && chooseOneIndex !== undefined
+      ? hp.chooseOne[chooseOneIndex]?.effects ?? []
+      : hp.effects ?? []
+  return effects.some((e) => 'target' in e && e.target === 'chosenTarget')
+}
+
 function handleMulligan(
   state: GameState,
   player: PlayerId,
@@ -441,6 +467,13 @@ function handlePlayCard(
 
   const cost = getLiveCost(state, action.player, inst)
   if (p.mana.current < cost) return
+
+  // Attack-capped targeting (Shadow Word: Pain): reject a target whose CURRENT
+  // attack — buffs and auras included — exceeds the cap. Heroes are never legal.
+  if (def.targeted && def.targetMaxAttack !== undefined && action.targetId) {
+    const f = findTargetMinion(state, action.targetId)
+    if (!f || f.attack > def.targetMaxAttack) return
+  }
 
   // Pay & remove from hand.
   p.mana.current -= cost
@@ -594,6 +627,11 @@ function handleHeroPower(
   if (p.mana.current < p.heroPower.cost) return
   if (!hasHeroPower(p.heroPower.id)) return
   const hp = getHeroPower(p.heroPower.id)
+
+  // A targeted power whose resolution consumes the chosen target must have one
+  // — without this guard a target-less use (e.g. Execute Strike via a bad
+  // dispatch, or the AI) burns the mana and does nothing.
+  if (hp.targeted && !action.targetId && heroPowerNeedsTarget(hp, action.chooseOneIndex)) return
 
   p.mana.current -= p.heroPower.cost
   p.heroPower.usedThisTurn = true

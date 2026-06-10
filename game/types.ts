@@ -87,6 +87,7 @@ export type TargetSelector =
   | 'allEnemyCharacters'
   | 'allCharacters'
   | 'otherEnemies' // enemy characters EXCEPT `chosenTarget` (e.g. Swipe splash)
+  | 'adjacentToTarget' // minions adjacent to `chosenTarget` on its owner's board
   | 'randomEnemyMinion'
   | 'randomEnemy'
   | 'randomFriendlyMinion'
@@ -265,6 +266,10 @@ export interface CardDef {
   targeted?: boolean
   /** Which targets are legal when `targeted`. Engine validates. */
   targetFilter?: TargetSelector
+  /** Max CURRENT Attack a minion may have to be a legal target (Shadow Word:
+   *  Pain). Checked against the live attack — buffs and auras included — both
+   *  in getValidTargets and at play time; hero targets are never legal. */
+  targetMaxAttack?: number
   /** Token cards (Treant, Sapling, The Coin) are not collectible/offered. */
   token?: boolean
   /** Set/expansion id, used to build card buckets. */

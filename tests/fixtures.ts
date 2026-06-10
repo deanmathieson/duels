@@ -1,9 +1,10 @@
-import type { CardDef, GameSetup, HeroPowerDef, HeroState, PlayerSetup } from '../game/types'
+import type { CardDef, GameSetup, HeroPowerDef, HeroState, PlayerSetup, TreasureDef } from '../game/types'
 import {
   clearCards,
   registerCards,
   registerHeroPowers,
 } from '../game/cardDb'
+import { clearTreasures, registerTreasures } from '../game/engine'
 import { makeCardInstance, resetInstanceCounter } from '../game/effects'
 import type { GameState, PlayerId } from '../game/types'
 
@@ -315,6 +316,36 @@ export const fixtureCards: CardDef[] = [
     targetFilter: 'allMinions',
     spell: [{ kind: 'destroy', target: 'chosenTarget' }],
   },
+  // --- attack-capped destroy (Shadow Word: Pain) ---
+  {
+    id: 'swp',
+    name: 'Pain',
+    cost: 2,
+    type: 'spell',
+    cardClass: 'neutral',
+    rarity: 'common',
+    text: 'Destroy a minion with 3 or less Attack.',
+    targeted: true,
+    targetFilter: 'allMinions',
+    targetMaxAttack: 3,
+    spell: [{ kind: 'destroy', target: 'chosenTarget' }],
+  },
+  // --- adjacency splash (Explosive Shot) ---
+  {
+    id: 'splash_shot',
+    name: 'Splash Shot',
+    cost: 4,
+    type: 'spell',
+    cardClass: 'neutral',
+    rarity: 'common',
+    text: 'Deal 5 damage to a minion and 2 damage to adjacent ones.',
+    targeted: true,
+    targetFilter: 'allMinions',
+    spell: [
+      { kind: 'damage', amount: 5, target: 'chosenTarget' },
+      { kind: 'damage', amount: 2, target: 'adjacentToTarget' },
+    ],
+  },
   {
     id: 'silence_spell',
     name: 'Silence',
@@ -510,12 +541,39 @@ export const fixtureHeroPowers: HeroPowerDef[] = [
   },
 ]
 
-/** Install the fixture cards/hero powers into the engine registries. */
+/** Fixture passive treasures (player-attached static auras). */
+export const fixtureTreasures: TreasureDef[] = [
+  {
+    id: 'tr_fix_taunt',
+    name: 'Fixture Bulwark',
+    kind: 'passive',
+    text: 'Your minions have Taunt.',
+    auras: [{ kind: 'giveKeyword', keyword: 'taunt', filter: 'minion' }],
+  },
+  {
+    id: 'tr_fix_hold_line',
+    name: 'Fixture Hold the Line',
+    kind: 'passive',
+    text: 'Your Taunt minions have +1/+2.',
+    auras: [{ kind: 'minionStat', atk: 1, health: 2, filter: 'taunt' }],
+  },
+  {
+    id: 'tr_fix_stats',
+    name: 'Fixture Tide',
+    kind: 'passive',
+    text: 'Your minions have +1/+1.',
+    auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'minion' }],
+  },
+]
+
+/** Install the fixture cards/hero powers/treasures into the engine registries. */
 export function installFixtures(): void {
   clearCards()
   resetInstanceCounter()
   registerCards(fixtureCards)
   registerHeroPowers(fixtureHeroPowers)
+  clearTreasures()
+  registerTreasures(fixtureTreasures)
 }
 
 /** Build a HeroState with sensible defaults. */
@@ -541,20 +599,22 @@ export function makeSetup(
     heroPower1?: string
     isAI0?: boolean
     isAI1?: boolean
+    passives0?: string[]
+    passives1?: string[]
   } = {}
 ): GameSetup {
   const p0: PlayerSetup = {
     hero: makeHero(),
     heroPowerId: opts.heroPower0 ?? 'hp_ping',
     deckCardIds: deck0,
-    passiveTreasureIds: [],
+    passiveTreasureIds: opts.passives0 ?? [],
     isAI: opts.isAI0 ?? false,
   }
   const p1: PlayerSetup = {
     hero: makeHero(),
     heroPowerId: opts.heroPower1 ?? 'hp_ping',
     deckCardIds: deck1,
-    passiveTreasureIds: [],
+    passiveTreasureIds: opts.passives1 ?? [],
     isAI: opts.isAI1 ?? false,
   }
   return { players: [p0, p1], firstPlayer: 0 }

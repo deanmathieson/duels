@@ -23,6 +23,10 @@
         <!-- Selection ring (golden) -->
         <div class="selection-ring" :class="{ 'ring-visible': selectedId === t.id }" />
 
+        <!-- Mana cost (top-right): playable treasures show what the card will
+             cost; passives show no gem (the emblem is tagged Passive). -->
+        <span v-if="t.cost != null" class="mana-gem treasure-cost">{{ t.cost }}</span>
+
         <!-- Gilded emblem disc -->
         <div class="emblem" :class="[`emblem-${t.rarity}`, { 'emblem-selected': selectedId === t.id }]">
           <img v-if="t.art" :src="t.art" :alt="t.name" class="emblem-img" draggable="false" />
@@ -78,6 +82,8 @@ interface TreasureView {
   art?: string
   rarity: Rarity
   kindLabel: string
+  /** Mana cost of the granted card; undefined for passives (no card). */
+  cost?: number
 }
 
 const treasures = computed<TreasureView[]>(() =>
@@ -91,6 +97,7 @@ const treasures = computed<TreasureView[]>(() =>
       art: def.art ?? def.card?.art,
       rarity,
       kindLabel: def.kind === 'active' ? 'Active' : def.kind === 'passive' ? 'Passive' : 'Signature',
+      cost: def.card?.cost,
     }
   })
 )
@@ -238,6 +245,17 @@ function skip(): void {
   transition: opacity 0.25s ease;
 }
 .ring-visible { opacity: 1; }
+
+/* Mana cost gem pinned to the box's top-right corner. */
+.treasure-cost {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 1rem;
+}
 
 /* Emblem disc */
 .emblem {

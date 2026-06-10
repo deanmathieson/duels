@@ -10,13 +10,15 @@ import type {
   PlayerId,
 } from '../types'
 import { HERO_TARGET } from '../types'
-import { getCard, hasCard } from '../cardDb'
+import { getCard, getHeroPower, hasCard, hasHeroPower } from '../cardDb'
 import { hasKeyword } from '../keywords'
 import {
   getAttackTargets,
   getAttackers,
+  getHeroPowerTargets,
   getLiveCost,
   getPlayableCards,
+  getValidTargets,
   isLethalAvailable,
 } from '../queries'
 
@@ -162,9 +164,12 @@ function buildPlayAction(
     action.chooseOneIndex = 0
   }
 
-  // Targeted: pick a sensible target.
+  // Targeted: pick a sensible target from the engine's legal-target list
+  // (which enforces stealth and attack caps like Shadow Word: Pain).
   if (def.targeted) {
-    const target = chooseSpellTarget(state, player, def)
+    const legal = getValidTargets(state, player, inst)
+    if (legal.length === 0) return undefined
+    const target = chooseSpellTarget(state, player, def, new Set(legal))
     if (!target) return undefined
     action.targetId = target
   }
@@ -173,14 +178,19 @@ function buildPlayAction(
 }
 
 /** Pick a target for a targeted card: damage→enemy, buff/heal→friendly. */
-function chooseSpellTarget(state: GameState, player: PlayerId, def: CardDef): string | undefined {
+function chooseSpellTarget(
+  state: GameState,
+  player: PlayerId,
+  def: CardDef,
+  legal: Set<string>
+): string | undefined {
   const foe = opp(player)
   const filter = def.targetFilter ?? 'chosenTarget'
   const isDamage = describesDamage(def)
   const isFriendlyBuff = describesFriendlyBuff(def)
 
-  const enemyMinions = state.players[foe].board
-  const friendlyMinions = state.players[player].board
+  const enemyMinions = state.players[foe].board.filter((m) => legal.has(m.instanceId))
+  const friendlyMinions = state.players[player].board.filter((m) => legal.has(m.instanceId))
 
   if (isFriendlyBuff) {
     // Buff the highest-attack friendly minion.
@@ -192,12 +202,12 @@ function chooseSpellTarget(state: GameState, player: PlayerId, def: CardDef): st
     // Damage: prefer to kill an enemy minion, else hit face.
     const target = bestRemovalTarget(enemyMinions, def)
     if (target) return target.instanceId
-    if (canTargetEnemyHero(filter)) return HERO_TARGET(foe)
+    if (canTargetEnemyHero(filter) && legal.has(HERO_TARGET(foe))) return HERO_TARGET(foe)
     if (enemyMinions.length > 0) return enemyMinions[0].instanceId
   }
 
   // Fallback: any legal target.
-  if (canTargetEnemyHero(filter)) return HERO_TARGET(foe)
+  if (canTargetEnemyHero(filter) && legal.has(HERO_TARGET(foe))) return HERO_TARGET(foe)
   if (enemyMinions.length > 0) return enemyMinions[0].instanceId
   if (friendlyMinions.length > 0) return friendlyMinions[0].instanceId
   return undefined
@@ -259,13 +269,60 @@ function maybeUseHeroPower(state: GameState, player: PlayerId, profile: AiProfil
   const spare = p.mana.current - p.heroPower.cost
   if (profile.heroPowerEagerness < 0.3 && spare > 1) return undefined
 
-  const def = hasCard(p.heroPower.id) ? undefined : undefined // hero power def via registry not needed here
-  // Use without a target where possible. If the hero power needs a target,
-  // skip when none is reasonable.
   const action: Extract<Action, { type: 'useHeroPower' }> = { type: 'useHeroPower', player }
+  const def = hasHeroPower(p.heroPower.id) ? getHeroPower(p.heroPower.id) : undefined
+  if (!def) return action
+
   // Default chooseOne to 0 for hero powers that have it.
-  action.chooseOneIndex = 0
+  if (def.chooseOne && def.chooseOne.length > 0) action.chooseOneIndex = 0
+
+  // Targeted powers (Fireblast, Execute Strike, Drain Soul …) must carry a
+  // target — the engine rejects a target-less use rather than wasting mana.
+  if (def.targeted) {
+    const target = chooseHeroPowerTarget(state, player, def, action.chooseOneIndex)
+    if (!target) return undefined
+    action.targetId = target
+  }
   return action
+}
+
+/** Pick a target for a targeted hero power: damage→enemy, heal→own hero. */
+function chooseHeroPowerTarget(
+  state: GameState,
+  player: PlayerId,
+  def: ReturnType<typeof getHeroPower>,
+  chooseOneIndex: number | undefined
+): string | undefined {
+  const foe = opp(player)
+  const legal = new Set(getHeroPowerTargets(state, player, def))
+  if (legal.size === 0) return undefined
+
+  const effects =
+    def.chooseOne && chooseOneIndex !== undefined
+      ? def.chooseOne[chooseOneIndex]?.effects ?? []
+      : def.effects ?? []
+  const isDamage = effects.some((e) => e.kind === 'damage' || e.kind === 'destroy')
+  const isHeal = effects.some((e) => e.kind === 'heal')
+
+  const enemyMinions = state.players[foe].board.filter((m) => legal.has(m.instanceId))
+  const friendlyMinions = state.players[player].board.filter((m) => legal.has(m.instanceId))
+
+  if (isDamage) {
+    const best = highestAttack(enemyMinions)
+    if (best) return best.instanceId
+    if (legal.has(HERO_TARGET(foe))) return HERO_TARGET(foe)
+    return undefined
+  }
+  if (isHeal) {
+    if (legal.has(HERO_TARGET(player))) return HERO_TARGET(player)
+    const best = highestAttack(friendlyMinions)
+    if (best) return best.instanceId
+    return undefined
+  }
+  // Buff-style fallback: our best minion, else any legal id.
+  const best = highestAttack(friendlyMinions)
+  if (best) return best.instanceId
+  return [...legal][0]
 }
 
 /** Decide the next attack: trade into threats or go face per aggression. */

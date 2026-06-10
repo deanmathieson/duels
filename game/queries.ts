@@ -5,6 +5,7 @@ import type {
   EffectSpec,
   EngineQueries,
   GameState,
+  HeroPowerDef,
   MinionInstance,
   PlayerId,
   TargetSelector,
@@ -186,7 +187,43 @@ function targetsForSelector(
 export function getValidTargets(state: GameState, player: PlayerId, inst: CardInstance): string[] {
   const def = hasCard(inst.cardId) ? getCard(inst.cardId) : undefined
   if (!def || !def.targeted) return []
-  return targetsForSelector(state, player, def.targetFilter)
+  let ids = targetsForSelector(state, player, def.targetFilter)
+  // Attack-capped removal (Shadow Word: Pain): only minions whose CURRENT
+  // attack — buffs and auras included — is within the cap are legal.
+  if (def.targetMaxAttack !== undefined) {
+    const cap = def.targetMaxAttack
+    ids = ids.filter((id) => {
+      const m = findBoardMinion(state, id)
+      return !!m && m.attack <= cap
+    })
+  }
+  return ids
+}
+
+/** Find a board minion across both players by instance id (heroes return undefined). */
+function findBoardMinion(state: GameState, instanceId: string): MinionInstance | undefined {
+  for (const p of [0, 1] as PlayerId[]) {
+    const m = state.players[p].board.find((x) => x.instanceId === instanceId)
+    if (m) return m
+  }
+  return undefined
+}
+
+/**
+ * Legal target ids for a targeted hero power (resolved from its targetFilter).
+ * Shared by the AI and any UI that needs engine-accurate hero power targeting.
+ * @param state - game state
+ * @param player - the player id
+ * @param hp - the hero power definition
+ * @returns legal target ids (minion instance ids and/or hero sentinels)
+ */
+export function getHeroPowerTargets(
+  state: GameState,
+  player: PlayerId,
+  hp: HeroPowerDef
+): string[] {
+  if (!hp.targeted) return []
+  return targetsForSelector(state, player, hp.targetFilter)
 }
 
 /**
@@ -222,8 +259,10 @@ function canMinionAttack(m: MinionInstance): boolean {
 export function getAttackTargets(state: GameState, player: PlayerId, attackerId: string): string[] {
   const foe = opp(player)
   // Stealthed minions can't be attacked and stealthed Taunts don't enforce.
+  // Keyword presence is the single source of truth (treasure auras may
+  // re-grant Taunt to a silenced minion — that still enforces).
   const attackable = state.players[foe].board.filter((m) => !hasKeyword(m, 'stealth'))
-  const taunts = attackable.filter((m) => hasKeyword(m, 'taunt') && !m.silenced)
+  const taunts = attackable.filter((m) => hasKeyword(m, 'taunt'))
 
   // Hero attacker (no rush restriction).
   if (attackerId === HERO_TARGET(player)) {
@@ -243,7 +282,7 @@ export function getAttackTargets(state: GameState, player: PlayerId, attackerId:
 function potentialFaceDamage(state: GameState, player: PlayerId): number {
   const foe = opp(player)
   const taunts = state.players[foe].board.filter(
-    (m) => hasKeyword(m, 'taunt') && !m.silenced && !hasKeyword(m, 'stealth')
+    (m) => hasKeyword(m, 'taunt') && !hasKeyword(m, 'stealth')
   )
   if (taunts.length > 0) return 0 // must clear taunts first; conservative
   let dmg = 0

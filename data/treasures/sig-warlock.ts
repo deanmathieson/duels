@@ -147,7 +147,7 @@ export const warlockSignatureTreasures: TreasureDef[] = [
     id: 'sig_warlock_demonic_tide',
     name: 'Demonic Tide',
     kind: 'signature',
-    text: 'PASSIVE: Your minions have +1/+1.',
+    text: 'Your minions have +1/+1.',
     auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'all' }],
     tags: ['warlock-good', 'passive', 'aura'],
   },

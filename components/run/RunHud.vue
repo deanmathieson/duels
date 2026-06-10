@@ -40,21 +40,23 @@
       </div>
     </div>
 
-    <!-- Right: health + deck count + abandon -->
+    <!-- Right: health + deck count + abandon. The HUD hugs the top edge of the
+         viewport, so these tooltips must drop DOWN — placed up they open
+         off-screen. -->
     <div class="hud-cluster justify-end">
-      <Tooltip text="Hero max health (grows each round)">
+      <Tooltip text="Hero max health (grows each round)" placement="bottom">
         <div class="stat-chip health-chip">
           <span class="chip-icon">♥</span>
           <span class="chip-val">{{ run.maxHealth }}</span>
         </div>
       </Tooltip>
-      <Tooltip text="View your deck">
+      <Tooltip text="View your deck" placement="bottom">
         <button class="stat-chip deck-chip deck-btn" @click="deckOpen = !deckOpen">
           <span class="chip-icon deck-icon">🂠</span>
           <span class="chip-val">{{ deckTotal }}</span>
         </button>
       </Tooltip>
-      <Tooltip text="Abandon run">
+      <Tooltip text="Abandon run" placement="bottom">
         <button class="abandon-btn" @click="$emit('abandon')">
           <span class="abandon-x">✕</span>
         </button>
@@ -69,6 +71,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
+import { getTreasureDef } from '~/data/registry'
 import { gsap } from 'gsap'
 
 /** Persistent top overlay showing run progress (wins/losses/round/health/deck). */
@@ -82,8 +85,17 @@ const deckOpen = ref(false)
 const targetWins = RUN_TARGET_WINS
 const maxLosses = RUN_MAX_LOSSES
 
-/** Deck size including the signature treasure (+1) when chosen. */
-const deckTotal = computed(() => run.deckCount + (run.signatureTreasureId ? 1 : 0))
+/** Deck size including the signature treasure's card (+1) when it adds one —
+ *  passive signatures (Beast Bond, Demonic Tide, …) put nothing in the deck. */
+const deckTotal = computed(() => {
+  let sigCard = 0
+  try {
+    if (run.signatureTreasureId && getTreasureDef(run.signatureTreasureId).card) sigCard = 1
+  } catch {
+    /* unknown id — count the deck only */
+  }
+  return run.deckCount + sigCard
+})
 
 /** Animate a pip "pop" when wins or losses change. */
 function popPip(selector: string): void {

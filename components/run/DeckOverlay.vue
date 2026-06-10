@@ -68,11 +68,12 @@ const grouped = computed<{ card: CardDef; count: number }[]>(() => {
     .sort((a, b) => a.card.cost - b.card.cost || a.card.name.localeCompare(b.card.name))
 })
 
-const totalCount = computed(() => run.deck.length + (run.signatureTreasureId ? 1 : 0))
-
 const signature = computed(() =>
   run.signatureTreasureId ? getTreasureDef(run.signatureTreasureId) : undefined
 )
+
+/** Passive signatures attach to the player, not the deck — they don't add a card. */
+const totalCount = computed(() => run.deck.length + (signature.value?.card ? 1 : 0))
 
 const passives = computed(() => run.passiveTreasureIds.map((id: string) => getTreasureDef(id)))
 

@@ -21,12 +21,14 @@ import {
 
 /**
  * Enemy minions that enforce Taunt against an attacking player. Stealthed
- * Taunt minions do not enforce (Stealth overrides Taunt).
+ * Taunt minions do not enforce (Stealth overrides Taunt). The keyword list is
+ * the single source of truth: silence strips card-owned Taunt, but a passive
+ * treasure aura can legitimately re-grant it to a silenced minion.
  */
 export function enforcingTaunts(state: GameState, attackerOwner: PlayerId): MinionInstance[] {
   const foe = opponentOf(attackerOwner)
   return state.players[foe].board.filter(
-    (m) => hasKeyword(m, 'taunt') && !m.silenced && !hasKeyword(m, 'stealth')
+    (m) => hasKeyword(m, 'taunt') && !hasKeyword(m, 'stealth')
   )
 }
 

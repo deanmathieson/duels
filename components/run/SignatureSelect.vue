@@ -24,15 +24,29 @@
 
         <div class="sig-card-wrap" :class="{ 'wrap-selected': selectedId === sig.id }">
           <CardView v-if="sig.card" :card="sig.card" :playable="selectedId === sig.id" />
-          <!-- PASSIVE signatures (auras only, no playable card) get a treasure tile. -->
+          <!-- PASSIVE signatures (auras only, no playable card) render in the
+               same golden legendary frame as a CardView so they read as a real
+               pick, with an always-on gem where the mana cost would sit. -->
           <div v-else class="sig-passive-card">
-            <div class="sp-art">
-              <img v-if="sig.art" :src="sig.art" :alt="sig.name" draggable="false" />
-              <span v-else class="sp-initial font-engrave">{{ sig.name.charAt(0) }}</span>
+            <div class="sp-inner">
+              <div class="sp-art">
+                <img v-if="sig.art" :src="sig.art" :alt="sig.name" draggable="false" />
+                <span v-else class="sp-initial font-engrave">{{ sig.name.charAt(0) }}</span>
+              </div>
+              <div class="sp-name-banner">
+                <span class="sp-name font-engrave">{{ sig.name }}</span>
+              </div>
+              <div class="sp-ribbon font-engrave">
+                <span class="sp-ribbon-rule" />
+                <span>Passive</span>
+                <span class="sp-ribbon-rule" />
+              </div>
+              <div class="sp-text-plate panel-parchment">
+                <p class="sp-text font-body">{{ sig.text }}</p>
+              </div>
             </div>
-            <span class="sp-tag font-engrave">Passive</span>
-            <div class="sp-name font-engrave">{{ sig.name }}</div>
-            <p class="sp-text font-body">{{ sig.text }}</p>
+            <!-- Always-active marker in the mana gem's corner -->
+            <span class="sp-gem font-engrave" title="Passive — always active">∞</span>
           </div>
         </div>
 
@@ -176,29 +190,36 @@ function goBack(): void {
   animation: legendary-pulse 2.5s ease-in-out infinite;
 }
 
-/* Treasure tile for PASSIVE signatures — sized to match a full CardView. */
+/* Treasure tile for PASSIVE signatures — the same golden legendary frame and
+   inner layout as a CardView (art window, name banner, parchment text), so a
+   passive pick no longer looks like a broken/missing card next to real ones. */
 .sig-passive-card {
+  position: relative;
   width: 200px;
   height: 280px;
+  border-radius: 12px;
+  border: 2px solid #6b4a0e;
+  background: linear-gradient(180deg, #fff3c8 0%, #ffe08a 14%, #f0c850 42%, #c79018 74%, #8a5e16 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 243, 200, 0.6),
+    inset 0 1px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 7px rgba(0, 0, 0, 0.5),
+    0 0 6px rgba(240, 144, 42, 0.35);
+}
+.sp-inner {
+  position: absolute;
+  inset: 6px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  border-radius: 14px;
-  border: 2px solid #6b4a0e;
-  background:
-    radial-gradient(120% 90% at 50% 0%, rgba(240, 144, 42, 0.22), transparent 60%),
-    linear-gradient(180deg, #42301c 0%, #2a1c10 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 6px 14px rgba(0, 0, 0, 0.55);
 }
 .sp-art {
-  width: 100%;
-  height: 46%;
+  position: relative;
+  margin: 24px auto 0;
+  width: 88%;
+  height: 51%;
   border-radius: 8px;
   overflow: hidden;
-  border: 2px solid #4a3209;
+  border: 2px solid #6b4a0e;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
@@ -216,32 +237,84 @@ function goBack(): void {
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
-.sp-tag {
-  margin-top: 6px;
-  font-size: 0.55rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  padding: 2px 10px;
-  border-radius: 9999px;
-  border: 1px solid #f0902a;
-  color: #ffd9a0;
-  background: rgba(58, 30, 10, 0.7);
+.sp-name-banner {
+  position: relative;
+  margin: -14px auto 0;
+  width: 92%;
+  z-index: 1;
+  padding: 2px 8px;
+  text-align: center;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #5a4022 0%, #311f0e 100%);
+  border: 1px solid #c79018;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 .sp-name {
-  margin-top: 6px;
-  font-size: 0.95rem;
-  font-weight: 800;
-  text-align: center;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
   color: #ffe9a8;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-ribbon {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(58, 36, 16, 0.85);
+}
+.sp-ribbon-rule {
+  width: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74, 50, 9, 0.55), transparent);
+}
+.sp-text-plate {
+  flex: 1;
+  margin: 2px auto 0;
+  width: 88%;
+  min-height: 0;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 .sp-text {
-  margin-top: 6px;
-  font-size: 0.72rem;
+  font-size: 9px;
   line-height: 1.35;
   text-align: center;
-  color: rgba(243, 233, 210, 0.85);
+  color: #2a1607;
+}
+/* Always-active gem where a card's mana cost would sit. */
+.sp-gem {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  z-index: 20;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  background: radial-gradient(circle at 34% 28%, #e6b4ff 0%, #b14ee0 45%, #7a23a8 100%);
+  border: 2px solid #4a1070;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.55),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
 .sig-card-wrap {

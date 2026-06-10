@@ -28,8 +28,10 @@ export const paladinHero: HeroDef = {
  * Hero power definitions for Lothraxion the Redeemed.
  *
  * - Reinforce: classic 2-mana summon a 1/1 Recruit.
- * - The Silver Hand: 2-mana Choose One — summon a 1/1 Recruit; or give all
- *   friendly minions +1/+1 this turn.
+ * - The Silver Hand: 3-mana — summon two 1/1 Recruits. (Was a Choose One whose
+ *   first option duplicated Reinforce exactly; reworked into the go-wide
+ *   variant so the two powers read as a real choice: steady single token vs
+ *   paying more for double the flood.)
  * - Blessing of Wisdom: 3-mana — give a friendly minion +1/+1 and Divine Shield.
  *   (Trimmed from +2/+2: a repeatable Blessing of Kings-half plus a Hand of
  *   Protection every turn was well above the ~1 mana of effect per 2 mana line.)
@@ -46,18 +48,9 @@ export const paladinHeroPowers: HeroPowerDef[] = [
   {
     id: 'hp_paladin_the_silver_hand',
     name: 'The Silver Hand',
-    cost: 2,
-    text: 'Choose One - Summon a 1/1 Recruit; or give your minions +1 Attack this turn.',
-    chooseOne: [
-      {
-        text: 'Summon a 1/1 Recruit.',
-        effects: [{ kind: 'summon', token: 'paladin_recruit', count: 1 }],
-      },
-      {
-        text: 'Give your minions +1 Attack this turn.',
-        effects: [{ kind: 'buffThisTurn', atk: 1, target: 'friendlyMinions' }],
-      },
-    ],
+    cost: 3,
+    text: 'Summon two 1/1 Recruits.',
+    effects: [{ kind: 'summon', token: 'paladin_recruit', count: 2 }],
     art: undefined,
   },
   {

@@ -211,6 +211,20 @@ export function resolveTargets(
         return e.minion.instanceId !== chosen
       })
     }
+    case 'adjacentToTarget': {
+      // Minions adjacent to the chosen target on its owner's board.
+      const id = ctx.chosenTargetId
+      if (!id) return []
+      const f = findMinion(state, id)
+      if (!f) return []
+      const board = state.players[f.owner].board
+      const idx = board.findIndex((m) => m.instanceId === id)
+      if (idx < 0) return []
+      const out: Entity[] = []
+      if (idx > 0) out.push(minionEntity(board[idx - 1], f.owner))
+      if (idx < board.length - 1) out.push(minionEntity(board[idx + 1], f.owner))
+      return out
+    }
     case 'randomEnemyMinion': {
       const m = pick(state.rng, state.players[foe].board)
       return m ? [minionEntity(m, foe)] : []

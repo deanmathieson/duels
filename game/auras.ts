@@ -81,50 +81,72 @@ export function recomputeAuras(state: GameState): void {
   }
 }
 
+/**
+ * Whether a source's auras reach a recipient minion. A minion never buffs
+ * itself, and silenced minions still receive PLAYER-level (passive treasure)
+ * auras — those are static run effects, not abilities on the minion — while
+ * minion-sourced auras skip silenced recipients.
+ */
+function auraReaches(src: AuraSource, m: MinionInstance): boolean {
+  if (src.sourceInstanceId && src.sourceInstanceId === m.instanceId) return false
+  return !m.silenced || !src.sourceInstanceId
+}
+
+/**
+ * Two passes: keyword grants first, stat deltas second, so keyword-filtered
+ * stat auras ("your Taunt minions have +1/+2") see Taunt granted by another
+ * aura (e.g. Bulwark of Azzinoth) in the same recompute.
+ */
 function applyMinionAuras(state: GameState, player: PlayerId, sources: AuraSource[]): void {
   const p = state.players[player]
+  // Always revert every previous aura delta first.
+  for (const m of p.board) revertAuraDelta(m)
+
+  // Pass 1: keyword grants.
   for (const m of p.board) {
-    // Always revert the previous aura delta first.
-    revertAuraDelta(m)
-    if (m.silenced) continue
     const def = hasCard(m.cardId) ? getCard(m.cardId) : undefined
     if (!def) continue
+    const added: Keyword[] = []
+    for (const src of sources) {
+      if (!auraReaches(src, m)) continue
+      for (const aura of src.auras) {
+        if (aura.kind !== 'giveKeyword') continue
+        if (STATEFUL_KEYWORDS.includes(aura.keyword)) continue
+        if (!minionMatchesFilter(def, m, aura.filter)) continue
+        // Record only keywords the aura layer actually ADDED: keywords the
+        // minion already owns (base or permanently granted) stay when the
+        // aura source leaves play — the revert must not strip them.
+        if (!hasKeyword(m, aura.keyword)) {
+          addKeyword(m, aura.keyword)
+          added.push(aura.keyword)
+        }
+      }
+    }
+    if (added.length) asInternalMinion(m)._auraKeywords = added
+  }
 
+  // Pass 2: stat deltas (filters now see aura-granted keywords).
+  for (const m of p.board) {
+    const def = hasCard(m.cardId) ? getCard(m.cardId) : undefined
+    if (!def) continue
     let atk = 0
     let health = 0
-    const keywords: Keyword[] = []
     for (const src of sources) {
-      // Minion-sourced auras exclude their own source.
-      if (src.sourceInstanceId && src.sourceInstanceId === m.instanceId) continue
+      if (!auraReaches(src, m)) continue
       for (const aura of src.auras) {
         if (aura.kind === 'minionStat' && minionMatchesFilter(def, m, aura.filter)) {
           atk += aura.atk ?? 0
           health += aura.health ?? 0
-        } else if (aura.kind === 'giveKeyword' && minionMatchesFilter(def, m, aura.filter)) {
-          if (STATEFUL_KEYWORDS.includes(aura.keyword)) continue
-          if (!keywords.includes(aura.keyword)) keywords.push(aura.keyword)
         }
       }
     }
-
-    if (atk || health || keywords.length) {
+    if (atk || health) {
       m.attack += atk
       m.maxHealth += health
       m.health += health
-      // Record only keywords the aura layer actually ADDED: keywords the minion
-      // already owns (base or permanently granted) stay when the aura source
-      // leaves play — the revert must not strip them.
-      const added: Keyword[] = []
-      for (const k of keywords) {
-        if (!hasKeyword(m, k)) {
-          addKeyword(m, k)
-          added.push(k)
-        }
-      }
       const im = asInternalMinion(m)
       im._auraAtk = atk
       im._auraHealth = health
-      im._auraKeywords = added
     }
   }
 }

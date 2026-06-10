@@ -20,13 +20,15 @@
         <!-- Golden selection ring -->
         <div class="selection-ring" :class="{ 'ring-visible': selectedId === power.id }" />
 
+        <!-- Mana cost gem pinned to the box's top-right corner -->
+        <span class="mana-gem hp-box-cost">{{ power.cost }}</span>
+
         <!-- Crystal art disc -->
         <div class="hp-disc" :class="{ 'disc-selected': selectedId === power.id }">
           <img v-if="power.art" :src="power.art" :alt="power.name" class="hp-disc-img" draggable="false" />
           <span v-else class="hp-disc-cost font-engrave">{{ power.cost }}</span>
           <!-- Shine overlay -->
           <div class="disc-shine" />
-          <span class="hp-cost-gem mana-gem">{{ power.cost }}</span>
         </div>
 
         <h2 class="hp-name font-engrave">{{ power.name }}</h2>
@@ -216,13 +218,14 @@ function goBack(): void {
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
 }
-.hp-cost-gem {
+.hp-box-cost {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 1.9rem;
-  height: 1.9rem;
-  font-size: 0.85rem;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.95rem;
 }
 
 .hp-name {

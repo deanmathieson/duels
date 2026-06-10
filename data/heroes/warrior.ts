@@ -29,14 +29,17 @@ export const warriorHero: HeroDef = {
  */
 export const warriorHeroPowers: HeroPowerDef[] = [
   /**
-   * Armor Up! — Gain 2 Armor. (Classic warrior hero power.)
+   * Armor Up! — Gain 4 Armor. (Was the classic 2 Armor, but next to Battle
+   * Stance's attack+armor and Execute Strike's removal+armor it was strictly
+   * the worst pick; 4 Armor — the Tank Up rate — makes pure defence a real
+   * option.)
    */
   {
     id: 'hp_warrior_armor_up',
     name: 'Armor Up!',
     cost: 2,
-    text: 'Gain 2 Armor.',
-    effects: [{ kind: 'gainArmor', amount: 2 }],
+    text: 'Gain 4 Armor.',
+    effects: [{ kind: 'gainArmor', amount: 4 }],
     art: undefined,
   },
 

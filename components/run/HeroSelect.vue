@@ -46,11 +46,6 @@
           <span class="meta-chip font-engrave">{{ hero.signatureTreasures.length }} Signatures</span>
         </div>
 
-        <!-- One-click pick, right in the card — no scrolling to a footer button. -->
-        <button class="choose-btn font-engrave" @click.stop="chooseHero(hero.id)">
-          Choose
-        </button>
-
         <!-- Selected checkmark badge -->
         <div v-show="selectedId === hero.id" class="selected-badge font-engrave">
           <span class="selected-check">✓</span>
@@ -59,11 +54,23 @@
       </article>
     </div>
 
-    <div class="mt-8 confirm-row">
-      <BaseButton variant="gold" size="lg" :disabled="!selectedId" @click="choose">
-        Choose {{ selectedName }}
-      </BaseButton>
-    </div>
+    <!-- Floating mid-screen confirm: appears once a hero is selected, so the
+         pick is confirmable without scrolling to a footer. The wrapper ignores
+         pointer events — other hero cards stay clickable around it. -->
+    <Transition name="confirm-pop">
+      <div v-if="selectedId" class="confirm-float">
+        <div class="confirm-card">
+          <p class="confirm-label font-engrave">Champion selected</p>
+          <p class="confirm-name font-engrave">{{ selectedName }}</p>
+          <BaseButton variant="gold" size="lg" @click="choose">
+            Confirm Selection
+          </BaseButton>
+          <button class="confirm-cancel font-engrave" @click="selectedId = undefined">
+            Pick someone else
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -72,8 +79,8 @@ import { ref, computed, onMounted } from 'vue'
 import { heroes } from '~/data/registry'
 import { gsap } from 'gsap'
 
-/** Hero draft screen. Currently Forest Warden Omu is the only champion; the
- *  layout already supports a row of selectable hero portraits for future heroes. */
+/** Hero draft screen. Clicking a portrait selects the hero; a floating
+ *  mid-screen panel then confirms the pick — no scrolling to a footer button. */
 const run = useRunStore()
 
 const rootEl = ref<HTMLElement>()
@@ -139,24 +146,12 @@ onMounted(() => {
     }
   )
 
-  // Confirm row entrance
-  gsap.fromTo(
-    '.confirm-row',
-    { opacity: 0, y: 16 },
-    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', delay: 0.6 }
-  )
 })
 
 /** Lock in the chosen hero and advance to hero-power selection. */
 function choose(): void {
   if (!selectedId.value) return
   run.selectHero(selectedId.value)
-}
-
-/** One-click pick from a card's own Choose button: select + confirm. */
-function chooseHero(id: string): void {
-  selectedId.value = id
-  run.selectHero(id)
 }
 </script>
 
@@ -307,38 +302,66 @@ function chooseHero(id: string): void {
   color: #d8a830;
 }
 
-/* In-card confirm button */
-.choose-btn {
-  display: block;
-  margin: 0.8rem auto 0;
-  padding: 0.45rem 1.6rem;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+/* Floating mid-screen confirm. The wrapper spans the viewport center but lets
+   clicks fall through; only the panel itself is interactive. */
+.confirm-float {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  pointer-events: none;
+}
+.confirm-card {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1.1rem 2rem 1rem;
+  border-radius: 16px;
+  border: 2px solid #f0c850;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(240, 200, 80, 0.16), transparent 65%),
+    linear-gradient(180deg, rgba(58, 42, 24, 0.97) 0%, rgba(32, 22, 12, 0.97) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 44px rgba(0, 0, 0, 0.75),
+    0 0 36px 6px rgba(240, 200, 80, 0.4);
+}
+.confirm-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: #3a2410;
-  border-radius: 9999px;
-  border: 1px solid #6b4a0e;
-  background: linear-gradient(180deg, #ffe9a8 0%, #f0c850 45%, #c79018 100%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.7),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
-    0 3px 8px rgba(0, 0, 0, 0.5);
+  color: #d8a830;
+}
+.confirm-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffe9a8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 12px rgba(240, 200, 80, 0.35);
+}
+.confirm-cancel {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 233, 210, 0.55);
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition: color 0.15s ease;
 }
-.choose-btn:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.7),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
-    0 5px 12px rgba(0, 0, 0, 0.55),
-    0 0 14px rgba(240, 200, 80, 0.5);
+.confirm-cancel:hover {
+  color: #ffe9a8;
 }
-.choose-btn:active {
-  transform: translateY(0);
-  filter: brightness(0.96);
+.confirm-pop-enter-active,
+.confirm-pop-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+.confirm-pop-enter-from,
+.confirm-pop-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
 }
 
 .selected-badge {
