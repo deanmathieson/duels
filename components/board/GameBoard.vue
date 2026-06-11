@@ -1289,4 +1289,39 @@ function enemyCardStyle(i: number, n: number): Record<string, string> {
 .minion-pop-move {
   transition: transform 0.3s ease;
 }
+
+/* ---- Phones (narrow viewports) ----
+   The hero rows' side columns (deck piles, End Turn) overflow a 375px screen
+   and get clipped by the board's overflow:hidden — most critically End Turn,
+   without which the game is unplayable. Collapse the side furniture and pin
+   End Turn to the right edge above the hand. */
+@media (max-width: 640px) {
+  .hero-row {
+    grid-template-columns: 0 auto 0;
+    gap: 0;
+    width: 100vw;
+  }
+  .deck-pile {
+    display: none; /* the HUD deck chip carries the count on phones */
+  }
+  .side-col.left,
+  .side-col.right {
+    padding: 0;
+  }
+  .hero-center {
+    gap: 6px;
+  }
+  /* End Turn: pinned floating button, always reachable above the hand fan. */
+  .player-zone .side-col.right {
+    position: fixed;
+    right: 6px;
+    bottom: 215px;
+    z-index: 45;
+    transform: scale(0.82);
+    transform-origin: bottom right;
+  }
+  .minion-row {
+    gap: 6px;
+  }
+}
 </style>

@@ -315,4 +315,29 @@ onMounted(() => {
 .abandon-btn:hover .abandon-x {
   color: #ff8c7a;
 }
+
+/* Phones: the pip rows can't fit beside the round badge — the numeric counts
+   carry the same info, so collapse to "WINS 0/12 · LIVES 3" chips. */
+@media (max-width: 640px) {
+  .run-hud {
+    padding: 0.4rem 0.5rem;
+    gap: 0.3rem;
+  }
+  .hud-cluster {
+    gap: 0.55rem;
+  }
+  .pips {
+    display: none;
+  }
+  .round-badge {
+    padding: 0.15rem 0.7rem;
+  }
+  .stat-chip {
+    padding: 0.15rem 0.45rem;
+  }
+  .abandon-btn {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+}
 </style>

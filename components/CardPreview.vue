@@ -10,6 +10,14 @@
         <div class="card-preview-inner" :style="innerStyle">
           <CardView :card="card" :spell-damage="spellDamage" />
         </div>
+
+        <!-- Keyword glossary plates (Hearthstone-style reference tiles) -->
+        <div v-if="glossary.length" class="glossary-col" :class="glossarySide">
+          <div v-for="g in glossary" :key="g.label" class="glossary-plate">
+            <span class="glossary-term font-engrave">{{ g.label }}</span>
+            <span class="glossary-text font-body">{{ g.text }}</span>
+          </div>
+        </div>
       </div>
     </Transition>
   </Teleport>
@@ -17,6 +25,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import type { Keyword } from '~/game/types'
+import {
+  KEYWORD_DESCRIPTION,
+  KEYWORD_LABEL,
+  MECHANIC_DESCRIPTION,
+  MECHANIC_LABEL,
+} from '~/data/terms'
 
 /**
  * Global hovered-card preview overlay. A single instance lives at the app root
@@ -82,6 +97,58 @@ const innerStyle = computed(() => ({
   transform: `scale(${SCALE})`,
   transformOrigin: 'top left'
 }))
+
+/* --------------------------------------------------------------------------
+ * Keyword glossary — definition plates beside the zoomed card for every
+ * Hollowmoor term the card carries (keywords) or references (rules text), so
+ * new players never need outside knowledge to read a card.
+ * ----------------------------------------------------------------------- */
+interface GlossaryEntry {
+  label: string
+  text: string
+}
+
+const MAX_PLATES = 4
+
+const glossary = computed<GlossaryEntry[]>(() => {
+  const c = card.value
+  if (!c) return []
+  const out: GlossaryEntry[] = []
+  const seen = new Set<string>()
+  const add = (label: string, text: string): void => {
+    if (seen.has(label) || out.length >= MAX_PLATES) return
+    seen.add(label)
+    out.push({ label, text })
+  }
+
+  // Mechanics the card has (or its text references by display name).
+  if (c.battlecry || c.text.includes(MECHANIC_LABEL.battlecry)) {
+    add(MECHANIC_LABEL.battlecry, MECHANIC_DESCRIPTION.battlecry)
+  }
+  if (c.deathrattle || c.text.includes(MECHANIC_LABEL.deathrattle)) {
+    add(MECHANIC_LABEL.deathrattle, MECHANIC_DESCRIPTION.deathrattle)
+  }
+  if (c.chooseOne?.length) add(MECHANIC_LABEL.chooseOne, MECHANIC_DESCRIPTION.chooseOne)
+
+  // Keywords on the card itself, then ones its text grants/references.
+  for (const k of c.keywords ?? []) add(KEYWORD_LABEL[k], KEYWORD_DESCRIPTION[k])
+  if (c.spellDamage) add(KEYWORD_LABEL.spellDamage, KEYWORD_DESCRIPTION.spellDamage)
+  for (const k of Object.keys(KEYWORD_LABEL) as Keyword[]) {
+    if (c.text.includes(KEYWORD_LABEL[k])) add(KEYWORD_LABEL[k], KEYWORD_DESCRIPTION[k])
+  }
+  return out
+})
+
+/** Put the plates on whichever side of the card has room (prefer right). */
+const GLOSSARY_W = 190
+const glossarySide = computed<'side-right' | 'side-left'>(() => {
+  const r = anchor.value
+  if (!r) return 'side-right'
+  const { w: vw } = viewport.value
+  let left = r.left + r.width / 2 - W / 2
+  left = Math.max(MARGIN, Math.min(left, vw - W - MARGIN))
+  return left + W + GLOSSARY_W + 24 <= vw ? 'side-right' : 'side-left'
+})
 </script>
 
 <style scoped>
@@ -95,6 +162,57 @@ const innerStyle = computed(() => ({
 .card-preview-inner {
   width: 200px;
   height: 280px;
+}
+
+/* Glossary plates beside the zoomed card */
+.glossary-col {
+  position: absolute;
+  top: 4px;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.glossary-col.side-right { left: calc(100% + 12px); }
+.glossary-col.side-left { right: calc(100% + 12px); }
+
+/* Narrow screens: no room beside the card — stack the plates underneath. */
+@media (max-width: 700px) {
+  .glossary-col.side-right,
+  .glossary-col.side-left {
+    left: 0;
+    right: auto;
+    top: calc(100% + 8px);
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .glossary-plate {
+    flex: 1 1 45%;
+    min-width: 140px;
+  }
+}
+.glossary-plate {
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #6b4a16;
+  background: linear-gradient(180deg, #f3e5c3 0%, #e2cb98 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 6px 14px rgba(0, 0, 0, 0.55);
+}
+.glossary-term {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5e420a;
+  margin-bottom: 1px;
+}
+.glossary-text {
+  display: block;
+  font-size: 0.68rem;
+  line-height: 1.3;
+  color: #3a2410;
 }
 
 /* A snappy pop-in: rises slightly and fades while scaling up. */

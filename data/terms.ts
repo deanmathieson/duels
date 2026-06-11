@@ -33,6 +33,26 @@ export const MECHANIC_LABEL = {
   chooseOne: 'Choose One',
 } as const
 
+/** One-line player-facing definitions for keywords (tooltips / glossary). */
+export const KEYWORD_DESCRIPTION: Record<Keyword, string> = {
+  taunt: 'Enemies must attack this minion first.',
+  divineShield: 'Ignores the first damage it takes.',
+  rush: 'Can attack enemy minions the turn it arrives.',
+  charge: 'Can attack anything the turn it arrives.',
+  windfury: 'Can attack twice each turn.',
+  lifesteal: 'Damage it deals also heals your hero.',
+  poisonous: 'Destroys any minion it damages.',
+  stealth: 'Can’t be attacked or targeted by the enemy until it attacks.',
+  spellDamage: 'Your spells deal that much more damage.',
+}
+
+/** One-line definitions for the card-text mechanic words. */
+export const MECHANIC_DESCRIPTION: Record<keyof typeof MECHANIC_LABEL, string> = {
+  battlecry: 'Does something when you play it from your hand.',
+  deathrattle: 'Does something when it dies.',
+  chooseOne: 'Pick one of its effects when you play it.',
+}
+
 /** Display names for minion tribes. */
 export const TRIBE_LABEL: Record<MinionTribe, string> = {
   none: '',

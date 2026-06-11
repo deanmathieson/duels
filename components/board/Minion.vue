@@ -58,7 +58,7 @@
         :key="kw.key"
         class="kw-pip"
         :style="{ background: kw.color }"
-        :title="kw.label"
+        :title="`${kw.label} — ${kw.desc}`"
         >{{ kw.label }}</span
       >
     </div>
@@ -88,7 +88,12 @@ import { computed, ref, watch } from 'vue'
 import type { CardClass, Keyword, MinionInstance } from '~/game/types'
 import { getCard, hasCard } from '~/game/index'
 import { useAnimations } from '~/composables/useAnimations'
-import { KEYWORD_LABEL, MECHANIC_LABEL } from '~/data/terms'
+import {
+  KEYWORD_DESCRIPTION,
+  KEYWORD_LABEL,
+  MECHANIC_DESCRIPTION,
+  MECHANIC_LABEL,
+} from '~/data/terms'
 
 /** Render a live minion on the battlefield. */
 const props = withDefaults(
@@ -204,17 +209,17 @@ const portraitStyle = computed(() => {
  * as reinforcing silhouette cues.
  */
 type BadgeKey = Keyword | 'haunt'
-const KW_META: Record<BadgeKey, { label: string; color: string }> = {
-  taunt: { label: KEYWORD_LABEL.taunt, color: 'linear-gradient(180deg,#cdb48a,#6b4a2a)' },
-  divineShield: { label: KEYWORD_LABEL.divineShield, color: 'linear-gradient(180deg,#ffe9a8,#b8841f)' },
-  haunt: { label: MECHANIC_LABEL.deathrattle, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
-  rush: { label: KEYWORD_LABEL.rush, color: 'linear-gradient(180deg,#5fbf4d,#206b16)' },
-  charge: { label: KEYWORD_LABEL.charge, color: 'linear-gradient(180deg,#e0a83f,#8a5e12)' },
-  windfury: { label: KEYWORD_LABEL.windfury, color: 'linear-gradient(180deg,#5fa8e0,#1f5e9e)' },
-  lifesteal: { label: KEYWORD_LABEL.lifesteal, color: 'linear-gradient(180deg,#e0584d,#8a1812)' },
-  poisonous: { label: KEYWORD_LABEL.poisonous, color: 'linear-gradient(180deg,#6fbf4d,#206b16)' },
-  stealth: { label: KEYWORD_LABEL.stealth, color: 'linear-gradient(180deg,#8fa0c0,#2a3550)' },
-  spellDamage: { label: KEYWORD_LABEL.spellDamage, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
+const KW_META: Record<BadgeKey, { label: string; desc: string; color: string }> = {
+  taunt: { label: KEYWORD_LABEL.taunt, desc: KEYWORD_DESCRIPTION.taunt, color: 'linear-gradient(180deg,#cdb48a,#6b4a2a)' },
+  divineShield: { label: KEYWORD_LABEL.divineShield, desc: KEYWORD_DESCRIPTION.divineShield, color: 'linear-gradient(180deg,#ffe9a8,#b8841f)' },
+  haunt: { label: MECHANIC_LABEL.deathrattle, desc: MECHANIC_DESCRIPTION.deathrattle, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
+  rush: { label: KEYWORD_LABEL.rush, desc: KEYWORD_DESCRIPTION.rush, color: 'linear-gradient(180deg,#5fbf4d,#206b16)' },
+  charge: { label: KEYWORD_LABEL.charge, desc: KEYWORD_DESCRIPTION.charge, color: 'linear-gradient(180deg,#e0a83f,#8a5e12)' },
+  windfury: { label: KEYWORD_LABEL.windfury, desc: KEYWORD_DESCRIPTION.windfury, color: 'linear-gradient(180deg,#5fa8e0,#1f5e9e)' },
+  lifesteal: { label: KEYWORD_LABEL.lifesteal, desc: KEYWORD_DESCRIPTION.lifesteal, color: 'linear-gradient(180deg,#e0584d,#8a1812)' },
+  poisonous: { label: KEYWORD_LABEL.poisonous, desc: KEYWORD_DESCRIPTION.poisonous, color: 'linear-gradient(180deg,#6fbf4d,#206b16)' },
+  stealth: { label: KEYWORD_LABEL.stealth, desc: KEYWORD_DESCRIPTION.stealth, color: 'linear-gradient(180deg,#8fa0c0,#2a3550)' },
+  spellDamage: { label: KEYWORD_LABEL.spellDamage, desc: KEYWORD_DESCRIPTION.spellDamage, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
 }
 
 /** Order chips defensive → keyword-actions → haunt, so they read consistently. */
