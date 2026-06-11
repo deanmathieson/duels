@@ -46,6 +46,10 @@
         <BaseButton variant="wood" size="sm" full-width @click="showHelp = !showHelp">
           {{ showHelp ? 'Hide' : 'How to Play' }}
         </BaseButton>
+
+        <BaseButton variant="wood" size="sm" full-width @click="router.push('/codex')">
+          Treasure Codex
+        </BaseButton>
       </div>
     </div>
 
