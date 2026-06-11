@@ -341,15 +341,15 @@ function escapeHtml(s: string): string {
 }
 
 /** Render card text: escape, convert **keyword** to bold spans, newlines to <br>.
- *  For spells with an active Spell Damage bonus, "Deal N damage" numbers render
- *  boosted (N+bonus, starred + highlighted) (boosted-number convention). */
+ *  For spells with an active Spell Damage bonus, "Deal N damage" shows the base
+ *  number followed by a highlighted "(+B)" bonus — e.g. "Deal 1(+1) damage". */
 const renderedText = computed(() => {
   let escaped = escapeHtml(props.card.text ?? '')
   if (props.card.type === 'spell' && (props.spellDamage ?? 0) > 0) {
+    const bonus = props.spellDamage
     escaped = escaped.replace(
       /Deal (\d+) damage/gi,
-      (_m, n: string) =>
-        `Deal <span class="card-text-sd">${Number(n) + props.spellDamage}*</span> damage`
+      (_m, n: string) => `Deal ${n}<span class="card-text-sd">(+${bonus})</span> damage`
     )
   }
   return escaped

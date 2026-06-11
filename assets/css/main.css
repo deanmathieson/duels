@@ -508,7 +508,7 @@ body::after {
   font-weight: 700;
   color: #2a1607;
 }
-/* Spell-damage-boosted number in card text (e.g. "Deal 3* damage"). */
+/* Spell-damage bonus shown in card text (e.g. the "(+1)" in "Deal 1(+1) damage"). */
 .card-text-sd {
   font-weight: 800;
   color: #1f6a14;

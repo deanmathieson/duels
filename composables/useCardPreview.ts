@@ -9,6 +9,9 @@ import type { CardDef } from '~/game/types'
  */
 const card = ref<CardDef | null>(null)
 const anchor = ref<DOMRect | null>(null)
+/** Owner's Spell Damage bonus for the previewed card, so the big preview shows
+ *  the same "Deal N(+B) damage" boost the in-hand card does. 0 unless passed. */
+const spellDamage = ref(0)
 /** While true (e.g. mid-targeting), show() is a no-op so the big preview never
  *  covers the board during an aimed action. Owned by GameBoard. */
 const suppressed = ref(false)
@@ -16,13 +19,14 @@ let hideTimer: ReturnType<typeof setTimeout> | null = null
 
 export function useCardPreview() {
   /** Show the preview for a card, anchored to the given element. */
-  function show(c: CardDef, el: HTMLElement | null): void {
+  function show(c: CardDef, el: HTMLElement | null, sd = 0): void {
     if (suppressed.value || !el) return
     if (hideTimer) {
       clearTimeout(hideTimer)
       hideTimer = null
     }
     card.value = c
+    spellDamage.value = sd
     anchor.value = el.getBoundingClientRect()
   }
 
@@ -54,5 +58,5 @@ export function useCardPreview() {
     if (v) clear()
   }
 
-  return { card, anchor, show, hide, clear, setSuppressed }
+  return { card, anchor, spellDamage, show, hide, clear, setSuppressed }
 }

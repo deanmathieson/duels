@@ -64,10 +64,11 @@ const hoverIndex = ref(-1)
 const els = new Map<string, HTMLElement>()
 const preview = useCardPreview()
 
-/** Hover a slot: lift it and surface the big, viewport-clamped preview overlay. */
+/** Hover a slot: lift it and surface the big, viewport-clamped preview overlay
+ *  (carrying the owner's Spell Damage so the preview shows the same boost). */
 function onSlotEnter(i: number, inst: CardInstance): void {
   hoverIndex.value = i
-  preview.show(defFor(inst), els.get(inst.instanceId) ?? null)
+  preview.show(defFor(inst), els.get(inst.instanceId) ?? null, props.spellDamage)
 }
 function onSlotLeave(): void {
   hoverIndex.value = -1

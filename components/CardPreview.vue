@@ -8,7 +8,7 @@
         aria-hidden="true"
       >
         <div class="card-preview-inner" :style="innerStyle">
-          <CardView :card="card" />
+          <CardView :card="card" :spell-damage="spellDamage" />
         </div>
       </div>
     </Transition>
@@ -25,7 +25,7 @@ import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
  * every `overflow` container (deck-builder pool, reward fan, …) and is then clamped
  * to the viewport — it can never clip at a screen or container edge.
  */
-const { card, anchor } = useCardPreview()
+const { card, anchor, spellDamage } = useCardPreview()
 
 /** Base CardView dimensions (normal size) and the preview magnification. */
 const BASE_W = 200
