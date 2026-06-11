@@ -24,6 +24,10 @@
       <span class="weapon-dur-gem">{{ weapon.durability }}</span>
     </div>
 
+    <!-- Generous invisible hit area while this hero is a legal target — the
+         visible disc alone is a fiddly click/drop target. -->
+    <div v-if="targetable" class="hit-pad" aria-hidden="true" />
+
     <!-- Portrait ring -->
     <div class="hero-ring" :class="{ 'attack-ready': canAttack }">
       <div class="hero-disc" :style="portraitStyle">
@@ -117,6 +121,14 @@ const portraitStyle = computed(() => {
   align-items: center;
   justify-content: center;
   transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+/* Invisible padded hit zone (rendered only while targetable): clicks and drag
+   releases that land just beside the portrait still count as the hero. */
+.hit-pad {
+  position: absolute;
+  inset: -24px;
+  border-radius: 38px;
 }
 
 .hero-ring {

@@ -11,7 +11,9 @@
     <CombatLog />
 
     <!-- ====================== ENEMY ZONE ====================== -->
-    <section class="zone enemy-zone">
+    <!-- While aiming with the enemy hero as a legal target, the WHOLE strip is
+         face territory: releasing/clicking anywhere in it targets the hero. -->
+    <section class="zone enemy-zone" :class="{ 'face-zone': faceZoneActive }">
       <!-- Enemy hand (face-down, fanned) + draw pile -->
       <div class="enemy-hand">
         <div
@@ -376,6 +378,40 @@ function isTargetable(id: string): boolean {
   return isTargeting.value && currentTargets.value.includes(id)
 }
 
+/** Face is a legal target right now — the whole enemy strip accepts the hit. */
+const faceZoneActive = computed(
+  () => isTargeting.value && currentTargets.value.includes(HERO_TARGET(1))
+)
+
+/**
+ * Forgiving drop/click target resolution:
+ *  1. An exact hit on an entity is authoritative — legal commits, illegal
+ *     cancels (no snapping someone's deliberate click onto a neighbour).
+ *  2. Anywhere in the enemy zone counts as the enemy hero when face is legal.
+ *  3. Otherwise snap to the nearest legal target within SNAP_RADIUS px.
+ */
+const SNAP_RADIUS = 110
+function resolveDropTarget(x: number, y: number): string | null {
+  const under = document.elementFromPoint(x, y)
+  const entityEl = under?.closest?.('[data-entity-id]') as HTMLElement | null
+  const exact = entityEl?.dataset.entityId ?? null
+  if (exact) return currentTargets.value.includes(exact) ? exact : null
+  if (faceZoneActive.value && under?.closest?.('.enemy-zone')) return HERO_TARGET(1)
+  let best: string | null = null
+  let bestDist = SNAP_RADIUS
+  for (const id of currentTargets.value) {
+    const el = nodeFor(id)
+    if (!el) continue
+    const r = el.getBoundingClientRect()
+    const d = Math.hypot(r.left + r.width / 2 - x, r.top + r.height / 2 - y)
+    if (d < bestDist) {
+      bestDist = d
+      best = id
+    }
+  }
+  return best
+}
+
 /* --------------------------------------------------------------------------
  * Drag-to-target (pointer events)
  *
@@ -463,13 +499,13 @@ function onDragUp(e: PointerEvent): void {
   if (!wasActive || !src) return
   suppressClickUntil = performance.now() + 250
 
-  const under = document.elementFromPoint(e.clientX, e.clientY)
-  const entityEl = under?.closest?.('[data-entity-id]') as HTMLElement | null
-  const targetId = entityEl?.dataset.entityId ?? null
+  // Forgiving resolution: exact hit, else the enemy strip as face, else the
+  // nearest legal target within reach.
+  const targetId = resolveDropTarget(e.clientX, e.clientY)
 
   if (src.kind === 'attacker') {
     const attackerId = src.id
-    if (targetId && currentTargets.value.includes(targetId)) {
+    if (targetId) {
       cancelSelection()
       void store.humanAttack(attackerId, targetId)
     } else {
@@ -478,9 +514,9 @@ function onDragUp(e: PointerEvent): void {
     return
   }
 
-  // Targeted card drag: release on a legal target casts it.
+  // Targeted card drag: release on (or near) a legal target casts it.
   if (selectedCardId.value === src.id) {
-    if (targetId && currentTargets.value.includes(targetId)) {
+    if (targetId) {
       playSelectedCard(src.id, { targetId, chooseOneIndex: pendingChooseOneIndex.value })
     } else {
       cancelSelection()
@@ -493,6 +529,7 @@ function onDragUp(e: PointerEvent): void {
   const cardId = dragPlayCardId.value
   dragPlayCardId.value = null
   if (!cardId) return
+  const under = document.elementFromPoint(e.clientX, e.clientY)
   const overBoard = !!under?.closest?.('.battlefield, .player-zone .hero-row')
   if (!overBoard) return
   const inst = human.value?.hand.find((c) => c.instanceId === cardId)
@@ -545,15 +582,21 @@ function cancelSelection(): void {
 }
 
 /**
- * Clicking empty board space while aiming cancels the selection. Clicks on
- * entities, hand cards, overlays and buttons are excluded — their own handlers
- * (which bubble here afterwards) own those interactions.
+ * Clicking board space while aiming: first try the forgiving target resolution
+ * (enemy strip = face, near-miss snap) — a resolved target commits the action;
+ * a true miss cancels. Clicks on entities, hand cards, overlays and buttons
+ * are excluded — their own handlers (which bubble here afterwards) own those.
  */
 function onBoardClick(e: MouseEvent): void {
   if (clickSuppressed()) return
   if (!isTargeting.value) return
   const t = e.target as HTMLElement | null
   if (t?.closest('.minion-root, .hero-root, .hand-slot, .choice-overlay, button')) return
+  const snapped = resolveDropTarget(e.clientX, e.clientY)
+  if (snapped) {
+    commitTarget(snapped)
+    return
+  }
   cancelSelection()
 }
 
@@ -670,7 +713,11 @@ function onEntityClick(targetId: string): void {
     cancelSelection()
     return
   }
+  commitTarget(targetId)
+}
 
+/** Dispatch the armed action (attack / hero power / card) at a legal target. */
+function commitTarget(targetId: string): void {
   if (selectedAttackerId.value) {
     const attackerId = selectedAttackerId.value
     cancelSelection()
@@ -1030,6 +1077,15 @@ function enemyCardStyle(i: number, n: number): Record<string, string> {
 .enemy-zone {
   gap: 2px;
   padding-top: 2px;
+  border-radius: 0 0 26px 26px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+/* Face is a legal target: the whole strip glows softly — release anywhere
+   up here to hit the enemy hero. */
+.enemy-zone.face-zone {
+  background: radial-gradient(70% 100% at 50% 0%, rgba(255, 80, 80, 0.13), rgba(255, 80, 80, 0) 75%);
+  box-shadow: inset 0 14px 30px -18px rgba(255, 80, 80, 0.55);
+  cursor: pointer;
 }
 .player-zone {
   gap: 0;
