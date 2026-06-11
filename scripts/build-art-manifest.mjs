@@ -36,4 +36,5 @@ for (const folder of FOLDERS) {
 
 const outPath = resolve(ASSETS, 'art-manifest.json')
 writeFileSync(outPath, JSON.stringify({ manifest }, null, 2))
-console.log(`Wrote ${count} art entries to ${outPath}`)
+const keys = Object.keys(manifest).length
+console.log(`Wrote ${keys} art ids (${count} image files) to ${outPath}`)
