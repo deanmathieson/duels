@@ -48,10 +48,12 @@ KIND_LAYOUT = {
 PRIORITY = {"hero": 0, "enemy": 1, "treasure": 2, "heroPower": 3, "card": 4}
 
 NEGATIVE = (
+    "pin-up, cheesecake, sexualized, suggestive pose, cleavage, lingerie, "
+    "bikini, nude, naked, bare midriff, seductive, glamour model, "
     "photograph, photo, photorealistic, hyperrealistic, realistic, dslr, "
     "3d render, cgi, plastic, smooth, anime, cartoon, flat colors, "
     "text, watermark, signature, frame, border, logo, username, "
-    "explicit nudity, gore, deformed hands, extra limbs, lowres, blurry"
+    "gore, deformed hands, extra limbs, lowres, blurry"
 )
 
 

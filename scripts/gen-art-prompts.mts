@@ -23,12 +23,27 @@ import type { CardClass, CardDef } from '../game/types'
 /**
  * The shared Hollowmoor style anchor (front-loaded, compact). Hard-leans
  * PAINTED, not photographic — Frank Frazetta pulp-fantasy oil register:
- * dramatic chiaroscuro, rich warm shadows, visceral dark-heroic mood.
+ * dramatic chiaroscuro, rich warm shadows, gothic dark-fantasy mood.
+ * (Anti-cheesecake is handled in the per-subject text + the negative prompt;
+ * the Frazetta token alone otherwise defaults every card to a pin-up woman.)
  */
 const STYLE =
   'oil painting in the style of Frank Frazetta, pulp fantasy art, ' +
   'dramatic chiaroscuro, rich warm shadows, painterly brushwork, ' +
-  'dark heroic folk-horror, moody and visceral'
+  'dark gothic folk-horror'
+
+/** Creature words per tribe so tribal minions render as monsters, not people. */
+const TRIBE_CREATURE: Record<string, string> = {
+  beast: 'a wild beast',
+  demon: 'a demonic fae creature',
+  elemental: 'an elemental spirit',
+  mech: 'a clockwork golem',
+  dragon: 'a wyrm',
+  murloc: 'a bog fish-creature',
+  pirate: 'a brigand',
+  totem: 'a carved wooden effigy',
+  ancient: 'an ancient treant',
+}
 
 /** Per-class palette/mood accents — short, so they survive the token budget. */
 const CLASS_MOOD: Record<CardClass, string> = {
@@ -51,13 +66,22 @@ interface PromptEntry {
   prompt: string
 }
 
+/**
+ * Build the subject clause by card TYPE. Only minions are characters; spells
+ * are effect/scene illustrations and weapons are object still-lifes — both
+ * explicitly people-free, so the Frazetta anchor can't turn them into figures.
+ */
 function cardSubject(c: CardDef): string {
   if (c.type === 'minion') {
-    const tribe = c.tribe && c.tribe !== 'none' ? ` ${c.tribe}` : ''
-    return `a${tribe} character named "${c.name}"`
+    const creature = c.tribe && c.tribe !== 'none' ? TRIBE_CREATURE[c.tribe] : undefined
+    const who = creature ?? 'a fully-clothed character'
+    return `${who} named "${c.name}"`
   }
-  if (c.type === 'weapon') return `the weapon "${c.name}"`
-  return `the spell "${c.name}"`
+  if (c.type === 'weapon') {
+    return `still-life of the weapon "${c.name}", object only, no people, no figures`
+  }
+  // spell
+  return `a dramatic scene evoking "${c.name}", a magical effect or eerie landscape, no people, no figures`
 }
 
 const prompts: PromptEntry[] = []
@@ -75,7 +99,7 @@ for (const h of heroes) {
     id: h.id,
     kind: 'hero',
     name: h.name,
-    prompt: `${STYLE}. waist-up portrait of "${h.name}", imposing. ${CLASS_MOOD[h.cardClass] ?? CLASS_MOOD.neutral}`,
+    prompt: `${STYLE}. waist-up portrait of "${h.name}", imposing, fully clothed, dignified. ${CLASS_MOOD[h.cardClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 for (const hp of heroPowers) {
@@ -83,7 +107,7 @@ for (const hp of heroPowers) {
     id: hp.id,
     kind: 'heroPower',
     name: hp.name,
-    prompt: `${STYLE}. small circular emblem of "${hp.name}"`,
+    prompt: `${STYLE}. an icon symbolizing "${hp.name}", object or symbol, no people, no faces`,
   })
 }
 for (const t of allTreasures) {
@@ -91,7 +115,7 @@ for (const t of allTreasures) {
     id: t.id,
     kind: 'treasure',
     name: t.name,
-    prompt: `${STYLE}. a legendary relic, "${t.name}", on dark velvet`,
+    prompt: `${STYLE}. still-life of an ornate magical relic, "${t.name}", object only on dark velvet, no people, no figures`,
   })
 }
 for (const e of enemies) {
@@ -99,7 +123,7 @@ for (const e of enemies) {
     id: e.id,
     kind: 'enemy',
     name: e.name,
-    prompt: `${STYLE}. menacing villain portrait of ${e.heroName}, "${e.name}". ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}`,
+    prompt: `${STYLE}. menacing villain portrait of ${e.heroName}, "${e.name}", fully clothed. ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 

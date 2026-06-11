@@ -43,7 +43,9 @@ const SOUNDS: Record<SfxName, string> = {
 
 /** Music name -> filename. */
 const MUSIC: Record<MusicName, string> = {
-  menu: 'ambient_menu.wav',
+  // Menu theme is a provided track ("Gloomhollow"), not a generated loop.
+  // MP3 (~830 KB) rather than WAV (~9 MB) — Web Audio decodes it natively.
+  menu: 'theme_gloomhollow.mp3',
   board: 'ambient_board.wav',
 }
 
