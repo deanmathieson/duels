@@ -216,6 +216,179 @@ export const passiveTreasures: TreasureDef[] = [
     tags: ['big'],
   },
 
+  // --- archetype cost reduction ---
+  {
+    id: 'tr_forewarnings',
+    name: 'Dark Forewarnings',
+    kind: 'passive',
+    text: 'Your **Omen** minions cost (1) less.',
+    tier: 1,
+    auras: [{ kind: 'costReduction', amount: 1, filter: 'battlecry' }],
+    tags: ['omen'],
+  },
+  {
+    id: 'tr_paupers_funeral',
+    name: "A Pauper's Funeral",
+    kind: 'passive',
+    text: 'Your **Haunt** minions cost (1) less.',
+    tier: 1,
+    auras: [{ kind: 'costReduction', amount: 1, filter: 'deathrattle' }],
+    tags: ['haunt'],
+  },
+  {
+    id: 'tr_poachers_snare',
+    name: "Poacher's Snares",
+    kind: 'passive',
+    text: 'Your Beasts cost (1) less.',
+    tier: 1,
+    auras: [{ kind: 'costReduction', amount: 1, filter: 'beast' }],
+    tags: ['beasts'],
+  },
+
+  // --- more archetype stat auras ---
+  {
+    id: 'tr_well_kept_graves',
+    name: 'Well-Tended Graves',
+    kind: 'passive',
+    text: 'Your **Haunt** minions have +1/+2.',
+    tier: 1,
+    auras: [{ kind: 'minionStat', atk: 1, health: 2, filter: 'deathrattle' }],
+    tags: ['haunt'],
+  },
+  {
+    id: 'tr_loud_omens',
+    name: 'Louder Omens',
+    kind: 'passive',
+    text: 'Your **Omen** minions have +1/+1.',
+    tier: 1,
+    auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'battlecry' }],
+    tags: ['omen'],
+  },
+
+  // --- more archetype triggers ---
+  {
+    id: 'tr_changeling_gift',
+    name: 'Changeling Gift',
+    kind: 'passive',
+    text: 'After you play a Fae, give it +2/+1.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onPlayMinion',
+        condition: 'cardIsDemon',
+        effects: [{ kind: 'buff', atk: 2, health: 1, target: 'triggerSource' }],
+      },
+    ],
+    tags: ['fae'],
+  },
+  {
+    id: 'tr_deep_lore',
+    name: 'Deep Lore',
+    kind: 'passive',
+    text: 'After you cast a spell that costs (4) or more, draw a card.',
+    tier: 1,
+    triggers: [{ event: 'onSpellCast4Plus', effects: [{ kind: 'draw', count: 1 }] }],
+    tags: ['spells', 'big'],
+  },
+  {
+    id: 'tr_thrown_stones',
+    name: 'Thrown Stones',
+    kind: 'passive',
+    text: 'After you play a minion, deal 1 damage to a random enemy minion.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onPlayMinion',
+        effects: [{ kind: 'damage', amount: 1, target: 'randomEnemyMinion' }],
+      },
+    ],
+    tags: ['swarm'],
+  },
+  {
+    id: 'tr_waste_not',
+    name: 'Waste Not',
+    kind: 'passive',
+    text: 'After a friendly minion dies, give a random friendly minion +1/+1.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        effects: [{ kind: 'buff', atk: 1, health: 1, target: 'randomFriendlyMinion' }],
+      },
+    ],
+    tags: ['swarm', 'haunt'],
+  },
+  {
+    id: 'tr_evensong',
+    name: 'Evensong',
+    kind: 'passive',
+    text: 'At the end of your turn, restore 2 Health to all friendly characters.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'endOfTurn',
+        effects: [{ kind: 'heal', amount: 2, target: 'allFriendlyCharacters' }],
+      },
+    ],
+  },
+  {
+    id: 'tr_peat_plaster',
+    name: 'Peat and Plaster',
+    kind: 'passive',
+    text: 'At the end of your turn, gain 2 Armor.',
+    tier: 1,
+    triggers: [{ event: 'endOfTurn', effects: [{ kind: 'gainArmor', amount: 2 }] }],
+  },
+  {
+    id: 'tr_penance_paid',
+    name: 'Penance Paid',
+    kind: 'passive',
+    text: 'After you use your Hero Power, restore 3 Health to your hero.',
+    tier: 1,
+    triggers: [
+      {
+        event: 'onHeroPowerUsed',
+        effects: [{ kind: 'heal', amount: 3, target: 'friendlyHero' }],
+      },
+    ],
+  },
+  {
+    id: 'tr_ox_plate',
+    name: 'Ox-Cart Armour',
+    kind: 'passive',
+    text: 'After you play a card that costs (5) or more, gain 4 Armor.',
+    tier: 1,
+    triggers: [{ event: 'onCardCost5Plus', effects: [{ kind: 'gainArmor', amount: 4 }] }],
+    tags: ['big'],
+  },
+
+  // --- start of game ---
+  {
+    id: 'tr_crooked_penny',
+    name: 'The Crooked Penny',
+    kind: 'passive',
+    text: 'Start of Game: Add 2 Coins to your hand.',
+    tier: 1,
+    startOfGame: [{ kind: 'gainCoin', count: 2 }],
+  },
+  {
+    id: 'tr_early_worm',
+    name: 'The Early Worm',
+    kind: 'passive',
+    text: 'Start of Game: Draw 2 extra cards.',
+    tier: 1,
+    startOfGame: [{ kind: 'draw', count: 2 }],
+  },
+  {
+    id: 'tr_hangmans_scythe',
+    name: "The Hangman's Scythe",
+    kind: 'passive',
+    text: 'Start of Game: Equip a 2/3 Scythe.',
+    tier: 1,
+    startOfGame: [{ kind: 'equipWeapon', cardId: 'treasure_scythe' }],
+    tags: ['weapons'],
+  },
+
   /* --------------------------------------------------------------------------
    * TIER 2 — game-warping build-arounds
    * ----------------------------------------------------------------------- */
@@ -312,6 +485,81 @@ export const passiveTreasures: TreasureDef[] = [
     tags: ['swarm'],
   },
 
+  {
+    id: 'tr_hemlock_pinch',
+    name: 'A Pinch of Hemlock',
+    kind: 'passive',
+    text: 'Your minions have **Poisonous**.',
+    tier: 2,
+    auras: [{ kind: 'giveKeyword', keyword: 'poisonous', filter: 'minion' }],
+    tags: ['swarm'],
+  },
+  {
+    id: 'tr_pack_hunger',
+    name: "The Pack's Hunger",
+    kind: 'passive',
+    text: 'After you play a Beast, draw a card.',
+    tier: 2,
+    triggers: [{ event: 'onPlayBeast', effects: [{ kind: 'draw', count: 1 }] }],
+    tags: ['beasts'],
+  },
+  {
+    id: 'tr_stray_blessings',
+    name: 'Stray Blessings',
+    kind: 'passive',
+    text: 'After you cast a spell, give a random friendly minion +2/+2.',
+    tier: 2,
+    triggers: [
+      {
+        event: 'onPlaySpell',
+        effects: [{ kind: 'buff', atk: 2, health: 2, target: 'randomFriendlyMinion' }],
+      },
+    ],
+    tags: ['spells', 'swarm'],
+  },
+  {
+    id: 'tr_whispering_shelf',
+    name: 'The Whispering Shelf',
+    kind: 'passive',
+    text: 'At the start of your turn, add a random spell to your hand.',
+    tier: 2,
+    triggers: [
+      {
+        event: 'startOfTurn',
+        effects: [{ kind: 'addRandomCardToHand', pool: 'spell', count: 1 }],
+      },
+    ],
+    tags: ['spells'],
+  },
+  {
+    id: 'tr_follow_me_lads',
+    name: 'Follow Me, Lads',
+    kind: 'passive',
+    text: 'After your hero attacks, summon two 1/1 Pitchfork Volunteers.',
+    tier: 2,
+    triggers: [
+      {
+        event: 'afterAttack',
+        effects: [{ kind: 'summon', token: 'hollow_recruit', count: 2 }],
+      },
+    ],
+    tags: ['weapons', 'swarm'],
+  },
+  {
+    id: 'tr_bad_tempers',
+    name: 'Bad Tempers',
+    kind: 'passive',
+    text: 'After a friendly minion takes damage, give it +2 Attack.',
+    tier: 2,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDamaged',
+        effects: [{ kind: 'buff', atk: 2, health: 0, target: 'triggerSource' }],
+      },
+    ],
+    tags: ['ward'],
+  },
+
   /* --------------------------------------------------------------------------
    * JACKPOTS — run-warping crazies. Never in the normal rotation: they appear
    * only via the low-probability jackpot slot (guaranteed after elites),
@@ -400,6 +648,78 @@ export const passiveTreasures: TreasureDef[] = [
       },
     ],
     tags: ['big'],
+  },
+  {
+    id: 'tr_jp_hiring_fair',
+    name: 'The Hiring Fair',
+    kind: 'passive',
+    text: 'Your minions cost (2) less.',
+    jackpot: true,
+    auras: [{ kind: 'costReduction', amount: 2, filter: 'minion' }],
+  },
+  {
+    id: 'tr_jp_twin_litters',
+    name: 'Twin Litters',
+    kind: 'passive',
+    text: 'After you play a Beast, summon a copy of it.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'onPlayBeast',
+        effects: [{ kind: 'summonCopy', of: 'triggerSource' }],
+      },
+    ],
+    tags: ['beasts'],
+  },
+  {
+    id: 'tr_jp_parade_drowned',
+    name: 'Parade of the Drowned',
+    kind: 'passive',
+    text: 'At the start of your turn, summon two 2/2 Revenants.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'startOfTurn',
+        effects: [{ kind: 'summon', token: 'revenant', count: 2 }],
+      },
+    ],
+    tags: ['swarm', 'haunt'],
+  },
+  {
+    id: 'tr_jp_book_reads_back',
+    name: 'The Book That Reads Back',
+    kind: 'passive',
+    text: 'After you cast a spell, add a random spell to your hand.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'onPlaySpell',
+        effects: [{ kind: 'addRandomCardToHand', pool: 'spell', count: 1 }],
+      },
+    ],
+    tags: ['spells'],
+  },
+  {
+    id: 'tr_jp_creeping_damp',
+    name: 'The Creeping Damp',
+    kind: 'passive',
+    text: 'At the end of your turn, deal 2 damage to all enemies.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'endOfTurn',
+        effects: [{ kind: 'damage', amount: 2, target: 'allEnemyCharacters' }],
+      },
+    ],
+  },
+  {
+    id: 'tr_jp_headsmans_pride',
+    name: "The Headsman's Pride",
+    kind: 'passive',
+    text: "Start of Game: Equip a 4/4 Headsman's Axe.",
+    jackpot: true,
+    startOfGame: [{ kind: 'equipWeapon', cardId: 'treasure_headsman' }],
+    tags: ['weapons'],
   },
 ];
 
