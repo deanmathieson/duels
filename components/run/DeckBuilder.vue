@@ -22,6 +22,13 @@
             >
               {{ f.label }}
             </button>
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Search…"
+              class="pool-search font-body"
+              aria-label="Search the card pool"
+            />
           </div>
         </div>
 
@@ -161,6 +168,9 @@ const filters = computed<{ key: FilterKey; label: string }[]>(() => [
 ])
 const activeFilter = ref<FilterKey>('all')
 
+/** Free-text pool search across card names and rules text. */
+const search = ref('')
+
 /** All collectible CardDefs (deduped) in cost-then-name order. */
 const allPool = computed<CardDef[]>(() => {
   const seen = new Set<string>()
@@ -173,22 +183,27 @@ const allPool = computed<CardDef[]>(() => {
   return out.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name))
 })
 
-/** Pool filtered by the active type/class filter. */
+/** Pool filtered by the active type/class filter and the search query. */
 const filteredPool = computed(() => {
   const f = activeFilter.value
+  const q = search.value.trim().toLowerCase()
   return allPool.value.filter((c) => {
     switch (f) {
       case 'minion':
-        return c.type === 'minion'
+        if (c.type !== 'minion') return false
+        break
       case 'spell':
-        return c.type === 'spell'
+        if (c.type !== 'spell') return false
+        break
       case 'class':
-        return c.cardClass === heroClass.value
+        if (c.cardClass !== heroClass.value) return false
+        break
       case 'neutral':
-        return c.cardClass === 'neutral'
-      default:
-        return true
+        if (c.cardClass !== 'neutral') return false
+        break
     }
+    if (q && !`${c.name} ${c.text}`.toLowerCase().includes(q)) return false
+    return true
   })
 })
 
@@ -333,6 +348,25 @@ function confirm(): void {
   color: #2a1607;
   border-color: #6b4a16;
   box-shadow: 0 2px 8px rgba(240, 200, 80, 0.35);
+}
+
+.pool-search {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.65rem;
+  width: 9.5rem;
+  border-radius: 9999px;
+  border: 1px solid #6b4a16;
+  background: rgba(20, 12, 6, 0.7);
+  color: #f3e9d2;
+  outline: none;
+  transition: border-color 0.15s ease, width 0.2s ease;
+}
+.pool-search:focus {
+  border-color: #f0c850;
+  width: 12rem;
+}
+.pool-search::placeholder {
+  color: rgba(199, 168, 106, 0.45);
 }
 
 .pool-scroll {
