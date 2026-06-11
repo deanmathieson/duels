@@ -45,6 +45,15 @@
         </div>
       </div>
 
+      <!-- Freshly earned achievements -->
+      <div v-if="newCheeves.length" class="cheeve-stack fade-up">
+        <div v-for="a in newCheeves" :key="a.id" class="cheeve-banner" :class="{ fat: a.fat }">
+          <span class="cheeve-icon">{{ a.icon }}</span>
+          <span class="cheeve-label font-engrave">ACHIEVEMENT</span>
+          <span class="cheeve-name font-engrave">{{ a.name }}</span>
+        </div>
+      </div>
+
       <div class="mt-9 flex flex-col sm:flex-row items-center gap-3 fade-up">
         <button class="play-again font-engrave" @click="playAgain">
           <span class="relative z-10">Play Again</span>
@@ -61,6 +70,7 @@ import { computed, ref } from 'vue'
 import { CLASS_LABEL } from '~/data/terms'
 import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
 import { dailyDateKey, shareText } from '~/game/run/meta'
+import { ACHIEVEMENT_BY_ID } from '~/game/run/achievements'
 
 /** Celebratory victory screen shown when the player reaches 12 wins. */
 const router = useRouter()
@@ -69,6 +79,12 @@ const game = useGameStore()
 
 const heroName = computed(() => run.heroDef?.name ?? 'Warden')
 const deckTotal = computed(() => run.deckCount + (run.signatureTreasureId ? 1 : 0))
+
+/** Achievements stamped by THIS run's recording (banner list). */
+const meta = useMetaStore()
+const newCheeves = computed(() =>
+  meta.recentUnlocks.map((id) => ACHIEVEMENT_BY_ID[id]).filter(Boolean)
+)
 
 const shared = ref(false)
 
@@ -235,5 +251,54 @@ function toMenu(): void {
   .play-again {
     animation: fadeUp 0.8s ease 0.6s both;
   }
+}
+
+/* Achievement banners (shared look with DefeatScreen via duplication — both
+   end screens are siblings, not a hierarchy). */
+.cheeve-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1.4rem;
+  width: min(380px, 88vw);
+}
+.cheeve-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid #b8841f;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #4d3620 0%, #2a1c10 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(240, 200, 80, 0.35);
+  animation: cheevePop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+}
+.cheeve-banner.fat {
+  border-color: rgba(255, 64, 96, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(255, 64, 96, 0.45);
+}
+.cheeve-icon { font-size: 1.25rem; }
+.cheeve-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  color: #d8a830;
+  flex: none;
+}
+.cheeve-banner.fat .cheeve-label { color: #ff8ca0; }
+.cheeve-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ffe9a8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+@keyframes cheevePop {
+  from { opacity: 0; transform: translateY(10px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 </style>

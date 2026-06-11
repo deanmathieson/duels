@@ -29,6 +29,32 @@
           <span class="total-num font-engrave">{{ meta.daily.streak }}</span>
           <span class="total-label font-engrave">Daily Streak</span>
         </div>
+        <div class="total-tile">
+          <span class="total-num font-engrave gold">{{ unlockedCount }}/{{ ACHIEVEMENTS.length }}</span>
+          <span class="total-label font-engrave">Achievements</span>
+        </div>
+      </section>
+
+      <!-- Achievement wall -->
+      <section>
+        <h2 class="section-title font-engrave">Achievements</h2>
+        <div class="ach-grid">
+          <div
+            v-for="a in achievementRows"
+            :key="a.id"
+            class="ach-tile"
+            :class="{ unlocked: a.unlockedOn, fat: a.fat }"
+          >
+            <div class="ach-medal" :class="{ 'medal-fat': a.fat }">
+              <span class="ach-icon">{{ a.icon }}</span>
+            </div>
+            <div class="ach-body">
+              <span class="ach-name font-engrave">{{ a.name }}</span>
+              <span class="ach-text font-body">{{ a.text }}</span>
+              <span v-if="a.unlockedOn" class="ach-date font-engrave">Unlocked {{ a.unlockedOn }}</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Unlock progress -->
@@ -84,6 +110,7 @@ import { computed, onMounted } from 'vue'
 import { allTreasures, getHeroDef } from '~/data/registry'
 import { CLASS_LABEL } from '~/data/terms'
 import { ALL_CALLINGS } from '~/game/run/meta'
+import { ACHIEVEMENTS } from '~/game/run/achievements'
 
 /** The Ledger — lifetime stats, calling unlock progress and run history. */
 useSeoMeta({
@@ -104,6 +131,14 @@ onMounted(() => meta.load())
 
 const mythicTotal = computed(() => allTreasures.filter((t) => t.jackpot).length)
 const upcoming = computed(() => meta.upcomingUnlock)
+
+/** Achievement tiles: unlocked first (newest stamp), locked after, fat ones leading each group. */
+const achievementRows = computed(() =>
+  ACHIEVEMENTS.map((a) => ({ ...a, unlockedOn: meta.achievements[a.id] })).sort(
+    (a, b) => Number(!!b.unlockedOn) - Number(!!a.unlockedOn) || Number(!!b.fat) - Number(!!a.fat)
+  )
+)
+const unlockedCount = computed(() => Object.keys(meta.achievements).length)
 
 /** Calling display name (class label) with a safe fallback. */
 function nameFor(heroId: string): string {
@@ -233,6 +268,64 @@ const callingRows = computed(() =>
 .calling-body { display: flex; flex-direction: column; min-width: 0; }
 .calling-name { font-size: 0.78rem; font-weight: 800; color: #ffe9a8; }
 .calling-stats { font-size: 0.68rem; color: rgba(243, 233, 210, 0.75); }
+
+/* Achievement wall */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.6rem;
+}
+.ach-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid rgba(107, 74, 22, 0.5);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2c2014 0%, #1d1409 100%);
+  filter: grayscale(0.7) brightness(0.78);
+  transition: filter 0.2s ease;
+}
+.ach-tile.unlocked {
+  filter: none;
+  border-color: #6b4a16;
+  background: linear-gradient(180deg, #3a2a18 0%, #241810 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+.ach-tile.unlocked.fat {
+  border-color: rgba(255, 64, 96, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    0 0 14px 2px rgba(255, 64, 96, 0.3);
+}
+.ach-medal {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #6b4a16;
+  background: radial-gradient(circle at 34% 28%, #ffe9a8 0%, #d8a830 45%, #6b4a16 100%);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), inset 0 -4px 8px rgba(0, 0, 0, 0.45);
+}
+.ach-medal.medal-fat {
+  background: radial-gradient(circle at 34% 28%, #ffb3c0 0%, #ff4060 45%, #9c1030 100%);
+}
+.ach-icon { font-size: 1.5rem; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)); }
+.ach-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ach-name { font-size: 0.78rem; font-weight: 800; color: #ffe9a8; }
+.ach-tile.unlocked.fat .ach-name { color: #ffb3c0; }
+.ach-text { font-size: 0.66rem; line-height: 1.3; color: rgba(243, 233, 210, 0.75); }
+.ach-date {
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(199, 168, 106, 0.7);
+  margin-top: 1px;
+}
 
 .history-list { display: flex; flex-direction: column; gap: 0.35rem; }
 .history-row {

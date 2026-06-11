@@ -90,6 +90,8 @@ export interface RunRecord {
   result: 'victory' | 'defeat'
   /** True when this was the daily hunt. */
   daily?: boolean
+  /** Mythic treasures held when the run ended (achievement fodder). */
+  mythicsClaimed?: number
 }
 
 /**

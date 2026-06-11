@@ -537,6 +537,13 @@ export const useRunStore = defineStore('run', () => {
   /** Write the finished run into the permanent ledger (abandons never get here). */
   function recordToLedger(result: 'victory' | 'defeat'): void {
     const meta = useMetaStore()
+    const mythicsClaimed = [...passiveTreasures.value, ...activeTreasures.value].filter((id) => {
+      try {
+        return !!getTreasureDef(id).jackpot
+      } catch {
+        return false
+      }
+    }).length
     meta.recordRunEnd({
       date: dailyDateKey(new Date()),
       heroId: heroId.value ?? 'unknown',
@@ -544,6 +551,7 @@ export const useRunStore = defineStore('run', () => {
       losses: losses.value,
       result,
       daily: mode.value === 'daily' || undefined,
+      mythicsClaimed: mythicsClaimed || undefined,
     })
   }
 

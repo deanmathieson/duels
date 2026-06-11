@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { RunRecord } from '~/game/run/meta'
 import {
+  ALL_CALLINGS,
   dailyCallingFor,
   dailyDateKey,
   dailySeed,
@@ -9,6 +10,8 @@ import {
   runsRequiredFor,
   unlockedCallings,
 } from '~/game/run/meta'
+import { evaluateAchievements } from '~/game/run/achievements'
+import { allTreasures } from '~/data/registry'
 
 const STORAGE_KEY = 'duels-meta'
 const HISTORY_CAP = 30
@@ -30,9 +33,13 @@ interface MetaSnapshot {
   daily: {
     lastKey?: string
     streak: number
+    /** Longest streak ever held (achievements). */
+    bestStreak?: number
     /** Result of the most recent daily, shown on the menu after playing. */
     lastResult?: { key: string; wins: number; losses: number; result: 'victory' | 'defeat' }
   }
+  /** Achievement id -> UTC date key unlocked. */
+  achievements: Record<string, string>
 }
 
 /**
@@ -48,6 +55,9 @@ export const useMetaStore = defineStore('meta', () => {
   const byCalling = ref<Record<string, CallingStats>>({})
   const mythicsSeen = ref<string[]>([])
   const daily = ref<MetaSnapshot['daily']>({ streak: 0 })
+  const achievements = ref<Record<string, string>>({})
+  /** Achievements stamped by the most recent evaluation (end-screen toasts). */
+  const recentUnlocks = ref<string[]>([])
 
   let loaded = false
 
@@ -60,6 +70,7 @@ export const useMetaStore = defineStore('meta', () => {
       byCalling: { ...byCalling.value },
       mythicsSeen: [...mythicsSeen.value],
       daily: { ...daily.value },
+      achievements: { ...achievements.value },
     }
   }
 
@@ -87,9 +98,12 @@ export const useMetaStore = defineStore('meta', () => {
       byCalling.value = { ...(s.byCalling ?? {}) }
       mythicsSeen.value = [...(s.mythicsSeen ?? [])]
       daily.value = { streak: 0, ...(s.daily ?? {}) }
+      achievements.value = { ...(s.achievements ?? {}) }
     } catch {
       /* corrupted save — start a fresh ledger */
     }
+    // Retroactive credit: stamp anything the existing ledger already earns.
+    reevaluateAchievements(false)
   }
 
   /* --------------------------------------------------------------------------
@@ -140,12 +154,16 @@ export const useMetaStore = defineStore('meta', () => {
       const key = rec.date
       const prev = daily.value.lastKey
       const yesterday = dailyDateKey(new Date(Date.parse(key) - 86400000))
+      const streak =
+        prev === yesterday || prev === key ? daily.value.streak + (prev === key ? 0 : 1) : 1
       daily.value = {
         lastKey: key,
-        streak: prev === yesterday || prev === key ? daily.value.streak + (prev === key ? 0 : 1) : 1,
+        streak,
+        bestStreak: Math.max(daily.value.bestStreak ?? 0, streak),
         lastResult: { key, wins: rec.wins, losses: rec.losses, result: rec.result },
       }
     }
+    reevaluateAchievements(true)
     save()
   }
 
@@ -163,8 +181,48 @@ export const useMetaStore = defineStore('meta', () => {
     }
     if (grew) {
       mythicsSeen.value = [...set]
+      reevaluateAchievements(false)
       save()
     }
+  }
+
+  /* --------------------------------------------------------------------------
+   * Achievements
+   * ----------------------------------------------------------------------- */
+
+  /** Total mythics in the content set (for The Full Ledger). */
+  const mythicTotal = allTreasures.filter((t) => t.jackpot).length
+
+  /**
+   * Re-run the pure evaluator over the ledger and stamp anything new.
+   * @param toast - when true, newly stamped ids replace recentUnlocks (end-screen banners)
+   */
+  function reevaluateAchievements(toast: boolean): void {
+    const earned = evaluateAchievements({
+      runsCompleted: runsCompleted.value,
+      victories: victories.value,
+      history: history.value,
+      byCalling: byCalling.value,
+      mythicsSeen: mythicsSeen.value.length,
+      mythicTotal,
+      bestDailyStreak: Math.max(daily.value.bestStreak ?? 0, daily.value.streak),
+      callingsTotal: ALL_CALLINGS.length,
+      callingsUnlocked: unlockedCallings(runsCompleted.value).length,
+    })
+    const fresh = earned.filter((id) => !(id in achievements.value))
+    if (fresh.length) {
+      const today = dailyDateKey(new Date())
+      const next = { ...achievements.value }
+      for (const id of fresh) next[id] = today
+      achievements.value = next
+    }
+    if (toast) recentUnlocks.value = fresh
+  }
+
+  /** Whether an achievement is unlocked (and when). */
+  function achievementUnlockedOn(id: string): string | undefined {
+    load()
+    return achievements.value[id]
   }
 
   /** Whether a mythic has been encountered (codex shows it unobscured). */
@@ -204,6 +262,9 @@ export const useMetaStore = defineStore('meta', () => {
     byCalling,
     mythicsSeen,
     daily,
+    achievements,
+    recentUnlocks,
+    achievementUnlockedOn,
     load,
     isCallingUnlocked,
     runsUntilUnlock,
