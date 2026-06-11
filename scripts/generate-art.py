@@ -21,10 +21,17 @@ model CPU offload + VAE tiling. ~6-10s per image.
 """
 
 import argparse
+import gc
 import hashlib
 import json
+import os
 import time
 from pathlib import Path
+
+# Reduce CUDA allocator fragmentation — lets the model coexist with a busy
+# desktop (Chrome/Discord/games) that already holds a slice of an 8GB card.
+# Must be set before torch initializes CUDA.
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 import torch
 from diffusers import AutoPipelineForText2Image, DPMSolverSinglestepScheduler
@@ -35,14 +42,15 @@ ASSETS = ROOT / "public" / "assets"
 
 MODEL = "Lykon/dreamshaper-xl-v2-turbo"
 
-# Folder + canvas per asset kind. SDXL wants ~1MP, multiples of 64.
-# Cards show in a landscape window (~1.23:1); heroes/enemies are portraits.
+# Folder + canvas per asset kind. Kept at/under ~0.85MP so each render fits an
+# 8GB card with headroom — at full 1MP the late images spilled into shared
+# system RAM and crawled. Cards land in a landscape window; heroes are portraits.
 KIND_LAYOUT = {
-    "card": ("cards", 1152, 896),
-    "hero": ("heroes", 896, 1152),
-    "enemy": ("heroes", 896, 1152),
-    "treasure": ("treasures", 1024, 1024),
-    "heroPower": ("treasures", 1024, 1024),
+    "card": ("cards", 1024, 768),
+    "hero": ("heroes", 832, 1088),
+    "enemy": ("heroes", 832, 1088),
+    "treasure": ("treasures", 960, 960),
+    "heroPower": ("treasures", 960, 960),
 }
 
 PRIORITY = {"hero": 0, "enemy": 1, "treasure": 2, "heroPower": 3, "card": 4}
@@ -68,6 +76,13 @@ def main() -> None:
     ap.add_argument("--only", default="", help="comma-separated ids to render")
     ap.add_argument("--seed-offset", type=int, default=0)
     ap.add_argument("--steps", type=int, default=8)
+    ap.add_argument(
+        "--offload",
+        choices=["model", "sequential"],
+        default="sequential",
+        help="model = faster, needs ~6GB free VRAM; "
+        "sequential = streams layers, ~2GB VRAM, slower but coexists with a busy desktop",
+    )
     args = ap.parse_args()
 
     data = json.loads(PROMPTS.read_text(encoding="utf-8"))
@@ -98,8 +113,13 @@ def main() -> None:
     pipe.scheduler = DPMSolverSinglestepScheduler.from_config(
         pipe.scheduler.config, use_karras_sigmas=True
     )
-    # 8GB card: keep submodules on CPU until needed; tile the VAE.
-    pipe.enable_model_cpu_offload()
+    # Offload strategy (see --offload). Sequential streams individual layers so
+    # the GPU footprint stays ~2GB — survives a desktop already holding VRAM;
+    # model-offload is faster but needs the card mostly free.
+    if args.offload == "sequential":
+        pipe.enable_sequential_cpu_offload()
+    else:
+        pipe.enable_model_cpu_offload()
     pipe.vae.enable_tiling()
 
     done = 0
@@ -127,6 +147,11 @@ def main() -> None:
             f"{time.time() - t0:.1f}s  eta {eta_min:.0f}m",
             flush=True,
         )
+        # Reclaim VRAM each iteration — without this it creeps full over a long
+        # run and late renders spill into shared system RAM (10-50x slower).
+        del image
+        gc.collect()
+        torch.cuda.empty_cache()
 
     print(f"Done: {done} images in {(time.time() - started) / 60:.1f} minutes.")
 
