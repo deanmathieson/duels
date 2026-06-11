@@ -510,7 +510,9 @@ const SFX = [
   ['hero_hit.wav', heroHit, SR],
   ['victory_sting.wav', victorySting, SR],
   ['defeat_sting.wav', defeatSting, SR],
-  ['ambient_menu.wav', menuJingle, AMB_SR],
+  // NOTE: the menu theme is now a provided track (theme_hollowmoor.mp3) loaded
+  // by useAudio, NOT a generated loop — so `menuJingle()` below is intentionally
+  // not listed here (it's kept for reference / as a regenerable fallback).
   ['ambient_board.wav', ambientBoard, AMB_SR],
 ]
 

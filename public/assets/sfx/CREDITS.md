@@ -1,18 +1,22 @@
 # Sound effects — license & provenance
 
-All audio files in this folder are **original works, generated procedurally**
+All **sound effects** in this folder are **original works, generated procedurally**
 from pure DSP (oscillators + filtered noise) by `scripts/generate-sfx.mjs`.
 
-Nothing here is sampled, recorded, or downloaded from a third party. The sounds
-are dedicated to the **public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)** —
-no attribution is required, which keeps this public fan project fully
-license-clean.
+Nothing in the SFX set is sampled, recorded, or downloaded from a third party.
+Those sounds are dedicated to the **public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)** —
+no attribution is required, which keeps this public fan project license-clean.
 
-Regenerate at any time with:
+Regenerate the SFX at any time with:
 
 ```bash
 npm run gen-sfx
 ```
+
+> **Menu theme — `theme_hollowmoor.mp3`** is a *provided* music track (not generated
+> by the script). It is supplied by the project owner; ensure you hold the rights
+> to distribute it for this public deployment. `npm run gen-sfx` does **not** touch
+> this file.
 
 ## Files
 
@@ -26,8 +30,8 @@ npm run gen-sfx
 | `hero_hit.wav`      | A hero taking damage                      |
 | `victory_sting.wav` | Winning a match                           |
 | `defeat_sting.wav`  | Losing a match                            |
-| `ambient_menu.wav`  | Looping menu jingle (menus / draft)       |
 | `ambient_board.wav` | Looping ambient track (combat board)      |
+| `theme_hollowmoor.mp3` | Menu / draft theme song (provided)     |
 
 ## Swapping in a CC0 audio pack
 
