@@ -18,8 +18,15 @@ import {
   STARTING_HEALTH,
   HEALTH_PER_ROUND,
 } from '~/game/types'
-import { getCard, generateOffering } from '~/game/index'
-import type { RewardPools } from '~/game/index'
+import {
+  getCard,
+  hasCard,
+  generateOffering,
+  generateTreasureOffering,
+  deckSynergies,
+  treasureWeight,
+} from '~/game/index'
+import type { RewardPools, TreasureCandidate } from '~/game/index'
 import { nextInt, shuffle } from '~/game/rng'
 import {
   getHeroDef,
@@ -73,6 +80,13 @@ function freshRunState(seed: number): RunState {
  * single match at a time through {@link useGameStore}. Persisted to localStorage
  * under 'duels-run' on every mutation and reloaded on startup.
  */
+/**
+ * Chance that a regular treasure offering rolls its jackpot slot (one of the
+ * three choices drawn from the run-warping jackpot pool). Elite-kill bonus
+ * offerings always roll it.
+ */
+const JACKPOT_CHANCE = 0.2
+
 export const useRunStore = defineStore('run', () => {
   // --- core state (mirrors RunState) ---
   const stage = ref<RunStage>('heroSelect')
@@ -511,11 +525,46 @@ export const useRunStore = defineStore('run', () => {
       buckets: bucketIdsForClass(heroClass),
       passiveTreasures: passiveTreasureIds.filter((id) => {
         if (passiveTreasures.value.includes(id)) return false
+        if (getTreasureDef(id).jackpot) return false
         if (completedRound === undefined) return true
         return (getTreasureDef(id).tier ?? 1) === passiveTier
       }),
-      activeTreasures: activeTreasureIds.filter((id) => !activeTreasures.value.includes(id)),
+      activeTreasures: activeTreasureIds.filter(
+        (id) => !activeTreasures.value.includes(id) && !getTreasureDef(id).jackpot
+      ),
     }
+  }
+
+  /**
+   * Synergy-weighted treasure candidates for an offering. The deck's archetype
+   * lean (deckSynergies) boosts treasures whose tags match what the player is
+   * building. Jackpot treasures are always eligible (they ignore the passive
+   * tier banding) but are only ever drawn via the offering's jackpot slot.
+   * @param type - which treasure pool to draw from
+   * @param completedRound - the round whose rewards are being built (passive tier banding)
+   */
+  function treasureCandidates(
+    type: 'passiveTreasure' | 'activeTreasure',
+    completedRound?: number
+  ): TreasureCandidate[] {
+    const synergies = deckSynergies(deck.value.filter((id) => hasCard(id)).map((id) => getCard(id)))
+    const owned = type === 'passiveTreasure' ? passiveTreasures.value : activeTreasures.value
+    const ids = type === 'passiveTreasure' ? passiveTreasureIds : activeTreasureIds
+    const passiveTier = completedRound === 3 ? 2 : 1
+    return ids
+      .filter((id) => {
+        if (owned.includes(id)) return false
+        const def = getTreasureDef(id)
+        if (def.jackpot) return true
+        if (type === 'passiveTreasure' && completedRound !== undefined) {
+          return (def.tier ?? 1) === passiveTier
+        }
+        return true
+      })
+      .map((id) => {
+        const def = getTreasureDef(id)
+        return { id, weight: treasureWeight(def.tags, synergies), jackpot: def.jackpot }
+      })
   }
 
   /**
@@ -544,11 +593,22 @@ export const useRunStore = defineStore('run', () => {
 
     const tType = treasureTypeForRound(completedRound)
     if (tType) {
-      const t = generateOffering(tType, completedRound, rng, rewardPools(completedRound))
+      const t = generateTreasureOffering(
+        tType,
+        rng,
+        treasureCandidates(tType, completedRound),
+        JACKPOT_CHANCE
+      )
       if (t.choices.length > 0) queue.push(t)
     }
     if (eliteBonus) {
-      const bonus = generateOffering('activeTreasure', completedRound, rng, rewardPools(completedRound))
+      // Elite kills guarantee a jackpot among the bonus treasure choices.
+      const bonus = generateTreasureOffering(
+        'activeTreasure',
+        rng,
+        treasureCandidates('activeTreasure', completedRound),
+        1
+      )
       if (bonus.choices.length > 0) queue.push(bonus)
     }
     const bucket = generateOffering('bucket', completedRound, rng, rewardPools(completedRound))

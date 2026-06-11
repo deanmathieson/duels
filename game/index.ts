@@ -15,6 +15,12 @@ export {
   getHeroPower,
   hasHeroPower,
 } from './cardDb'
-export { rewardScheduleFor, generateOffering } from './run/rewards'
-export type { RewardPools } from './run/rewards'
+export {
+  rewardScheduleFor,
+  generateOffering,
+  generateTreasureOffering,
+  deckSynergies,
+  treasureWeight,
+} from './run/rewards'
+export type { RewardPools, TreasureCandidate } from './run/rewards'
 export * as rng from './rng'

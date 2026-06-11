@@ -50,6 +50,7 @@ export const activeTreasures: TreasureDef[] = [
       spell: [{ kind: 'refreshMana' }],
       token: true,
     },
+    tags: ['big', 'spells'],
   },
   {
     id: 'tr_healing_touch',
@@ -112,6 +113,7 @@ export const activeTreasures: TreasureDef[] = [
       spell: [{ kind: 'discover', pool: 'spell', costReduction: 3 }],
       token: true,
     },
+    tags: ['spells'],
   },
 
   // ---- 2-cost ----
@@ -165,6 +167,7 @@ export const activeTreasures: TreasureDef[] = [
       ],
       token: true,
     },
+    tags: ['ward'],
   },
   {
     id: 'tr_research',
@@ -270,6 +273,7 @@ export const activeTreasures: TreasureDef[] = [
       spell: [{ kind: 'summon', token: 'treasure_grizzly', count: 2 }],
       token: true,
     },
+    tags: ['ward', 'beasts'],
   },
 
   // ---- 5-cost ----
@@ -310,5 +314,74 @@ export const activeTreasures: TreasureDef[] = [
       spell: [{ kind: 'resummonDeadMinion', count: 3, filter: 'all' }],
       token: true,
     },
+    tags: ['haunt'],
+  },
+
+  /* --------------------------------------------------------------------------
+   * JACKPOTS — run-warping crazies. Only appear via the low-probability
+   * jackpot slot in active-treasure offerings (guaranteed after elites).
+   * ----------------------------------------------------------------------- */
+
+  {
+    id: 'tr_jp_moors_verdict',
+    name: "The Moor's Verdict",
+    kind: 'active',
+    text: 'Destroy all enemy minions.',
+    jackpot: true,
+    card: {
+      id: 'tr_jp_moors_verdict',
+      name: "The Moor's Verdict",
+      cost: 5,
+      type: 'spell',
+      cardClass: 'neutral',
+      rarity: 'legendary',
+      text: 'Destroy all enemy minions.',
+      flavor: 'The moor hears every case. The moor finds for the moor.',
+      spell: [{ kind: 'destroy', target: 'enemyMinions' }],
+      token: true,
+    },
+  },
+  {
+    id: 'tr_jp_carnival',
+    name: 'Carnival of Teeth',
+    kind: 'active',
+    text: 'Fill your board with 2/2 Revenants.',
+    jackpot: true,
+    card: {
+      id: 'tr_jp_carnival',
+      name: 'Carnival of Teeth',
+      cost: 4,
+      type: 'spell',
+      cardClass: 'neutral',
+      rarity: 'legendary',
+      text: 'Fill your board with 2/2 Revenants.',
+      flavor: 'It comes to town overnight, uninvited. Admission is free. Leaving is negotiable.',
+      spell: [{ kind: 'summon', token: 'revenant', count: 7 }],
+      token: true,
+    },
+    tags: ['swarm', 'haunt'],
+  },
+  {
+    id: 'tr_jp_stolen_hours',
+    name: 'The Stolen Hours',
+    kind: 'active',
+    text: "Draw 4 cards, then reduce your hand's Cost by (2).",
+    jackpot: true,
+    card: {
+      id: 'tr_jp_stolen_hours',
+      name: 'The Stolen Hours',
+      cost: 1,
+      type: 'spell',
+      cardClass: 'neutral',
+      rarity: 'legendary',
+      text: "Draw 4 cards, then reduce your hand's Cost by (2).",
+      flavor: 'Where do the hours go when the clock runs slow? Someone is keeping them. Someone is spending them.',
+      spell: [
+        { kind: 'draw', count: 4 },
+        { kind: 'reduceCostInHand', amount: 2 },
+      ],
+      token: true,
+    },
+    tags: ['big', 'spells'],
   },
 ];

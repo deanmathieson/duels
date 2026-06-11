@@ -323,6 +323,22 @@ export interface HeroDef {
 
 export type TreasureKind = 'passive' | 'active' | 'signature'
 
+/**
+ * Synergy tags drive treasure offerings toward what the player is drafting:
+ * the run store scores the deck (see deckSynergies) and treasures whose tags
+ * match the deck's lean are weighted up in the offering roll.
+ */
+export type SynergyTag =
+  | 'spells' // spell-heavy deck
+  | 'beasts' // Beast tribal
+  | 'fae' // Fae (demon) tribal
+  | 'ward' // Ward (taunt) wall
+  | 'omen' // Omen (battlecry) value
+  | 'haunt' // Haunt (deathrattle) graveyard play
+  | 'swarm' // wide boards of cheap minions
+  | 'big' // expensive top-end
+  | 'weapons' // hero-attack / weapon decks
+
 export interface TreasureDef {
   id: string
   name: string
@@ -338,8 +354,14 @@ export interface TreasureDef {
   // active & signature treasures: a real card added to the deck/hand
   card?: CardDef
 
-  /** Hint for the AI / UI on who this is good for. */
+  /** Synergy tags (see SynergyTag) — weight this treasure toward decks leaning
+   *  that way. Legacy free-form tags are tolerated and simply never match. */
   tags?: string[]
+
+  /** Run-warping jackpot treasure: only appears via the low-probability jackpot
+   *  slot in offerings (guaranteed after elites), ignores passive tier banding,
+   *  and gets the mythic presentation in the picker. */
+  jackpot?: boolean
 
   /** Passive offering band: tier 1 = early (round 1), tier 2 = game-warping
    *  (round 3). Treasures without a tier default to 1. */

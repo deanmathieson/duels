@@ -24,7 +24,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your spells cost (1) less.',
     tier: 1,
     auras: [{ kind: 'costReduction', amount: 1, filter: 'spell' }],
-    tags: ['druid-good'],
+    tags: ['spells'],
   },
   {
     id: 'tr_inspiring_presence',
@@ -43,6 +43,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your **Ward** minions have +1/+2.',
     tier: 1,
     auras: [{ kind: 'minionStat', atk: 1, health: 2, filter: 'taunt' }],
+    tags: ['ward'],
   },
   {
     id: 'tr_natural_force',
@@ -51,7 +52,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your Beasts have +2 Attack.',
     tier: 1,
     auras: [{ kind: 'minionStat', atk: 2, filter: 'beast' }],
-    tags: ['druid-good'],
+    tags: ['beasts'],
   },
   {
     id: 'tr_titans_favor',
@@ -60,6 +61,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your minions that cost (5) or more have +2/+2.',
     tier: 1,
     auras: [{ kind: 'minionStat', atk: 2, health: 2, filter: 'costGte5' }],
+    tags: ['big'],
   },
 
   // --- archetype triggers ---
@@ -80,7 +82,7 @@ export const passiveTreasures: TreasureDef[] = [
         ],
       },
     ],
-    tags: ['druid-good'],
+    tags: ['beasts'],
   },
   // id kept for compatibility; was "start with 10 Armor", now a weapon/attack
   // build-around.
@@ -91,6 +93,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'After your hero attacks, draw a card.',
     tier: 1,
     triggers: [{ event: 'afterAttack', effects: [{ kind: 'draw', count: 1 }] }],
+    tags: ['weapons'],
   },
   {
     id: 'tr_double_treant',
@@ -104,7 +107,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'summon', token: 'sapling', count: 1 }],
       },
     ],
-    tags: ['druid-good'],
+    tags: ['spells', 'swarm'],
   },
   {
     id: 'tr_grave_pact',
@@ -119,6 +122,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'summon', token: 'revenant', count: 1 }],
       },
     ],
+    tags: ['haunt'],
   },
   {
     id: 'tr_battle_drums',
@@ -133,6 +137,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'buff', atk: 1, health: 1, target: 'triggerSource' }],
       },
     ],
+    tags: ['omen'],
   },
   {
     id: 'tr_standing_army',
@@ -146,6 +151,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'summon', token: 'hollow_recruit', count: 1 }],
       },
     ],
+    tags: ['swarm'],
   },
   {
     id: 'tr_spell_spark',
@@ -159,6 +165,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'damage', amount: 1, target: 'randomEnemy' }],
       },
     ],
+    tags: ['spells'],
   },
   {
     id: 'tr_fae_blood',
@@ -173,6 +180,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'damage', amount: 2, target: 'enemyHero' }],
       },
     ],
+    tags: ['fae'],
   },
   {
     id: 'tr_scholars_focus',
@@ -194,6 +202,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'draw', count: 1 }],
       },
     ],
+    tags: ['big'],
   },
 
   // --- start of game ---
@@ -204,7 +213,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Start of Game: Gain an empty Mana Stone.',
     tier: 1,
     startOfGame: [{ kind: 'gainManaCrystal', count: 1, empty: true }],
-    tags: ['druid-good'],
+    tags: ['big'],
   },
 
   /* --------------------------------------------------------------------------
@@ -218,6 +227,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your **Haunts** trigger twice.',
     tier: 2,
     auras: [{ kind: 'triggerTwice', what: 'deathrattle' }],
+    tags: ['haunt'],
   },
   {
     id: 'tr_omen_double',
@@ -226,6 +236,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your **Omens** trigger twice.',
     tier: 2,
     auras: [{ kind: 'triggerTwice', what: 'battlecry' }],
+    tags: ['omen'],
   },
   {
     id: 'tr_echo_chamber',
@@ -234,6 +245,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'The first spell you cast each turn casts twice.',
     tier: 2,
     auras: [{ kind: 'firstSpellEachTurnTwice' }],
+    tags: ['spells'],
   },
   {
     id: 'tr_grave_echo',
@@ -248,6 +260,7 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'summonCopy', of: 'triggerSource', atk: 1, health: 1 }],
       },
     ],
+    tags: ['haunt'],
   },
   {
     id: 'tr_swarm_banner',
@@ -256,6 +269,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your minions that cost (2) or less have +1/+1.',
     tier: 2,
     auras: [{ kind: 'minionStat', atk: 1, health: 1, filter: 'costLte2' }],
+    tags: ['swarm'],
   },
   {
     id: 'tr_rocket_backpacks',
@@ -264,6 +278,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your minions have **Rush**.',
     tier: 2,
     auras: [{ kind: 'giveKeyword', keyword: 'rush', filter: 'minion' }],
+    tags: ['swarm'],
   },
   {
     id: 'tr_vampiric_fangs',
@@ -280,7 +295,7 @@ export const passiveTreasures: TreasureDef[] = [
     text: 'Your hero has +1 Spell Damage.',
     tier: 2,
     auras: [{ kind: 'spellDamage', amount: 1 }],
-    tags: ['druid-good'],
+    tags: ['spells'],
   },
   {
     id: 'tr_divine_illumination',
@@ -294,6 +309,97 @@ export const passiveTreasures: TreasureDef[] = [
         effects: [{ kind: 'giveDivineShield', target: 'triggerSource' }],
       },
     ],
+    tags: ['swarm'],
+  },
+
+  /* --------------------------------------------------------------------------
+   * JACKPOTS — run-warping crazies. Never in the normal rotation: they appear
+   * only via the low-probability jackpot slot (guaranteed after elites),
+   * ignore tier banding, and get the mythic presentation in the picker.
+   * ----------------------------------------------------------------------- */
+
+  {
+    id: 'tr_jp_mirrored_moor',
+    name: 'The Mirrored Moor',
+    kind: 'passive',
+    text: 'After you play a minion, summon a 1/1 copy of it.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'onPlayMinion',
+        effects: [{ kind: 'summonCopy', of: 'triggerSource', atk: 1, health: 1 }],
+      },
+    ],
+    tags: ['swarm', 'omen'],
+  },
+  {
+    id: 'tr_jp_second_dawn',
+    name: 'Litany of Second Dawns',
+    kind: 'passive',
+    text: 'Your spells cost (2) less.',
+    jackpot: true,
+    auras: [{ kind: 'costReduction', amount: 2, filter: 'spell' }],
+    tags: ['spells'],
+  },
+  {
+    id: 'tr_jp_harvest_due',
+    name: "The Harvest Queen's Due",
+    kind: 'passive',
+    text: 'At the end of your turn, give your minions +1/+1.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'endOfTurn',
+        effects: [{ kind: 'buff', atk: 1, health: 1, target: 'friendlyMinions' }],
+      },
+    ],
+    tags: ['swarm', 'ward'],
+  },
+  {
+    id: 'tr_jp_old_hunger',
+    name: 'The Old Hunger',
+    kind: 'passive',
+    text: 'Your hero has +3 Spell Damage.',
+    jackpot: true,
+    auras: [{ kind: 'spellDamage', amount: 3 }],
+    tags: ['spells'],
+  },
+  {
+    id: 'tr_jp_thrice_moon',
+    name: 'The Thrice-Risen Moon',
+    kind: 'passive',
+    text: 'Start of Game: Gain 2 Mana Stones.',
+    jackpot: true,
+    startOfGame: [{ kind: 'gainManaCrystal', count: 2 }],
+    tags: ['big'],
+  },
+  {
+    id: 'tr_jp_unquiet_earth',
+    name: 'The Unquiet Earth',
+    kind: 'passive',
+    text: 'After a friendly minion dies, summon a 1/1 copy of it.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'onFriendlyMinionDeath',
+        effects: [{ kind: 'summonCopy', of: 'triggerSource', atk: 1, health: 1 }],
+      },
+    ],
+    tags: ['swarm', 'haunt'],
+  },
+  {
+    id: 'tr_jp_long_midnight',
+    name: 'The Long Midnight',
+    kind: 'passive',
+    text: 'At the start of your turn, gain 1 extra Mana this turn.',
+    jackpot: true,
+    triggers: [
+      {
+        event: 'startOfTurn',
+        effects: [{ kind: 'gainManaThisTurn', amount: 1 }],
+      },
+    ],
+    tags: ['big'],
   },
 ];
 

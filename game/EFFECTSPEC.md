@@ -117,6 +117,25 @@ bounds resolution to guard against infinite trigger loops.
 | `equipWeapon` | Equip `cardId` weapon (replaces existing). |
 | `script` | Run the named `ScriptId` (see below). |
 
+### Treasure offerings: synergy weighting & jackpots
+
+Treasure offerings (game/run/rewards.ts `generateTreasureOffering`) are not a
+flat shuffle:
+
+- **Synergy weighting** — `deckSynergies(cards)` scores the player's deck per
+  `SynergyTag` (`spells`, `beasts`, `fae`, `ward`, `omen`, `haunt`, `swarm`,
+  `big`, `weapons`); a treasure whose `tags` match the deck's lean is weighted
+  up (`treasureWeight`: baseline 1 + 2.5 per matched signal point, so a hard
+  lean ≈ 3.5x as likely). Untagged treasures are universal and stay baseline.
+- **Jackpots** — treasures with `jackpot: true` are run-warping crazies kept
+  OUT of the normal rotation. Each offering rolls one jackpot slot with
+  probability `JACKPOT_CHANCE` (0.2 in the run store); elite-kill bonus
+  offerings always include one. Jackpot passives ignore tier banding (a
+  round-1 offering can hit one). The picker renders them as **mythic**.
+- Authoring rules: a jackpot must read as absurd on sight (Hollowmoor voice,
+  mythic-worthy); give every non-universal treasure 1–2 `SynergyTag`s; ids use
+  the `tr_jp_` prefix for jackpots.
+
 ### ScriptId implementations (engine worker)
 
 - `harvestTime`: destroy the chosen minion; summon two `sapling` on **that minion's owner's** side.

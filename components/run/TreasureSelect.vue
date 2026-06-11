@@ -80,7 +80,8 @@ interface TreasureView {
   name: string
   text: string
   art?: string
-  rarity: Rarity
+  /** Display tier; 'mythic' is the jackpot presentation above legendary. */
+  rarity: Rarity | 'mythic'
   kindLabel: string
   /** Mana cost of the granted card; undefined for passives (no card). */
   cost?: number
@@ -89,7 +90,9 @@ interface TreasureView {
 const treasures = computed<TreasureView[]>(() =>
   (run.offering?.choices ?? []).map((id) => {
     const def = getTreasureDef(id)
-    const rarity: Rarity = def.card?.rarity ?? (def.kind === 'signature' ? 'legendary' : 'epic')
+    const rarity: TreasureView['rarity'] = def.jackpot
+      ? 'mythic'
+      : (def.card?.rarity ?? (def.kind === 'signature' ? 'legendary' : 'epic'))
     return {
       id: def.id,
       name: def.name,
@@ -205,6 +208,14 @@ function skip(): void {
 .rarity-border-epic { border-color: rgba(177, 78, 224, 0.55); }
 .rarity-border-legendary { border-color: rgba(240, 144, 42, 0.6); }
 .rarity-border-rare { border-color: rgba(61, 127, 240, 0.5); }
+.rarity-border-mythic {
+  border-color: rgba(255, 64, 96, 0.75);
+  animation: mythic-pulse 1.8s ease-in-out infinite;
+}
+@keyframes mythic-pulse {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 18px 2px rgba(255, 64, 96, 0.35); }
+  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 30px 6px rgba(255, 64, 96, 0.6); }
+}
 
 /* Rarity ambient glow (bottom fill) */
 .rarity-ambient {
@@ -225,6 +236,10 @@ function skip(): void {
 }
 .ambient-rare {
   background: radial-gradient(120% 60% at 50% 100%, rgba(61, 127, 240, 0.6), transparent 70%);
+}
+.ambient-mythic {
+  background: radial-gradient(120% 60% at 50% 100%, rgba(255, 64, 96, 0.75), transparent 70%);
+  opacity: 0.26;
 }
 .ambient-common,
 .ambient-free {
@@ -293,6 +308,9 @@ function skip(): void {
 .emblem-rare {
   background: radial-gradient(circle at 34% 28%, #aacbff 0%, #3d7ff0 45%, #1a4fb0 100%);
 }
+.emblem-mythic {
+  background: radial-gradient(circle at 34% 28%, #ffb3c0 0%, #ff4060 45%, #9c1030 100%);
+}
 .emblem-common,
 .emblem-free {
   background: radial-gradient(circle at 34% 28%, #ffffff 0%, #c7ccd1 50%, #8b9197 100%);
@@ -356,6 +374,8 @@ function skip(): void {
 .tag-legendary { color: #ffd9a0; text-shadow: 0 0 8px rgba(240, 144, 42, 0.7); }
 .tag-rare { color: #aacbff; }
 .tag-common, .tag-free { color: #c7ccd1; }
+.tag-mythic { color: #ffb3c0; text-shadow: 0 0 10px rgba(255, 64, 96, 0.85); }
+.rarity-gem.rarity-mythic { background: #ff4060; box-shadow: 0 0 8px rgba(255, 64, 96, 0.8); }
 
 .treasure-text-plate {
   padding: 0.6rem 0.7rem;
