@@ -43,7 +43,8 @@ const SOUNDS: Record<SfxName, string> = {
 
 /** Music name -> filename. */
 const MUSIC: Record<MusicName, string> = {
-  menu: 'ambient_menu.wav',
+  // Menu theme is a provided track ("Gloomhollow"), not a generated loop.
+  menu: 'theme_gloomhollow.wav',
   board: 'ambient_board.wav',
 }
 
