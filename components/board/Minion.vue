@@ -51,15 +51,15 @@
       {{ def?.name }}
     </div>
 
-    <!-- Keyword pips (taunt/rush/etc) shown as small markers -->
-    <div v-if="keywordBadges.length" class="kw-row">
+    <!-- Keyword chips (Ward / Blessing / Rush / Charge / Haunt / …) -->
+    <div v-if="keywordBadges.length" class="kw-row" :class="{ 'kw-row-sm': small }">
       <span
         v-for="kw in keywordBadges"
         :key="kw.key"
         class="kw-pip"
         :style="{ background: kw.color }"
         :title="kw.label"
-        >{{ kw.glyph }}</span
+        >{{ kw.label }}</span
       >
     </div>
 
@@ -88,7 +88,7 @@ import { computed, ref, watch } from 'vue'
 import type { CardClass, Keyword, MinionInstance } from '~/game/types'
 import { getCard, hasCard } from '~/game/index'
 import { useAnimations } from '~/composables/useAnimations'
-import { KEYWORD_LABEL } from '~/data/terms'
+import { KEYWORD_LABEL, MECHANIC_LABEL } from '~/data/terms'
 
 /** Render a live minion on the battlefield. */
 const props = withDefaults(
@@ -158,6 +158,10 @@ const divineShield = computed(() => props.minion.divineShield)
 const hasStealth = computed(
   () => props.minion.keywords.includes('stealth') && !props.minion.silenced
 )
+/** Haunt (deathrattle): read off the card def — not stored on the instance. */
+const hasHaunt = computed(
+  () => !!def.value?.deathrattle && def.value.deathrattle.length > 0 && !props.minion.silenced
+)
 
 /** Attack colored green if buffed above base. */
 const attackClass = computed(() => {
@@ -193,23 +197,44 @@ const portraitStyle = computed(() => {
   return { background: `radial-gradient(120% 120% at 35% 25%, ${g[0]} 0%, ${g[1]} 100%)` }
 })
 
-/** Small keyword markers (skip taunt/stealth/divineShield which have visuals). */
-const KW_META: Partial<Record<Keyword, { glyph: string; label: string; color: string }>> = {
-  rush: { glyph: '»', label: KEYWORD_LABEL.rush, color: 'linear-gradient(180deg,#7fe06b,#2c7a1f)' },
-  charge: { glyph: '⚡', label: KEYWORD_LABEL.charge, color: 'linear-gradient(180deg,#ffe07f,#b8841f)' },
-  windfury: { glyph: '⟳', label: KEYWORD_LABEL.windfury, color: 'linear-gradient(180deg,#9fd6ff,#2e7fd6)' },
-  lifesteal: { glyph: '✚', label: KEYWORD_LABEL.lifesteal, color: 'linear-gradient(180deg,#ff9b8c,#b32414)' },
-  poisonous: { glyph: '☠', label: KEYWORD_LABEL.poisonous, color: 'linear-gradient(180deg,#a6ff7f,#2c7a1f)' },
+/**
+ * Keyword badge chips along the top of the token — the keyword WORD in a
+ * colour-coded pill, so every keyword reads instantly (text always renders, no
+ * glyph-font roulette). The taunt frame, blessing ring and stealth veil remain
+ * as reinforcing silhouette cues.
+ */
+type BadgeKey = Keyword | 'haunt'
+const KW_META: Record<BadgeKey, { label: string; color: string }> = {
+  taunt: { label: KEYWORD_LABEL.taunt, color: 'linear-gradient(180deg,#cdb48a,#6b4a2a)' },
+  divineShield: { label: KEYWORD_LABEL.divineShield, color: 'linear-gradient(180deg,#ffe9a8,#b8841f)' },
+  haunt: { label: MECHANIC_LABEL.deathrattle, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
+  rush: { label: KEYWORD_LABEL.rush, color: 'linear-gradient(180deg,#5fbf4d,#206b16)' },
+  charge: { label: KEYWORD_LABEL.charge, color: 'linear-gradient(180deg,#e0a83f,#8a5e12)' },
+  windfury: { label: KEYWORD_LABEL.windfury, color: 'linear-gradient(180deg,#5fa8e0,#1f5e9e)' },
+  lifesteal: { label: KEYWORD_LABEL.lifesteal, color: 'linear-gradient(180deg,#e0584d,#8a1812)' },
+  poisonous: { label: KEYWORD_LABEL.poisonous, color: 'linear-gradient(180deg,#6fbf4d,#206b16)' },
+  stealth: { label: KEYWORD_LABEL.stealth, color: 'linear-gradient(180deg,#8fa0c0,#2a3550)' },
+  spellDamage: { label: KEYWORD_LABEL.spellDamage, color: 'linear-gradient(180deg,#b07be6,#4a2080)' },
 }
+
+/** Order chips defensive → keyword-actions → haunt, so they read consistently. */
+const BADGE_ORDER: BadgeKey[] = [
+  'taunt',
+  'divineShield',
+  'rush',
+  'charge',
+  'windfury',
+  'lifesteal',
+  'poisonous',
+  'haunt',
+]
 
 const keywordBadges = computed(() => {
   if (props.minion.silenced) return []
-  return props.minion.keywords
-    .map((k) => {
-      const meta = KW_META[k]
-      return meta ? { key: k, ...meta } : null
-    })
-    .filter((x): x is { key: Keyword; glyph: string; label: string; color: string } => !!x)
+  const present = new Set<BadgeKey>(props.minion.keywords as BadgeKey[])
+  if (divineShield.value) present.add('divineShield')
+  if (hasHaunt.value) present.add('haunt')
+  return BADGE_ORDER.filter((k) => present.has(k)).map((k) => ({ key: k, ...KW_META[k] }))
 })
 </script>
 
@@ -392,26 +417,40 @@ const keywordBadges = computed(() => {
     0 0 8px 2px rgba(255, 80, 60, 0.85);
 }
 
-/* Keyword pips */
+/* Keyword chips — the keyword WORD in a colour-coded pill, so each keyword is
+   legible at a glance. Wraps to a second line on a heavily-buffed minion. */
 .kw-row {
   position: absolute;
-  top: -6px;
+  top: -9px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
+  justify-content: center;
+  width: 132%;
   z-index: 25;
+  pointer-events: none;
 }
 .kw-pip {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  font-size: 9px;
-  line-height: 14px;
-  text-align: center;
+  padding: 1px 5px;
+  border-radius: 7px;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 8.5px;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.6);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.75);
+  font-weight: 800;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+.kw-row-sm .kw-pip {
+  font-size: 7px;
+  padding: 1px 4px;
 }
 </style>

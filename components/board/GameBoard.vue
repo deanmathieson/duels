@@ -1127,6 +1127,15 @@ function enemyCardStyle(i: number, n: number): Record<string, string> {
   position: relative;
   z-index: 30;
 }
+/* The player hero row likewise rides ABOVE the hand fan so the hero's health,
+   armour and attack gems are never buried under cards. The hand's click
+   hitboxes sit low (at the fan's resting line), so painting the hero over the
+   cards' upper edge doesn't block playing them — and the big hover preview
+   still shows any card the portrait overlaps. */
+.player-zone .hero-row {
+  position: relative;
+  z-index: 30;
+}
 .compact .enemy-hand {
   height: 52px;
 }
