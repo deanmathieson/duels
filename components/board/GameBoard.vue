@@ -1183,14 +1183,16 @@ function enemyCardStyle(i: number, n: number): Record<string, string> {
   position: relative;
   z-index: 30;
 }
-/* The player hero row likewise rides ABOVE the hand fan so the hero's health,
-   armour and attack gems are never buried under cards. The hand's click
-   hitboxes sit low (at the fan's resting line), so painting the hero over the
-   cards' upper edge doesn't block playing them — and the big hover preview
-   still shows any card the portrait overlaps. */
+/* The player hero row rides ABOVE the hand fan (z) AND floats clear of it: the
+   transform lifts the whole hero cluster up so the portrait + health/armour
+   gems sit in their own band with a comfortable gap above the resting cards,
+   instead of the fan crowding up under the portrait. The lift is `transform`
+   (not margin) so it doesn't move the hand — it only pulls the hero up into
+   the battlefield's spare room. */
 .player-zone .hero-row {
   position: relative;
   z-index: 30;
+  transform: translateY(-6px);
 }
 .compact .enemy-hand {
   height: 52px;
@@ -1205,7 +1207,10 @@ function enemyCardStyle(i: number, n: number): Record<string, string> {
   gap: 4px;
   min-height: 0;
   width: 100%;
-  padding: 4px 0;
+  /* Extra bottom padding lifts the centred minion rows up off the player's
+     floating hero portrait, so the friendly row, the hero and the hand fan
+     each get their own clear band on shorter (≈940px) desktops. */
+  padding: 4px 0 40px;
 }
 .minion-row {
   display: flex;

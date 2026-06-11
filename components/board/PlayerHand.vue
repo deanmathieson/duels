@@ -120,13 +120,17 @@ function fanGeometry(i: number): { offset: number; spacing: number; rot: number;
   // drop below the viewport). A small base lift keeps the whole fan in view.
   const arc = Math.min(props.small ? 8 : 12, Math.abs(offset) * (props.small ? 4 : 8))
 
-  // HS-style tuck: resting full-size cards sit low (their bottom rides off the
-  // board edge) so the hero portrait + health gem above stay fully visible.
-  const tuck = props.small ? 0 : 56
+  // HS-style tuck: resting cards sit low (their bottom rides off the board
+  // edge) so the hero portrait + health gem above stay clear of the fan. The
+  // compact tier tucks less (less vertical room) but still enough to clear the
+  // gem.
+  const tuck = props.small ? 22 : 56
 
-  // Full cards render at 0.84 (≈168px visual, fully readable); the small tier
-  // shrinks a little harder for short viewports.
-  const scale = props.small ? 0.88 : 0.84
+  // Resting scale: the desktop fan sits a touch smaller so its top clears the
+  // floating hero portrait above (the hover pop + the big preview overlay keep
+  // resting cards fully readable). The small tier shrinks harder for short
+  // viewports.
+  const scale = props.small ? 0.88 : 0.78
   return { offset, spacing, rot, arc, tuck, scale }
 }
 
