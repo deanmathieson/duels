@@ -2210,6 +2210,30 @@
       "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a wild beast named \"Barrow-Bear\". village folk, lantern light"
     },
     {
+      "id": "treasure_fae",
+      "kind": "card",
+      "name": "Hobyah",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a demonic fae creature named \"Hobyah\". village folk, lantern light"
+    },
+    {
+      "id": "treasure_scythe",
+      "kind": "card",
+      "name": "Rust-Bit Scythe",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of the weapon \"Rust-Bit Scythe\", object only, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "treasure_thresher",
+      "kind": "card",
+      "name": "Threshing Blade",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of the weapon \"Threshing Blade\", object only, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "treasure_headsman",
+      "kind": "card",
+      "name": "Headsman's Axe",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of the weapon \"Headsman's Axe\", object only, no people, no figures. village folk, lantern light"
+    },
+    {
       "id": "lunar_eclipse_token",
       "kind": "card",
       "name": "Dark o' the Moon",
@@ -2304,6 +2328,102 @@
       "kind": "card",
       "name": "Grave Calling",
       "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Grave Calling\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_quiet_knife",
+      "kind": "card",
+      "name": "The Quiet Knife",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"The Quiet Knife\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_frog_throat",
+      "kind": "card",
+      "name": "Frog in the Throat",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Frog in the Throat\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_hush_choir",
+      "kind": "card",
+      "name": "Hush the Choir",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Hush the Choir\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_eavesdropped",
+      "kind": "card",
+      "name": "Eavesdropped Incantations",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Eavesdropped Incantations\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_pressganged",
+      "kind": "card",
+      "name": "Press-Ganged Strangers",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Press-Ganged Strangers\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_threshing_blade",
+      "kind": "card",
+      "name": "The Threshing Blade",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"The Threshing Blade\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_stand_together",
+      "kind": "card",
+      "name": "Stand Together",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Stand Together\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_hobyah_call",
+      "kind": "card",
+      "name": "Hobyah! Hobyah!",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Hobyah! Hobyah!\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_two_more_stones",
+      "kind": "card",
+      "name": "Two More Stones",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Two More Stones\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_red_morning",
+      "kind": "card",
+      "name": "Red Morning",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Red Morning\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_harvest_feast",
+      "kind": "card",
+      "name": "Harvest Feast",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Harvest Feast\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_marsh_panthers",
+      "kind": "card",
+      "name": "Let Slip the Panthers",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Let Slip the Panthers\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_jp_great_waking",
+      "kind": "card",
+      "name": "The Great Waking",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"The Great Waking\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_jp_moors_verdict",
+      "kind": "card",
+      "name": "The Moor's Verdict",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"The Moor's Verdict\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_jp_carnival",
+      "kind": "card",
+      "name": "Carnival of Teeth",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"Carnival of Teeth\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
+    },
+    {
+      "id": "tr_jp_stolen_hours",
+      "kind": "card",
+      "name": "The Stolen Hours",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. a dramatic scene evoking \"The Stolen Hours\", a magical effect or eerie landscape, no people, no figures. village folk, lantern light"
     },
     {
       "id": "sig_wardens_insight",
@@ -2912,6 +3032,102 @@
       "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Swallowed Moonstone\", object only on dark velvet, no people, no figures"
     },
     {
+      "id": "tr_forewarnings",
+      "kind": "treasure",
+      "name": "Dark Forewarnings",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Dark Forewarnings\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_paupers_funeral",
+      "kind": "treasure",
+      "name": "A Pauper's Funeral",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"A Pauper's Funeral\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_poachers_snare",
+      "kind": "treasure",
+      "name": "Poacher's Snares",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Poacher's Snares\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_well_kept_graves",
+      "kind": "treasure",
+      "name": "Well-Tended Graves",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Well-Tended Graves\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_loud_omens",
+      "kind": "treasure",
+      "name": "Louder Omens",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Louder Omens\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_changeling_gift",
+      "kind": "treasure",
+      "name": "Changeling Gift",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Changeling Gift\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_deep_lore",
+      "kind": "treasure",
+      "name": "Deep Lore",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Deep Lore\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_thrown_stones",
+      "kind": "treasure",
+      "name": "Thrown Stones",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Thrown Stones\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_waste_not",
+      "kind": "treasure",
+      "name": "Waste Not",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Waste Not\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_evensong",
+      "kind": "treasure",
+      "name": "Evensong",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Evensong\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_peat_plaster",
+      "kind": "treasure",
+      "name": "Peat and Plaster",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Peat and Plaster\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_penance_paid",
+      "kind": "treasure",
+      "name": "Penance Paid",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Penance Paid\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_ox_plate",
+      "kind": "treasure",
+      "name": "Ox-Cart Armour",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Ox-Cart Armour\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_crooked_penny",
+      "kind": "treasure",
+      "name": "The Crooked Penny",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Crooked Penny\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_early_worm",
+      "kind": "treasure",
+      "name": "The Early Worm",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Early Worm\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_hangmans_scythe",
+      "kind": "treasure",
+      "name": "The Hangman's Scythe",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Hangman's Scythe\", object only on dark velvet, no people, no figures"
+    },
+    {
       "id": "tr_haunt_double",
       "kind": "treasure",
       "name": "Second Funeral",
@@ -2964,6 +3180,120 @@
       "kind": "treasure",
       "name": "Lamplighter Baptism",
       "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Lamplighter Baptism\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_hemlock_pinch",
+      "kind": "treasure",
+      "name": "A Pinch of Hemlock",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"A Pinch of Hemlock\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_pack_hunger",
+      "kind": "treasure",
+      "name": "The Pack's Hunger",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Pack's Hunger\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_stray_blessings",
+      "kind": "treasure",
+      "name": "Stray Blessings",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Stray Blessings\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_whispering_shelf",
+      "kind": "treasure",
+      "name": "The Whispering Shelf",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Whispering Shelf\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_follow_me_lads",
+      "kind": "treasure",
+      "name": "Follow Me, Lads",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Follow Me, Lads\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_bad_tempers",
+      "kind": "treasure",
+      "name": "Bad Tempers",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Bad Tempers\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_mirrored_moor",
+      "kind": "treasure",
+      "name": "The Mirrored Moor",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Mirrored Moor\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_second_dawn",
+      "kind": "treasure",
+      "name": "Litany of Second Dawns",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Litany of Second Dawns\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_harvest_due",
+      "kind": "treasure",
+      "name": "The Harvest Queen's Due",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Harvest Queen's Due\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_old_hunger",
+      "kind": "treasure",
+      "name": "The Old Hunger",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Old Hunger\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_thrice_moon",
+      "kind": "treasure",
+      "name": "The Thrice-Risen Moon",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Thrice-Risen Moon\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_unquiet_earth",
+      "kind": "treasure",
+      "name": "The Unquiet Earth",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Unquiet Earth\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_long_midnight",
+      "kind": "treasure",
+      "name": "The Long Midnight",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Long Midnight\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_hiring_fair",
+      "kind": "treasure",
+      "name": "The Hiring Fair",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Hiring Fair\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_twin_litters",
+      "kind": "treasure",
+      "name": "Twin Litters",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Twin Litters\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_parade_drowned",
+      "kind": "treasure",
+      "name": "Parade of the Drowned",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Parade of the Drowned\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_book_reads_back",
+      "kind": "treasure",
+      "name": "The Book That Reads Back",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Book That Reads Back\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_creeping_damp",
+      "kind": "treasure",
+      "name": "The Creeping Damp",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Creeping Damp\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_headsmans_pride",
+      "kind": "treasure",
+      "name": "The Headsman's Pride",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Headsman's Pride\", object only on dark velvet, no people, no figures"
     },
     {
       "id": "tr_bitter_cold",
@@ -3060,6 +3390,102 @@
       "kind": "treasure",
       "name": "Grave Calling",
       "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Grave Calling\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_quiet_knife",
+      "kind": "treasure",
+      "name": "The Quiet Knife",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Quiet Knife\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_frog_throat",
+      "kind": "treasure",
+      "name": "Frog in the Throat",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Frog in the Throat\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_hush_choir",
+      "kind": "treasure",
+      "name": "Hush the Choir",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Hush the Choir\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_eavesdropped",
+      "kind": "treasure",
+      "name": "Eavesdropped Incantations",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Eavesdropped Incantations\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_pressganged",
+      "kind": "treasure",
+      "name": "Press-Ganged Strangers",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Press-Ganged Strangers\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_threshing_blade",
+      "kind": "treasure",
+      "name": "The Threshing Blade",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Threshing Blade\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_stand_together",
+      "kind": "treasure",
+      "name": "Stand Together",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Stand Together\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_hobyah_call",
+      "kind": "treasure",
+      "name": "Hobyah! Hobyah!",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Hobyah! Hobyah!\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_two_more_stones",
+      "kind": "treasure",
+      "name": "Two More Stones",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Two More Stones\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_red_morning",
+      "kind": "treasure",
+      "name": "Red Morning",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Red Morning\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_harvest_feast",
+      "kind": "treasure",
+      "name": "Harvest Feast",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Harvest Feast\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_marsh_panthers",
+      "kind": "treasure",
+      "name": "Let Slip the Panthers",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Let Slip the Panthers\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_great_waking",
+      "kind": "treasure",
+      "name": "The Great Waking",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Great Waking\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_moors_verdict",
+      "kind": "treasure",
+      "name": "The Moor's Verdict",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Moor's Verdict\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_carnival",
+      "kind": "treasure",
+      "name": "Carnival of Teeth",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"Carnival of Teeth\", object only on dark velvet, no people, no figures"
+    },
+    {
+      "id": "tr_jp_stolen_hours",
+      "kind": "treasure",
+      "name": "The Stolen Hours",
+      "prompt": "oil painting in the style of Frank Frazetta, pulp fantasy art, dramatic chiaroscuro, rich warm shadows, painterly brushwork, dark gothic folk-horror. still-life of an ornate magical relic, \"The Stolen Hours\", object only on dark velvet, no people, no figures"
     },
     {
       "id": "sig_wardens_insight",
