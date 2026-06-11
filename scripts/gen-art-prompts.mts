@@ -10,28 +10,38 @@ import type { CardClass, CardDef } from '../game/types'
  * `npm run build-art-manifest` to wire them up. Cards without art fall back to
  * the styled class-gradient placeholder, so partial batches are always safe.
  *
+ * Prompt order is deliberate: the STYLE anchor is FRONT-loaded because CLIP
+ * (SDXL's text encoder) truncates at 77 tokens — anything past that is ignored.
+ * Style first → every image renders in the same illustrated look; the subject
+ * and per-class mood fill the remaining budget. Card flavor text is omitted
+ * from prompts on purpose: it ate tokens and pulled results toward literal,
+ * photographic scenes.
+ *
  * Run with: npm run gen-art-prompts
  */
 
-/** The shared Hollowmoor style anchor — keep every image in one world. */
+/**
+ * The shared Hollowmoor style anchor (front-loaded, compact). Hard-leans
+ * PAINTED, not photographic — Frank Frazetta pulp-fantasy oil register:
+ * dramatic chiaroscuro, rich warm shadows, visceral dark-heroic mood.
+ */
 const STYLE =
-  'dark folk-horror storybook illustration, 19th-century rural gothic, candlelit, ' +
-  'crooked woods and peat bog atmosphere, muted earthy palette with warm candle accents, ' +
-  'painterly texture, grotesque-but-playful, suggestive bawdy humor without explicit content, ' +
-  'no text, no watermark, single subject focus, card-art composition'
+  'oil painting in the style of Frank Frazetta, pulp fantasy art, ' +
+  'dramatic chiaroscuro, rich warm shadows, painterly brushwork, ' +
+  'dark heroic folk-horror, moody and visceral'
 
-/** Per-class palette/mood accents. */
+/** Per-class palette/mood accents — short, so they survive the token budget. */
 const CLASS_MOOD: Record<CardClass, string> = {
-  neutral: 'village common-folk mood, lantern light',
-  druid: 'hedgewitch greens, briar and mandrake, overgrown garden dark',
-  hunter: 'poacher browns, snare lines and hounds, misty moor at dawn',
-  mage: 'midnight blues, falling stars and frost, astrologer clutter',
-  paladin: 'wax-yellow lantern glow, processions and candle smoke',
-  priest: 'incense gloom, crooked parish church, communion wine reds',
-  rogue: 'tavern-backroom shadows, knives and stolen silver',
-  shaman: 'bog greens and storm greys, carved effigies, entrail-reading',
-  warlock: 'crossroads contract dread, fae court purples, red ink',
-  warrior: 'rusting plate, tourney banners gone ragged, alehouse brawn',
+  neutral: 'village folk, lantern light',
+  druid: 'hedgewitch greens, briar and mandrake',
+  hunter: 'poacher browns, snares and hounds, misty moor',
+  mage: 'midnight blues, falling stars and frost',
+  paladin: 'wax-yellow lantern glow, candle processions',
+  priest: 'incense gloom, crooked parish church',
+  rogue: 'tavern-backroom shadows, knives and silver',
+  shaman: 'bog greens and storm greys, carved effigies',
+  warlock: 'fae-court purples, crossroads contract dread',
+  warrior: 'rusting plate, ragged banners, alehouse brawn',
 }
 
 interface PromptEntry {
@@ -42,17 +52,12 @@ interface PromptEntry {
 }
 
 function cardSubject(c: CardDef): string {
-  const bits: string[] = []
   if (c.type === 'minion') {
-    const tribe = c.tribe && c.tribe !== 'none' ? ` (${c.tribe} creature)` : ''
-    bits.push(`character portrait of "${c.name}"${tribe}`)
-  } else if (c.type === 'weapon') {
-    bits.push(`ornate weapon still-life: "${c.name}"`)
-  } else {
-    bits.push(`magical moment depicting the spell "${c.name}"`)
+    const tribe = c.tribe && c.tribe !== 'none' ? ` ${c.tribe}` : ''
+    return `a${tribe} character named "${c.name}"`
   }
-  if (c.flavor) bits.push(`scene hint: ${c.flavor}`)
-  return bits.join(', ')
+  if (c.type === 'weapon') return `the weapon "${c.name}"`
+  return `the spell "${c.name}"`
 }
 
 const prompts: PromptEntry[] = []
@@ -62,7 +67,7 @@ for (const c of allCards) {
     id: c.id,
     kind: 'card',
     name: c.name,
-    prompt: `${cardSubject(c)}, ${CLASS_MOOD[c.cardClass] ?? CLASS_MOOD.neutral}, ${STYLE}`,
+    prompt: `${STYLE}. ${cardSubject(c)}. ${CLASS_MOOD[c.cardClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 for (const h of heroes) {
@@ -70,7 +75,7 @@ for (const h of heroes) {
     id: h.id,
     kind: 'hero',
     name: h.name,
-    prompt: `heroic waist-up portrait of "${h.name}", ${CLASS_MOOD[h.cardClass] ?? CLASS_MOOD.neutral}, imposing character, ${STYLE}`,
+    prompt: `${STYLE}. waist-up portrait of "${h.name}", imposing. ${CLASS_MOOD[h.cardClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 for (const hp of heroPowers) {
@@ -78,7 +83,7 @@ for (const hp of heroPowers) {
     id: hp.id,
     kind: 'heroPower',
     name: hp.name,
-    prompt: `small circular emblem illustrating "${hp.name}" (${hp.text}), ${STYLE}`,
+    prompt: `${STYLE}. small circular emblem of "${hp.name}"`,
   })
 }
 for (const t of allTreasures) {
@@ -86,7 +91,7 @@ for (const t of allTreasures) {
     id: t.id,
     kind: 'treasure',
     name: t.name,
-    prompt: `legendary relic illustration: "${t.name}" (${t.text}), treasure-hoard lighting, ${STYLE}`,
+    prompt: `${STYLE}. a legendary relic, "${t.name}", on dark velvet`,
   })
 }
 for (const e of enemies) {
@@ -94,11 +99,11 @@ for (const e of enemies) {
     id: e.id,
     kind: 'enemy',
     name: e.name,
-    prompt: `villain portrait of ${e.heroName}, known as "${e.name}", ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}, menacing local legend, ${STYLE}`,
+    prompt: `${STYLE}. menacing villain portrait of ${e.heroName}, "${e.name}". ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 
 const outPath = fileURLToPath(new URL('./art-prompts.json', import.meta.url))
 writeFileSync(outPath, JSON.stringify({ style: STYLE, prompts }, null, 2))
 console.log(`Wrote ${prompts.length} prompts to ${outPath}`)
-console.log('Priority order suggestion: heroes -> enemies -> treasures -> legendaries -> the rest.')
+console.log('Priority order: heroes -> enemies -> treasures -> heroPowers -> cards.')
