@@ -899,6 +899,9 @@ function applyEffect(eff: EffectSpec, ctx: EffectContext, events: GameEvent[]): 
       }
       if (!def || def.type !== 'minion') break
       const copy = makeMinion(def, { attack: eff.atk, health: eff.health })
+      // Echo copies don't re-echo: death-echo triggers skip minions that were
+      // themselves created by summonCopy (prevents infinite respawn chains).
+      asInternalMinion(copy)._echoCopy = true
       placeMinion(state, me, copy, undefined, events)
       break
     }

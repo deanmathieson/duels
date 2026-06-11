@@ -424,7 +424,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_grave_echo',
     name: 'Restless Lodgers',
     kind: 'passive',
-    text: 'After a friendly **Haunt** minion dies, summon a 1/1 copy of it.',
+    text: 'After a friendly **Haunt** minion dies, summon a 1/1 copy of it. (Copies don’t echo.)',
     tier: 2,
     triggers: [
       {
@@ -625,7 +625,7 @@ export const passiveTreasures: TreasureDef[] = [
     id: 'tr_jp_unquiet_earth',
     name: 'The Unquiet Earth',
     kind: 'passive',
-    text: 'After a friendly minion dies, summon a 1/1 copy of it.',
+    text: 'After a friendly minion dies, summon a 1/1 copy of it. (Copies don’t echo.)',
     jackpot: true,
     triggers: [
       {

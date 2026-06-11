@@ -135,6 +135,10 @@ flat shuffle:
 - Authoring rules: a jackpot must read as absurd on sight (Hollowmoor voice,
   mythic-worthy); give every non-universal treasure 1–2 `SynergyTag`s; ids use
   the `tr_jp_` prefix for jackpots.
+- **Echo copies don't re-echo**: minions created by `summonCopy` are marked,
+  and death triggers that would `summonCopy` the dead minion skip marked ones —
+  a real minion echoes exactly once (Reborn-style). Without this, Restless
+  Lodgers / The Unquiet Earth respawn every copy forever.
 
 ### ScriptId implementations (engine worker)
 

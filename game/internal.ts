@@ -46,6 +46,13 @@ export interface InternalMinion extends MinionInstance {
   _auraAtk?: number
   _auraHealth?: number
   _auraKeywords?: Keyword[]
+  /**
+   * Created by a `summonCopy` effect. Death-echo triggers (summon a copy of
+   * the minion that died) skip echo copies — otherwise every copy's death
+   * summons another copy and the loop never ends (Restless Lodgers / The
+   * Unquiet Earth). Reborn-style: a real minion echoes exactly once.
+   */
+  _echoCopy?: boolean
 }
 
 /** Narrow a GameState to the internal augmented view. */

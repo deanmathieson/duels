@@ -204,7 +204,7 @@ describe('summonCopy (grave echo)', () => {
     expect(copy.health).toBe(1)
   })
 
-  it('each respawn needs a fresh kill (no infinite loop)', () => {
+  it('echo copies do not re-echo (no eternal respawn)', () => {
     let { state, instanceId } = playMinion(
       startGame({ passives0: ['tr_fix_grave_echo'] }),
       'egg_fix'
@@ -212,14 +212,28 @@ describe('summonCopy (grave echo)', () => {
     state = kill(state, instanceId)
     const copy = state.players[0].board.find((m) => m.cardId === 'egg_fix')!
     state = kill(state, copy.instanceId)
-    // Copy died -> another treant + another copy; board is bounded, game alive.
+    // The copy's own deathrattle still fires (second treant), but its death
+    // does NOT summon another copy — a real minion echoes exactly once.
     const counts = state.players[0].board.reduce(
       (acc, m) => ((acc[m.cardId] = (acc[m.cardId] ?? 0) + 1), acc),
       {} as Record<string, number>
     )
     expect(counts['treant']).toBe(2)
-    expect(counts['egg_fix']).toBe(1)
+    expect(counts['egg_fix']).toBeUndefined()
     expect(state.phase).not.toBe('gameOver')
+  })
+
+  it('a SECOND real deathrattle minion still echoes (only copies are blocked)', () => {
+    let { state, instanceId } = playMinion(
+      startGame({ passives0: ['tr_fix_grave_echo'] }),
+      'egg_fix'
+    )
+    state = kill(state, instanceId)
+    state = kill(state, state.players[0].board.find((m) => m.cardId === 'egg_fix')!.instanceId)
+    // Play a fresh (real) egg: it must still echo on death.
+    const second = playMinion(state, 'egg_fix')
+    state = kill(second.state, second.instanceId)
+    expect(state.players[0].board.filter((m) => m.cardId === 'egg_fix')).toHaveLength(1)
   })
 
   it('does not trigger for minions without a deathrattle (condition gate)', () => {

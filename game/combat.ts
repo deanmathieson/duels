@@ -5,7 +5,7 @@ import type {
 import type { GameEvent, GameState, MinionInstance, PlayerId, TriggerCondition, TriggerDef } from './types'
 import { HERO_TARGET } from './types'
 import { getCard, hasCard } from './cardDb'
-import { asInternal } from './internal'
+import { asInternal, asInternalMinion } from './internal'
 import { effectMultiplier, recomputeAuras } from './auras'
 import { hasKeyword, isRushRestricted, removeKeyword } from './keywords'
 import {
@@ -326,6 +326,17 @@ function flushDamageTriggers(state: GameState, events: GameEvent[]): void {
   }
 }
 
+/**
+ * Would this death trigger summon a copy of the dead minion while the dead
+ * minion is itself an echo copy? Echo copies must not chain — otherwise every
+ * copy's death summons another copy and the respawn loop never ends
+ * (Restless Lodgers / The Unquiet Earth). A real minion echoes exactly once.
+ */
+function echoChainBlocked(trig: TriggerDef, deadMinion: MinionInstance): boolean {
+  if (!asInternalMinion(deadMinion)._echoCopy) return false
+  return !!trig.effects?.some((e) => e.kind === 'summonCopy' && e.of === 'triggerSource')
+}
+
 /** Fire onMinionDeath / onFriendlyMinionDeath triggers for surviving minions and passives. */
 function fireDeathTriggers(
   state: GameState,
@@ -341,6 +352,7 @@ function fireDeathTriggers(
           trig.event === 'onMinionDeath' ||
           (trig.event === 'onFriendlyMinionDeath' && p === deadOwner)
         ) {
+          if (echoChainBlocked(trig, deadMinion)) continue
           fireTrigger(state, trig, p, undefined, deadMinion.instanceId, events, deadMinion.cardId)
         }
       }
@@ -352,6 +364,7 @@ function fireDeathTriggers(
       const def = hasCard(m.cardId) ? getCard(m.cardId) : undefined
       if (!def?.triggers) continue
       for (const trig of def.triggers) {
+        if (echoChainBlocked(trig, deadMinion)) continue
         if (trig.event === 'onMinionDeath') {
           fireTrigger(state, trig, p, m.instanceId, deadMinion.instanceId, events, deadMinion.cardId)
         } else if (trig.event === 'onFriendlyMinionDeath' && p === deadOwner) {
