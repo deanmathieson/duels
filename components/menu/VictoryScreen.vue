@@ -49,6 +49,7 @@
         <button class="play-again font-engrave" @click="playAgain">
           <span class="relative z-10">Play Again</span>
         </button>
+        <BaseButton variant="wood" size="md" @click="onShare">{{ shared ? 'Copied!' : 'Share Result' }}</BaseButton>
         <BaseButton variant="wood" size="md" @click="toMenu">Main Menu</BaseButton>
       </div>
     </div>
@@ -56,7 +57,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { CLASS_LABEL } from '~/data/terms'
+import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
+import { dailyDateKey, shareText } from '~/game/run/meta'
 
 /** Celebratory victory screen shown when the player reaches 12 wins. */
 const router = useRouter()
@@ -65,6 +69,28 @@ const game = useGameStore()
 
 const heroName = computed(() => run.heroDef?.name ?? 'Warden')
 const deckTotal = computed(() => run.deckCount + (run.signatureTreasureId ? 1 : 0))
+
+const shared = ref(false)
+
+/** Copy a Wordle-style run summary to the clipboard. */
+async function onShare(): Promise<void> {
+  const text = shareText({
+    result: 'victory',
+    wins: run.wins,
+    losses: run.losses,
+    callingName: run.heroDef ? CLASS_LABEL[run.heroDef.cardClass] : 'Champion',
+    targetWins: RUN_TARGET_WINS,
+    maxLosses: RUN_MAX_LOSSES,
+    dateKey: run.mode === 'daily' ? dailyDateKey(new Date()) : undefined,
+  })
+  try {
+    await navigator.clipboard.writeText(text)
+    shared.value = true
+    setTimeout(() => (shared.value = false), 1800)
+  } catch {
+    window.prompt('Copy your result:', text)
+  }
+}
 
 interface Confetto {
   id: number

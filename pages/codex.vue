@@ -43,17 +43,30 @@
             <div class="tile-ambient" :class="t.mythic ? 'tile-ambient-mythic' : ''" />
             <span v-if="t.cost != null" class="mana-gem tile-cost">{{ t.cost }}</span>
 
-            <div class="tile-emblem" :class="t.mythic ? 'emblem-mythic' : `emblem-${t.kind}`">
-              <img v-if="t.art" :src="t.art" :alt="t.name" class="tile-art" loading="lazy" draggable="false" />
-              <span v-else class="tile-rune font-engrave">{{ t.name.charAt(0) }}</span>
+            <div
+              class="tile-emblem"
+              :class="t.undiscovered ? 'emblem-undiscovered' : t.mythic ? 'emblem-mythic' : `emblem-${t.kind}`"
+            >
+              <img
+                v-if="t.art && !t.undiscovered"
+                :src="t.art"
+                :alt="t.name"
+                class="tile-art"
+                loading="lazy"
+                draggable="false"
+              />
+              <span v-else class="tile-rune font-engrave">{{ t.undiscovered ? '?' : t.name.charAt(0) }}</span>
             </div>
 
             <div class="tile-body">
-              <h3 class="tile-name font-engrave">{{ t.name }}</h3>
+              <h3 class="tile-name font-engrave">{{ t.undiscovered ? '???' : t.name }}</h3>
               <div class="tile-badges font-engrave">
                 <span class="badge" :class="t.mythic ? 'badge-mythic' : `badge-${t.kind}`">{{ t.badge }}</span>
               </div>
-              <p class="tile-text font-body" v-html="renderText(t.text)" />
+              <p v-if="t.undiscovered" class="tile-text font-body tile-text-dim">
+                Undiscovered. Mythics reveal themselves when the moor offers them.
+              </p>
+              <p v-else class="tile-text font-body" v-html="renderText(t.text)" />
             </div>
           </article>
         </div>
@@ -72,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { CardClass, TreasureDef } from '~/game/types'
 import {
   activeTreasureIds,
@@ -85,9 +98,12 @@ import { CLASS_LABEL } from '~/data/terms'
 /**
  * Treasure Codex — a browsable ledger of every treasure in the game, reached
  * from the main menu. Offerable treasures (tiered passives, actives, mythic
- * jackpots) plus every calling's signature treasures.
+ * jackpots) plus every calling's signature treasures. Mythics the player has
+ * never been offered render obscured — discovery is part of the chase.
  */
 const router = useRouter()
+const meta = useMetaStore()
+onMounted(() => meta.load())
 
 type TabKey = 'all' | 'mythic' | 'passive1' | 'passive2' | 'active' | 'signature'
 
@@ -98,6 +114,8 @@ interface CodexEntry {
   art?: string
   kind: TreasureDef['kind']
   mythic: boolean
+  /** Mythic the player has never been offered — shown obscured. */
+  undiscovered?: boolean
   badge: string
   tab: TabKey
   cost?: number
@@ -128,6 +146,7 @@ function toEntry(def: TreasureDef): CodexEntry {
     art: def.art ?? def.card?.art,
     kind: def.kind,
     mythic,
+    undiscovered: mythic && !meta.isMythicSeen(def.id),
     badge,
     tab,
     cost: def.card?.cost,
@@ -337,6 +356,7 @@ function renderText(text: string): string {
 .emblem-active { background: radial-gradient(circle at 34% 28%, #ffd9a0 0%, #f0902a 45%, #b85e10 100%); }
 .emblem-signature { background: radial-gradient(circle at 34% 28%, #aacbff 0%, #3d7ff0 45%, #1a4fb0 100%); }
 .emblem-mythic { background: radial-gradient(circle at 34% 28%, #ffb3c0 0%, #ff4060 45%, #9c1030 100%); }
+.emblem-undiscovered { background: radial-gradient(circle at 34% 28%, #4a3340 0%, #2a1b26 55%, #140a12 100%); }
 .tile-art { width: 100%; height: 100%; object-fit: cover; }
 .tile-rune {
   font-size: 1.7rem;
@@ -373,4 +393,5 @@ function renderText(text: string): string {
   color: rgba(243, 233, 210, 0.85);
 }
 .tile-text :deep(strong) { color: #ffe9a8; }
+.tile-text-dim { color: rgba(243, 233, 210, 0.45); font-style: italic; }
 </style>

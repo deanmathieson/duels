@@ -54,7 +54,20 @@ export default defineNuxtConfig({
           name: 'description',
           content:
             'Hollowmoor: an original roguelike deckbuilder card duel set in a cursed county of crooked woods, where the dead never stop talking.'
-        }
+        },
+        // Social link unfurls (Discord / X / Slack) — absolute URLs required.
+        { property: 'og:title', content: 'Hollowmoor — A Roguelike Card Duel' },
+        {
+          property: 'og:description',
+          content:
+            'Draft a deck, claim mythic treasures, climb to 12 wins — or the moor keeps you. Free in your browser; a new Daily Hunt every day.'
+        },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: 'https://toast.house/duels/' },
+        { property: 'og:image', content: 'https://toast.house/duels/og-image.jpg' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Hollowmoor — A Roguelike Card Duel' },
+        { name: 'twitter:image', content: 'https://toast.house/duels/og-image.jpg' }
       ],
       htmlAttrs: { lang: 'en' }
     }

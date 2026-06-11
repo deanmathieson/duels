@@ -43,12 +43,35 @@
           Continue Run
         </BaseButton>
 
+        <!-- The Daily Hunt: one seeded attempt per day, fixed calling. -->
+        <button
+          v-if="!daily.playedToday"
+          class="daily-btn font-engrave"
+          @click="onDaily"
+        >
+          <span class="daily-title">DAILY HUNT</span>
+          <span class="daily-sub">Today: the {{ dailyCallingName }}</span>
+        </button>
+        <div v-else class="daily-done font-engrave">
+          <span class="daily-done-text">
+            Daily {{ daily.lastResult?.result === 'victory' ? 'claimed' : 'done' }} —
+            {{ daily.lastResult?.wins }} wins
+          </span>
+          <button class="daily-share" @click="onShareDaily">
+            {{ shared ? 'Copied!' : 'Share' }}
+          </button>
+        </div>
+
         <BaseButton variant="wood" size="sm" full-width @click="showHelp = !showHelp">
           {{ showHelp ? 'Hide' : 'How to Play' }}
         </BaseButton>
 
         <BaseButton variant="wood" size="sm" full-width @click="router.push('/codex')">
           Treasure Codex
+        </BaseButton>
+
+        <BaseButton variant="wood" size="sm" full-width @click="router.push('/ledger')">
+          The Ledger
         </BaseButton>
       </div>
     </div>
@@ -103,16 +126,64 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useAudio } from '~/composables/useAudio'
-import { GAME_SUBTITLE, GAME_TITLE } from '~/data/terms'
+import { GAME_SUBTITLE, GAME_TITLE, CLASS_LABEL } from '~/data/terms'
+import { getHeroDef } from '~/data/registry'
+import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
+import { shareText } from '~/game/run/meta'
 
 /** Main menu: title, glowing PLAY, how-to-play, settings shelf, footer. */
 const router = useRouter()
 const runStore = useRunStore()
 const settings = useSettingsStore()
+const meta = useMetaStore()
 const audio = useAudio()
 
 const showHelp = ref(false)
 const hasSavedRun = ref(false)
+const shared = ref(false)
+
+/** Today's daily descriptor (recomputed on mount; date flips are per-load). */
+const daily = ref(meta.dailyStatus())
+
+/** Display name of today's fixed daily calling. */
+const dailyCallingName = computed(() => {
+  try {
+    return CLASS_LABEL[getHeroDef(daily.value.heroId).cardClass]
+  } catch {
+    return 'Champion'
+  }
+})
+
+/** Start today's hunt (confirming if it would replace a run in progress). */
+function onDaily(): void {
+  if (hasSavedRun.value && !window.confirm('Starting the Daily Hunt abandons your current run. Continue?')) {
+    return
+  }
+  runStore.startDailyRun()
+  router.push('/run')
+}
+
+/** Copy the Wordle-style daily summary to the clipboard. */
+async function onShareDaily(): Promise<void> {
+  const r = daily.value.lastResult
+  if (!r) return
+  const text = shareText({
+    result: r.result,
+    wins: r.wins,
+    losses: r.losses,
+    callingName: dailyCallingName.value,
+    targetWins: RUN_TARGET_WINS,
+    maxLosses: RUN_MAX_LOSSES,
+    dateKey: r.key,
+  })
+  try {
+    await navigator.clipboard.writeText(text)
+    shared.value = true
+    setTimeout(() => (shared.value = false), 1800)
+  } catch {
+    window.prompt('Copy your result:', text)
+  }
+}
 
 /** Volume as a whole-number percentage for the settings pill. */
 const volumePct = computed(() => Math.round(settings.volume * 100))
@@ -127,6 +198,8 @@ const howTo = [
 
 onMounted(() => {
   hasSavedRun.value = runStore.loadFromStorage()
+  meta.load()
+  daily.value = meta.dailyStatus()
   // Request the calm menu theme; it begins on the first user interaction.
   audio.playMusic('menu')
 })
@@ -233,6 +306,80 @@ function onContinue(): void {
   background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
   transform: translateX(-120%);
   animation: shine 3.4s ease-in-out infinite;
+}
+
+/* Daily Hunt — a crimson sibling of the PLAY button. */
+.daily-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 0.55rem 1rem;
+  border: 2px solid #7a1d28;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #5a1620 0%, #380d14 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(255, 64, 96, 0.25);
+  cursor: pointer;
+  transition: filter 0.14s ease, transform 0.14s ease, box-shadow 0.14s ease;
+  animation: fadeUp 1s ease 0.5s both;
+}
+.daily-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 6px 18px rgba(0, 0, 0, 0.55),
+    0 0 26px rgba(255, 64, 96, 0.45);
+}
+.daily-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #ffb3c0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.daily-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 233, 168, 0.75);
+}
+.daily-done {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.45rem 0.9rem;
+  border: 2px solid rgba(122, 29, 40, 0.7);
+  border-radius: 12px;
+  background: rgba(56, 13, 20, 0.55);
+  animation: fadeUp 1s ease 0.5s both;
+}
+.daily-done-text {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffb3c0;
+}
+.daily-share {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.8rem;
+  border-radius: 9999px;
+  border: 1.5px solid #7a1d28;
+  background: linear-gradient(180deg, #5a1620 0%, #380d14 100%);
+  color: #ffe9a8;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+.daily-share:hover {
+  filter: brightness(1.25);
 }
 
 .icon-pill {

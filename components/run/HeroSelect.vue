@@ -14,12 +14,18 @@
         :key="hero.id"
         ref="cardEls"
         class="hero-portrait-card"
-        :class="{ selected: selectedId === hero.id }"
+        :class="{ selected: selectedId === hero.id, locked: isLocked(hero.id) }"
         :style="{ '--stagger': i }"
-        @click="selectedId = hero.id"
+        @click="onHeroClick(hero.id)"
       >
         <!-- Selected golden ring overlay -->
         <div class="selection-ring" :class="{ 'ring-visible': selectedId === hero.id }" />
+
+        <!-- Locked veil: unlock condition over a dimmed portrait -->
+        <div v-if="isLocked(hero.id)" class="lock-veil">
+          <span class="lock-rune">🔒</span>
+          <span class="lock-text font-engrave">{{ lockHint(hero.id) }}</span>
+        </div>
 
         <!-- Portrait -->
         <div class="portrait-frame">
@@ -81,8 +87,27 @@ import { CLASS_LABEL } from '~/data/terms'
 import { gsap } from 'gsap'
 
 /** Hero draft screen. Clicking a portrait selects the hero; a floating
- *  mid-screen panel then confirms the pick — no scrolling to a footer button. */
+ *  mid-screen panel then confirms the pick — no scrolling to a footer button.
+ *  Callings unlock one per completed run (the ledger tracks progress). */
 const run = useRunStore()
+const meta = useMetaStore()
+
+/** Locked in FREE runs only — the daily hunt fixes (and bypasses) the calling. */
+function isLocked(heroId: string): boolean {
+  return run.mode !== 'daily' && !meta.isCallingUnlocked(heroId)
+}
+
+/** The unlock requirement line shown on a locked portrait. */
+function lockHint(heroId: string): string {
+  const n = meta.runsUntilUnlock(heroId)
+  return n === 1 ? 'Complete 1 more run' : `Complete ${n} more runs`
+}
+
+/** Select an unlocked hero; locked portraits just shake their chains. */
+function onHeroClick(heroId: string): void {
+  if (isLocked(heroId)) return
+  selectedId.value = heroId
+}
 
 const rootEl = ref<HTMLElement>()
 const cardEls = ref<HTMLElement[]>([])
@@ -200,6 +225,43 @@ function choose(): void {
     0 14px 32px rgba(0, 0, 0, 0.6),
     0 0 30px 6px rgba(240, 200, 80, 0.55);
   transform: translateY(-6px) scale(1.01);
+}
+
+/* Locked calling: dimmed, desaturated, with the unlock requirement overlaid. */
+.hero-portrait-card.locked {
+  cursor: not-allowed;
+  filter: grayscale(0.85) brightness(0.7);
+}
+.hero-portrait-card.locked:hover {
+  transform: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 28px rgba(0, 0, 0, 0.55);
+}
+.lock-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 14px;
+  background: rgba(10, 6, 2, 0.45);
+}
+.lock-rune {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
+}
+.lock-text {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffe9a8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  background: rgba(20, 12, 6, 0.8);
+  border: 1px solid rgba(240, 200, 80, 0.4);
+  border-radius: 9999px;
+  padding: 3px 12px;
 }
 
 /* Golden ring overlay for selected state. Transparent center — an opaque

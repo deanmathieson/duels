@@ -27,6 +27,7 @@ import {
   treasureWeight,
 } from '~/game/index'
 import type { RewardPools, TreasureCandidate } from '~/game/index'
+import { dailyDateKey } from '~/game/run/meta'
 import { nextInt, shuffle } from '~/game/rng'
 import {
   getHeroDef,
@@ -105,6 +106,8 @@ export const useRunStore = defineStore('run', () => {
   /** Reward offerings queued behind the current one (treasure round → treasure + bucket). */
   const rewardQueue = ref<RewardOffering[]>([])
   const currentEnemyId = ref<string | undefined>(undefined)
+  /** 'daily' = the seeded one-attempt daily hunt; 'free' = a normal run. */
+  const mode = ref<'free' | 'daily'>('free')
 
   /** True once a run has been started (used by the run page to gate redirects). */
   const active = ref(false)
@@ -175,6 +178,7 @@ export const useRunStore = defineStore('run', () => {
       offering: offering.value ? { ...offering.value, choices: [...offering.value.choices] } : undefined,
       rewardQueue: rewardQueue.value.map((o) => ({ ...o, choices: [...o.choices] })),
       currentEnemyId: currentEnemyId.value,
+      mode: mode.value,
     }
   }
 
@@ -209,6 +213,7 @@ export const useRunStore = defineStore('run', () => {
     rewardQueue.value = (s.rewardQueue ?? []).map((o) => ({ ...o, choices: [...o.choices] }))
     // A retired enemy id falls back to the round-based lineup.
     currentEnemyId.value = s.currentEnemyId && hasEnemyDef(s.currentEnemyId) ? s.currentEnemyId : undefined
+    mode.value = s.mode ?? 'free'
     active.value = true
   }
 
@@ -254,9 +259,25 @@ export const useRunStore = defineStore('run', () => {
     ensureContent()
     const s = freshRunState(newSeed ?? (Date.now() & 0x7fffffff))
     hydrate(s)
+    mode.value = 'free'
     active.value = true
     // Auto-pick the only hero so the player lands on the hero portrait screen,
     // but leave selection explicit (HeroSelect calls selectHero to advance).
+    save()
+  }
+
+  /**
+   * Start today's Daily Hunt: the date-seeded run with the day's fixed calling
+   * (locks don't apply — the daily is a teaser for locked callings). One
+   * attempt per day; a no-op if today's hunt is already done.
+   */
+  function startDailyRun(): void {
+    const meta = useMetaStore()
+    const d = meta.dailyStatus()
+    if (d.playedToday) return
+    startNewRun(d.seed)
+    mode.value = 'daily'
+    selectHero(d.heroId)
     save()
   }
 
@@ -496,11 +517,13 @@ export const useRunStore = defineStore('run', () => {
 
     if (wins.value >= RUN_TARGET_WINS) {
       stage.value = 'victory'
+      recordToLedger('victory')
       save()
       return
     }
     if (losses.value >= RUN_MAX_LOSSES) {
       stage.value = 'defeat'
+      recordToLedger('defeat')
       save()
       return
     }
@@ -509,6 +532,19 @@ export const useRunStore = defineStore('run', () => {
     const completedRound = round.value
     round.value += 1
     buildRewards(completedRound, didWin && !!beaten?.elite)
+  }
+
+  /** Write the finished run into the permanent ledger (abandons never get here). */
+  function recordToLedger(result: 'victory' | 'defeat'): void {
+    const meta = useMetaStore()
+    meta.recordRunEnd({
+      date: dailyDateKey(new Date()),
+      heroId: heroId.value ?? 'unknown',
+      wins: wins.value,
+      losses: losses.value,
+      result,
+      daily: mode.value === 'daily' || undefined,
+    })
   }
 
   /**
@@ -573,7 +609,7 @@ export const useRunStore = defineStore('run', () => {
    *  - active treasure after rounds 2, 4, 5, 7, 9, 11, 13
    *  - no treasure on other rounds (bucket only)
    */
-  function treasureTypeForRound(r: number): RewardType | null {
+  function treasureTypeForRound(r: number): 'passiveTreasure' | 'activeTreasure' | null {
     if (r === 1 || r === 3) return 'passiveTreasure'
     if ([2, 4, 5, 7, 9, 11, 13].includes(r)) return 'activeTreasure'
     return null
@@ -613,6 +649,18 @@ export const useRunStore = defineStore('run', () => {
     }
     const bucket = generateOffering('bucket', completedRound, rng, rewardPools(completedRound))
     if (bucket.choices.length > 0) queue.push(bucket)
+
+    // Any mythic the player is about to be SHOWN counts as discovered (codex).
+    const offeredMythics = queue
+      .flatMap((o) => o.choices)
+      .filter((id) => {
+        try {
+          return !!getTreasureDef(id).jackpot
+        } catch {
+          return false
+        }
+      })
+    if (offeredMythics.length) useMetaStore().markMythicsSeen(offeredMythics)
 
     seed.value = rng.seed // persist the advanced RNG
     rewardQueue.value = queue
@@ -700,8 +748,10 @@ export const useRunStore = defineStore('run', () => {
     progressText,
     canAdd,
     canSkipReward,
+    mode,
     // lifecycle
     startNewRun,
+    startDailyRun,
     abandon,
     loadFromStorage,
     save,

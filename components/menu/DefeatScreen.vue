@@ -40,6 +40,7 @@
 
       <div class="mt-9 flex flex-col sm:flex-row items-center gap-3 fade-up">
         <BaseButton variant="gold" size="lg" @click="tryAgain">Try Again</BaseButton>
+        <BaseButton variant="wood" size="md" @click="onShare">{{ shared ? 'Copied!' : 'Share Result' }}</BaseButton>
         <BaseButton variant="wood" size="md" @click="toMenu">Main Menu</BaseButton>
       </div>
     </div>
@@ -47,7 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { CLASS_LABEL } from '~/data/terms'
+import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
+import { dailyDateKey, shareText } from '~/game/run/meta'
 
 /** Somber defeat screen shown after the player suffers 3 losses. */
 const router = useRouter()
@@ -56,6 +60,28 @@ const game = useGameStore()
 
 const heroName = computed(() => run.heroDef?.name ?? 'Warden')
 const deckTotal = computed(() => run.deckCount + (run.signatureTreasureId ? 1 : 0))
+
+const shared = ref(false)
+
+/** Copy a Wordle-style run summary to the clipboard. */
+async function onShare(): Promise<void> {
+  const text = shareText({
+    result: 'defeat',
+    wins: run.wins,
+    losses: run.losses,
+    callingName: run.heroDef ? CLASS_LABEL[run.heroDef.cardClass] : 'Champion',
+    targetWins: RUN_TARGET_WINS,
+    maxLosses: RUN_MAX_LOSSES,
+    dateKey: run.mode === 'daily' ? dailyDateKey(new Date()) : undefined,
+  })
+  try {
+    await navigator.clipboard.writeText(text)
+    shared.value = true
+    setTimeout(() => (shared.value = false), 1800)
+  } catch {
+    window.prompt('Copy your result:', text)
+  }
+}
 
 /** Start a fresh run and head back to the draft. */
 function tryAgain(): void {

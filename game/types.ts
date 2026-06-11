@@ -633,6 +633,8 @@ export type RewardType = 'bucket' | 'passiveTreasure' | 'activeTreasure'
 
 export interface RunState {
   stage: RunStage
+  /** 'daily' = the seeded one-attempt daily hunt; default 'free'. */
+  mode?: 'free' | 'daily'
   heroId?: string
   heroPowerId?: HeroPowerId
   signatureTreasureId?: string
