@@ -119,6 +119,9 @@
       <p class="font-body text-[10px] text-parchment-light/40 px-4">
         HOLLOWMOOR — an original roguelike card duel. The moor thanks you for your custom.
       </p>
+      <p class="font-body text-[10px] text-parchment-light/30 px-4 mt-0.5">
+        Created by Dean Mathieson &amp; John Kay
+      </p>
     </footer>
   </div>
 </template>
@@ -132,6 +135,43 @@ import { RUN_TARGET_WINS, RUN_MAX_LOSSES } from '~/game/types'
 import { shareText } from '~/game/run/meta'
 
 /** Main menu: title, glowing PLAY, how-to-play, settings shelf, footer. */
+useSeoMeta({
+  title: 'Hollowmoor — A Roguelike Card Duel',
+  description:
+    'A free browser roguelike deckbuilder: draft a deck, claim mythic treasures, climb to 12 wins — or the moor keeps you. New Daily Hunt every day.',
+  ogTitle: 'Hollowmoor — A Roguelike Card Duel',
+  ogUrl: 'https://toast.house/duels/',
+})
+useHead({
+  link: [{ rel: 'canonical', href: 'https://toast.house/duels/' }],
+  script: [
+    {
+      type: 'application/ld+json',
+      // VideoGame structured data for search results.
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'VideoGame',
+        name: 'Hollowmoor',
+        alternateName: 'Hollowmoor — A Roguelike Card Duel',
+        url: 'https://toast.house/duels/',
+        image: 'https://toast.house/duels/og-image.jpg',
+        description:
+          'An original roguelike deckbuilder card duel set in a cursed folk-horror county. Draft a 15-card deck, bargain for mythic treasures, and climb to 12 wins.',
+        genre: ['Card Game', 'Roguelike', 'Deckbuilder'],
+        playMode: 'SinglePlayer',
+        applicationCategory: 'Game',
+        gamePlatform: 'Web Browser',
+        operatingSystem: 'Any',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        author: [
+          { '@type': 'Person', name: 'Dean Mathieson' },
+          { '@type': 'Person', name: 'John Kay' },
+        ],
+      }),
+    },
+  ],
+})
+
 const router = useRouter()
 const runStore = useRunStore()
 const settings = useSettingsStore()

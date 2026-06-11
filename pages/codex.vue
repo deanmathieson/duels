@@ -101,6 +101,15 @@ import { CLASS_LABEL } from '~/data/terms'
  * jackpots) plus every calling's signature treasures. Mythics the player has
  * never been offered render obscured — discovery is part of the chase.
  */
+useSeoMeta({
+  title: 'Treasure Codex — Hollowmoor',
+  description:
+    'Every boon the moor has ever offered: tiered passives, active treasures, the seventeen mythic jackpots, and the signature treasures of all nine callings.',
+  ogTitle: 'Treasure Codex — Hollowmoor',
+  ogUrl: 'https://toast.house/duels/codex/',
+})
+useHead({ link: [{ rel: 'canonical', href: 'https://toast.house/duels/codex/' }] })
+
 const router = useRouter()
 const meta = useMetaStore()
 onMounted(() => meta.load())

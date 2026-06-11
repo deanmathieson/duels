@@ -67,7 +67,14 @@ export default defineNuxtConfig({
         { property: 'og:image', content: 'https://toast.house/duels/og-image.jpg' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Hollowmoor — A Roguelike Card Duel' },
-        { name: 'twitter:image', content: 'https://toast.house/duels/og-image.jpg' }
+        { name: 'twitter:image', content: 'https://toast.house/duels/og-image.jpg' },
+        { name: 'theme-color', content: '#241810' },
+        { name: 'author', content: 'Dean Mathieson & John Kay' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', href: `${baseURL}favicon.png` },
+        { rel: 'apple-touch-icon', href: `${baseURL}apple-touch-icon.png` },
+        { rel: 'manifest', href: `${baseURL}site.webmanifest` }
       ],
       htmlAttrs: { lang: 'en' }
     }

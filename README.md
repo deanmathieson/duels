@@ -66,7 +66,11 @@ env so `baseURL` defaults to `/`.
 - `stores/`, `components/`, `pages/` — the Vue/Nuxt presentation layer.
 - `tests/original-ip.spec.ts` — regression guard: no third-party IP in any display field.
 
+## Credits
+
+Created by **Dean Mathieson** & **John Kay**.
+
 ## License & content
 
 All game content (names, text, flavor, world) is original. Code and content
-© the project author.
+© Dean Mathieson & John Kay.

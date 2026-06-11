@@ -86,6 +86,17 @@ import { CLASS_LABEL } from '~/data/terms'
 import { ALL_CALLINGS } from '~/game/run/meta'
 
 /** The Ledger — lifetime stats, calling unlock progress and run history. */
+useSeoMeta({
+  title: 'The Ledger — Hollowmoor',
+  description:
+    'Your standing with the moor: lifetime victories, best climbs, calling unlock progress, daily streak and run history.',
+  ogTitle: 'The Ledger — Hollowmoor',
+  ogUrl: 'https://toast.house/duels/ledger/',
+  // Personal stats — nothing for crawlers here.
+  robots: 'noindex',
+})
+useHead({ link: [{ rel: 'canonical', href: 'https://toast.house/duels/ledger/' }] })
+
 const router = useRouter()
 const meta = useMetaStore()
 

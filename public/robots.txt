@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://toast.house/duels/sitemap.xml

@@ -52,6 +52,8 @@ unlucky enough — one of seventeen **mythics** that break the game open.
 
 **Play now:** https://toast.house/duels/
 
+Created by Dean Mathieson & John Kay.
+
 ---
 
 ## Launch checklist

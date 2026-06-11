@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Hollowmoor — an original roguelike deckbuilder card duel set in a cursed county of crooked woods.",
+  "author": "Dean Mathieson & John Kay",
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
