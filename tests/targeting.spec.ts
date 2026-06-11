@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { applyAction, createInitialState } from '../game/engine'
-import { getValidTargets } from '../game/queries'
+import { getAttackers, getValidTargets } from '../game/queries'
 import type { GameSetup, GameState, PlayerId } from '../game/types'
 import { HERO_TARGET } from '../game/types'
 import { giveCard, installFixtures, makeSetup, padDeck, setMana } from './fixtures'
@@ -202,5 +202,46 @@ describe('passive treasures are static effects', () => {
     s = cast(s, 0, 'silence_spell', yetiId)
     expect(minion(s, 1, yetiId)!.attack).toBe(4)
     expect(minion(s, 1, yetiId)!.maxHealth).toBe(5)
+  })
+})
+
+describe('rush attacker gating', () => {
+  it('a summon-turn rush minion is NOT an attacker when the enemy board is empty', () => {
+    const { state: s, id } = summon(start(), 0, 'rusher')
+    expect(getAttackers(s, 0)).not.toContain(id)
+  })
+
+  it('becomes an attacker as soon as there is an enemy minion to hit', () => {
+    let r = summon(start(), 1, 'yeti')
+    let s = r.state
+    r = summon(s, 0, 'rusher')
+    s = r.state
+    expect(getAttackers(s, 0)).toContain(r.id)
+  })
+
+  it('an enemy board of only stealthed minions does not count as attackable', () => {
+    let r = summon(start(), 1, 'stealth_cat')
+    let s = r.state
+    r = summon(s, 0, 'rusher')
+    s = r.state
+    expect(getAttackers(s, 0)).not.toContain(r.id)
+  })
+
+  it('a charge minion still attacks into an empty board (it can go face)', () => {
+    const { state: s, id } = summon(start(), 0, 'charger')
+    expect(getAttackers(s, 0)).toContain(id)
+  })
+
+  it('the rush minion attacks normally from its second turn', () => {
+    let r = summon(start(), 0, 'rusher')
+    let s = r.state
+    const rusherId = r.id
+    // Pass the round back to player 0 so the rusher sheds summoning sickness.
+    let guard = 0
+    do {
+      s = applyAction(s, { type: 'endTurn', player: s.activePlayer }).state
+      guard++
+    } while (s.activePlayer !== 0 && s.phase !== 'gameOver' && guard < 6)
+    expect(getAttackers(s, 0)).toContain(rusherId)
   })
 })

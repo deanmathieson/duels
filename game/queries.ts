@@ -236,7 +236,14 @@ export function getHeroPowerTargets(
  */
 export function getAttackers(state: GameState, player: PlayerId): string[] {
   if (state.phase !== 'main' || state.activePlayer !== player || state.pendingChoice) return []
-  const ids = state.players[player].board.filter((m) => canMinionAttack(m)).map((m) => m.instanceId)
+  // Rush only allows attacking MINIONS on the summon turn — with no attackable
+  // enemy minion (empty board, or all stealthed) a rush-restricted minion has
+  // no legal action and must not light up as an attacker.
+  const foe = opp(player)
+  const hasAttackableMinion = state.players[foe].board.some((m) => !hasKeyword(m, 'stealth'))
+  const ids = state.players[player].board
+    .filter((m) => canMinionAttack(m) && (hasAttackableMinion || !isRushRestricted(m)))
+    .map((m) => m.instanceId)
   // The hero can attack if it has Attack (weapon or buff) and hasn't attacked yet.
   const hero = state.players[player].hero
   if (hero.attack > 0 && hero.attacksThisTurn === 0) ids.push(HERO_TARGET(player))

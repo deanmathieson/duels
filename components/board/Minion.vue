@@ -234,6 +234,12 @@ const keywordBadges = computed(() => {
   const present = new Set<BadgeKey>(props.minion.keywords as BadgeKey[])
   if (divineShield.value) present.add('divineShield')
   if (hasHaunt.value) present.add('haunt')
+  // Rush/Charge only matter on the turn the minion arrives (they unlock its
+  // summon-turn attack); after that the chips are noise — drop them.
+  if (!props.minion.summonedThisTurn) {
+    present.delete('rush')
+    present.delete('charge')
+  }
   return BADGE_ORDER.filter((k) => present.has(k)).map((k) => ({ key: k, ...KW_META[k] }))
 })
 </script>
