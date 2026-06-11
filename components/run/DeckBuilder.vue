@@ -146,7 +146,7 @@ import { ref, computed, onMounted } from 'vue'
 import type { CardDef } from '~/game/types'
 import { getCard } from '~/game/index'
 import { collectibleCardIdsForClass, getTreasureDef } from '~/data/registry'
-import { CLASS_LABEL } from '~/data/terms'
+import { CLASS_LABEL, KEYWORD_LABEL, MECHANIC_LABEL, TRIBE_LABEL } from '~/data/terms'
 import { gsap } from 'gsap'
 
 /** The deck-building screen: pool grouped by cost + the live deck list with a mana curve. */
@@ -183,6 +183,28 @@ const allPool = computed<CardDef[]>(() => {
   return out.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name))
 })
 
+/**
+ * Everything a card visibly IS, searchable: name, rules text, tribe label
+ * ("Beast", "Wyrm"), card type, calling, keyword labels ("Ward", "Leeching")
+ * and mechanic labels ("Omen", "Haunt") — so a search for "beast" finds Beast
+ * minions even though the tribe is a chip, not rules text.
+ */
+function searchHaystack(c: CardDef): string {
+  const bits: string[] = [
+    c.name,
+    c.text,
+    TRIBE_LABEL[c.tribe ?? 'none'],
+    c.type,
+    CLASS_LABEL[c.cardClass],
+    ...(c.keywords ?? []).map((k) => KEYWORD_LABEL[k]),
+  ]
+  if (c.spellDamage) bits.push(KEYWORD_LABEL.spellDamage)
+  if (c.battlecry) bits.push(MECHANIC_LABEL.battlecry)
+  if (c.deathrattle) bits.push(MECHANIC_LABEL.deathrattle)
+  if (c.chooseOne?.length) bits.push(MECHANIC_LABEL.chooseOne)
+  return bits.join(' ').toLowerCase()
+}
+
 /** Pool filtered by the active type/class filter and the search query. */
 const filteredPool = computed(() => {
   const f = activeFilter.value
@@ -202,7 +224,7 @@ const filteredPool = computed(() => {
         if (c.cardClass !== 'neutral') return false
         break
     }
-    if (q && !`${c.name} ${c.text}`.toLowerCase().includes(q)) return false
+    if (q && !searchHaystack(c).includes(q)) return false
     return true
   })
 })

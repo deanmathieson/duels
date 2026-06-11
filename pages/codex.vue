@@ -191,11 +191,22 @@ const tabs = computed(() =>
   }))
 )
 
+/**
+ * Searchable haystack: name, text, badge ("Mythic", "Passive — Tier II",
+ * "Signature — Vicar") and kind — so "mythic" lists the jackpots and "vicar"
+ * finds a calling's signatures. Undiscovered mythics match only their
+ * obscured face (no fishing for hidden names).
+ */
+function entryHaystack(e: CodexEntry): string {
+  if (e.undiscovered) return `??? undiscovered mythic ${e.badge}`.toLowerCase()
+  return `${e.name} ${e.text} ${e.badge} ${e.kind}`.toLowerCase()
+}
+
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase()
   return entries.value.filter((e) => {
     if (activeTab.value !== 'all' && e.tab !== activeTab.value) return false
-    if (q && !`${e.name} ${e.text}`.toLowerCase().includes(q)) return false
+    if (q && !entryHaystack(e).includes(q)) return false
     return true
   })
 })
