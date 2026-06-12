@@ -21,16 +21,19 @@ import type { CardClass, CardDef } from '../game/types'
  */
 
 /**
- * The shared Hollowmoor style anchor (front-loaded, compact). Hard-leans
- * PAINTED, not photographic — Frank Frazetta pulp-fantasy oil register:
- * dramatic chiaroscuro, rich warm shadows, gothic dark-fantasy mood.
- * (Anti-cheesecake is handled in the per-subject text + the negative prompt;
- * the Frazetta token alone otherwise defaults every card to a pin-up woman.)
+ * The shared Hollowmoor style anchor (front-loaded, compact). Storybook-simple:
+ * the game's heroes are Postman-Pat villagers in a folk-horror county, and the
+ * art matches — bold flat shapes, one readable subject, plain background.
+ * Chosen via scripts/art-style-test.py (winner: greg-storybook-simple-s202);
+ * the previous Frazetta oil register rendered busy scenes that didn't read at
+ * card size and fought the simple-character redesign.
  */
 const STYLE =
-  'oil painting in the style of Frank Frazetta, pulp fantasy art, ' +
-  'dramatic chiaroscuro, rich warm shadows, painterly brushwork, ' +
-  'dark gothic folk-horror'
+  'charming storybook illustration with a dark folk-horror twist, ' +
+  'bold simple shapes, plain muted background, soft candlelit palette'
+
+/** Extra clause for character subjects — keeps figures big, flat and readable. */
+const CHARACTER_FRAMING = 'clean strong silhouette, single character filling the frame'
 
 /** Creature words per tribe so tribal minions render as monsters, not people. */
 const TRIBE_CREATURE: Record<string, string> = {
@@ -59,6 +62,33 @@ const CLASS_MOOD: Record<CardClass, string> = {
   warrior: 'forge-glow orange, anvils and sparks, horseshoes',
 }
 
+/**
+ * Per-hero look, keyed by hero id. Short and concrete: explicit age/build
+ * words come FIRST (the storybook style otherwise casts everyone as a cute
+ * child), then one or two signature props, then a setting hint. Kept tight —
+ * CLIP truncates at 77 tokens and the style anchor already spends ~25.
+ */
+const HERO_LOOK: Record<string, string> = {
+  forest_warden_omu:
+    'a stout middle-aged farmer, flat cap, wellington boots, mud-stained smock, holding a pitchfork, friendly weathered grin, moonlit field',
+  hero_hunter:
+    'a wiry middle-aged man, gamekeeper, flat cap, warm coat, shotgun over one arm, loyal hound sitting beside him, moonlit countryside',
+  hero_mage:
+    'a gaunt middle-aged man, firework maker, wild grey-streaked hair, singed stubble, soot-stained apron, holding a big rocket, manic grin, sparks in the night',
+  hero_paladin:
+    'a cheerful middle-aged lamplighter, long coat, raised glowing lantern pole, ladder on his shoulder, foggy village street at night',
+  hero_priest:
+    'a mild elderly priest, round spectacles, black cassock, white collar, teacup in hand, faint unsettling smile, dim parish church',
+  hero_rogue:
+    'a sneaky middle-aged man, burglar, stubbled human face, striped jumper, flat cap, bulging sack over his shoulder, moonlit rooftop',
+  hero_shaman:
+    'a lanky weathered old weatherman, oilskin coat, holding a weathervane staff, gazing up at gathering storm clouds, windswept moor',
+  hero_warlock:
+    'a portly middle-aged pawnbroker, pince-nez spectacles, waistcoat and watch chain, ledger under one arm, sly smile, candlelit cluttered shop',
+  hero_warrior:
+    'a burly broad-shouldered middle-aged blacksmith woman, thick arms, heavy leather apron, gripping a massive blacksmith sledgehammer resting on her shoulder, forge glow',
+}
+
 interface PromptEntry {
   id: string
   kind: 'card' | 'hero' | 'heroPower' | 'treasure' | 'enemy'
@@ -68,20 +98,21 @@ interface PromptEntry {
 
 /**
  * Build the subject clause by card TYPE. Only minions are characters; spells
- * are effect/scene illustrations and weapons are object still-lifes — both
- * explicitly people-free, so the Frazetta anchor can't turn them into figures.
+ * are scene illustrations with ONE focal subject and weapons are single-object
+ * still-lifes — both explicitly people-free. Every clause pushes the same
+ * simplicity rule: one thing in the picture, nothing else competing.
  */
 function cardSubject(c: CardDef): string {
   if (c.type === 'minion') {
     const creature = c.tribe && c.tribe !== 'none' ? TRIBE_CREATURE[c.tribe] : undefined
     const who = creature ?? 'a fully-clothed character'
-    return `${who} named "${c.name}"`
+    return `${who} named "${c.name}", ${CHARACTER_FRAMING}`
   }
   if (c.type === 'weapon') {
-    return `still-life of the weapon "${c.name}", object only, no people, no figures`
+    return `the weapon "${c.name}", one single object centered, no people, no figures`
   }
   // spell
-  return `a dramatic scene evoking "${c.name}", a magical effect or eerie landscape, no people, no figures`
+  return `a simple eerie scene evoking "${c.name}", one clear focal subject, no people, no figures`
 }
 
 const prompts: PromptEntry[] = []
@@ -95,11 +126,13 @@ for (const c of allCards) {
   })
 }
 for (const h of heroes) {
+  // Per-hero look beats the generic clause; mood is sacrificial tail budget.
+  const look = HERO_LOOK[h.id] ?? `"${h.name}", fully clothed, ${CHARACTER_FRAMING}`
   prompts.push({
     id: h.id,
     kind: 'hero',
     name: h.name,
-    prompt: `${STYLE}. waist-up portrait of "${h.name}", imposing, fully clothed, dignified. ${CLASS_MOOD[h.cardClass] ?? CLASS_MOOD.neutral}`,
+    prompt: `${STYLE}, ${CHARACTER_FRAMING}. ${look}`,
   })
 }
 for (const hp of heroPowers) {
@@ -107,7 +140,7 @@ for (const hp of heroPowers) {
     id: hp.id,
     kind: 'heroPower',
     name: hp.name,
-    prompt: `${STYLE}. an icon symbolizing "${hp.name}", object or symbol, no people, no faces`,
+    prompt: `${STYLE}. a simple emblem symbolizing "${hp.name}", one single object or symbol, no people, no faces`,
   })
 }
 for (const t of allTreasures) {
@@ -115,7 +148,7 @@ for (const t of allTreasures) {
     id: t.id,
     kind: 'treasure',
     name: t.name,
-    prompt: `${STYLE}. still-life of an ornate magical relic, "${t.name}", object only on dark velvet, no people, no figures`,
+    prompt: `${STYLE}. a single magical relic, "${t.name}", one object centered on a plain dark background, no people, no figures`,
   })
 }
 for (const e of enemies) {
@@ -123,7 +156,7 @@ for (const e of enemies) {
     id: e.id,
     kind: 'enemy',
     name: e.name,
-    prompt: `${STYLE}. menacing villain portrait of ${e.heroName}, "${e.name}", fully clothed. ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}`,
+    prompt: `${STYLE}, ${CHARACTER_FRAMING}. menacing villain portrait of ${e.heroName}, "${e.name}", fully clothed. ${CLASS_MOOD[e.heroClass] ?? CLASS_MOOD.neutral}`,
   })
 }
 

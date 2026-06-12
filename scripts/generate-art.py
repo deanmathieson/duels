@@ -55,11 +55,15 @@ KIND_LAYOUT = {
 
 PRIORITY = {"hero": 0, "enemy": 1, "treasure": 2, "heroPower": 3, "card": 4}
 
+# Storybook-simple style: bans the photo register AND the old oil-paint
+# register (busy brushwork pulled renders back toward cluttered scenes).
+# Deliberately does NOT ban cartoon/flat colors — that's the look now.
 NEGATIVE = (
     "pin-up, cheesecake, sexualized, suggestive pose, cleavage, lingerie, "
     "bikini, nude, naked, bare midriff, seductive, glamour model, "
     "photograph, photo, photorealistic, hyperrealistic, realistic, dslr, "
-    "3d render, cgi, plastic, smooth, anime, cartoon, flat colors, "
+    "3d render, cgi, plastic, oil painting, impasto, busy brushwork, "
+    "cluttered background, busy composition, "
     "text, watermark, signature, frame, border, logo, username, "
     "gore, deformed hands, extra limbs, lowres, blurry"
 )

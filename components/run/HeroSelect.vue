@@ -294,6 +294,9 @@ function choose(): void {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Portraits are full-figure renders; anchor the crop to the top so the
+     character's head survives the card window. */
+  object-position: top;
   transition: transform 0.4s ease;
 }
 .hero-portrait-card:hover .portrait-img {
