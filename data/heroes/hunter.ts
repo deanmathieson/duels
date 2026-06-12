@@ -1,12 +1,13 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Widow Bracken hero definition for the Trapper class.
- * The poacher matriarch of Hollowmoor: four husbands buried, never lost a dog.
+ * Gamekeeper Gary hero definition for the Gamekeeper class.
+ * Keeps the squire's land, the squire's pheasants, and the squire's secrets.
+ * Flat cap, shotgun, three dogs, no patience.
  */
 export const hunterHero: HeroDef = {
   id: 'hero_hunter',
-  name: 'Widow Bracken',
+  name: 'Gamekeeper Gary',
   cardClass: 'hunter',
   heroPowers: [
     'hp_hunter_steady_shot',
@@ -26,16 +27,16 @@ export const hunterHero: HeroDef = {
 }
 
 /**
- * Widow Bracken's three hero powers.
+ * Gamekeeper Gary's three hero powers.
  *
  * - Pick a Quarrel: deal 2 damage to the enemy hero.
- * - Check the Snares: add a random Beast (Trapper/neutral pool) to hand at a discount.
+ * - Check the Snares: add a random Beast (Gamekeeper/neutral pool) to hand at a discount.
  * - Feed the Pack: buff all friendly minions and draw a card.
  */
 export const hunterHeroPowers: HeroPowerDef[] = [
   /**
    * Pick a Quarrel — 2 mana. Deal 2 damage to the enemy hero.
-   * The widow settles arguments with a crossbow bolt.
+   * Gary settles arguments with both barrels.
    */
   {
     id: 'hp_hunter_steady_shot',
@@ -48,7 +49,7 @@ export const hunterHeroPowers: HeroPowerDef[] = [
 
   /**
    * Check the Snares — 2 mana. Add a random Beast to your hand that costs (2) less.
-   * Synergises with the Beast-heavy Trapper gameplan.
+   * Synergises with the Beast-heavy Gamekeeper gameplan.
    */
   {
     id: 'hp_hunter_beast_within',

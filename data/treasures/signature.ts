@@ -157,13 +157,13 @@ const herdingHornCard: CardDef = {
 };
 
 /**
- * Old Nan's Almanack — 4-mana Hedgewitch spell, Choose One.
+ * The Farmer's Almanack — 4-mana Farmer spell, Choose One.
  * Option 1: Refresh your Mana Crystals.
  * Option 2: Summon a Treant for each Mana Crystal you have.
  */
 const wardensInsightCard: CardDef = {
   id: 'sig_wardens_insight',
-  name: "Old Nan's Almanack",
+  name: "The Farmer's Almanack",
   cost: 4,
   type: 'spell',
   cardClass: 'druid',
@@ -184,7 +184,7 @@ const wardensInsightCard: CardDef = {
 };
 
 /**
- * Witch's Butter — 5-mana Hedgewitch spell.
+ * Witch's Butter — 5-mana Farmer spell.
  * Shuffle 3 random Choose One cards (from your class) into your deck.
  * (Approximation: the original "3× Discover... combine its effects" — the
  * marvelousMycelium script picks the 3 cards at random with no interactive
@@ -204,13 +204,13 @@ const marvelousMyceliumCard: CardDef = {
 };
 
 /**
- * All signature treasures for Old Nan Nettlebed.
+ * All signature treasures for Farmer Greg.
  * Each embeds a token:true CardDef that is added to the player's deck at run start.
  */
 export const signatureTreasures: TreasureDef[] = [
   {
     id: 'sig_wardens_insight',
-    name: "Old Nan's Almanack",
+    name: "The Farmer's Almanack",
     kind: 'signature',
     text: 'Choose One - Refresh your Mana Stones; or Summon a Treant for each Mana Stone you have.',
     card: wardensInsightCard,

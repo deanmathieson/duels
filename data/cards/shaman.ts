@@ -427,7 +427,7 @@ export const shamanCards: CardDef[] = [
     type: 'minion',
     cardClass: 'shaman',
     rarity: 'legendary',
-    text: '**Omen:** Deal 3 damage to all minions. After you play a minion, add a random Augur spell to your hand.',
+    text: '**Omen:** Deal 3 damage to all minions. After you play a minion, add a random Weatherman spell to your hand.',
     flavor: 'She delivered half the parish and poisoned the other half. A few lucky souls got both.',
     attack: 5,
     health: 5,

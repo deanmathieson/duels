@@ -1,14 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Vicar Hezekiah Marrow — Vicar hero definition.
- * Shepherd of Hollowmoor's crookedest parish: mends the flock with one hand,
- * unravels minds with the other, and bills the diocese for both.
+ * The Priest — Priest hero definition.
+ * Nobody remembers his name and nobody asks. Tea, biscuits, exorcisms,
+ * Sundays. The collection plate always comes back fuller than it should.
  * Theme: heal and control, shadow direct damage, sticky high-health minions.
  */
 export const priestHero: HeroDef = {
   id: 'hero_priest',
-  name: 'Vicar Hezekiah Marrow',
+  name: 'The Priest',
   cardClass: 'priest',
   heroPowers: [
     'hp_priest_mending',
@@ -27,7 +27,7 @@ export const priestHero: HeroDef = {
 }
 
 /**
- * Vicar Hezekiah Marrow's three hero powers.
+ * The Priest's three hero powers.
  */
 export const priestHeroPowers: HeroPowerDef[] = [
   /**

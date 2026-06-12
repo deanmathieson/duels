@@ -5,20 +5,20 @@ import type { CardDef, TreasureDef } from '../../game/types'
 // ---------------------------------------------------------------------------
 
 /**
- * Crowmarch's Reckoning — 7-mana legendary warrior spell.
+ * Hammer and Tongs — 7-mana legendary warrior spell.
  * Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.
  * (Costed at 7: ~8 mana of raw effect was beyond even signature-treasure
  *  push; at 7 it sits ~1 above curve, in line with other signatures.)
  */
 const rattlegoreChainCard: CardDef = {
   id: 'sig_warrior_rattlegore_chain',
-  name: "Crowmarch's Reckoning",
+  name: 'Hammer and Tongs',
   cost: 7,
   type: 'spell',
   cardClass: 'warrior',
   rarity: 'legendary',
   text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
-  flavor: 'The bill comes due, and Ser Wystan pays in full — with the flat, the edge, and the pommel.',
+  flavor: 'Bess settles arguments the way she settles horseshoes: at full heat, with everything on the bench.',
   spell: [
     { kind: 'damage', amount: 3, target: 'allEnemyCharacters' },
     { kind: 'gainArmor', amount: 3 },
@@ -133,12 +133,12 @@ const bladestormAxeToken: CardDef = {
 // ---------------------------------------------------------------------------
 
 /**
- * All signature treasures for Ser Wystan Crowmarch (the Banneret).
+ * All signature treasures for Bess the Blacksmith.
  */
 export const warriorSignatureTreasures: TreasureDef[] = [
   {
     id: 'sig_warrior_rattlegore_chain',
-    name: "Crowmarch's Reckoning",
+    name: 'Hammer and Tongs',
     kind: 'signature',
     text: 'Deal 3 damage to all enemies. Gain 3 Armor. Draw a card.',
     card: rattlegoreChainCard,

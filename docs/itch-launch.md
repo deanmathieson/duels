@@ -33,7 +33,7 @@ account owner; this file is the copy-paste kit.
 **Every duel is a bargain in the cursed county.**
 
 HOLLOWMOOR is a single-player roguelike deckbuilder duel: pick one of nine
-callings — Hedgewitch, Trapper, Banneret, Stargazer and worse company — draft
+villagers — Farmer Greg, Burglar Bill, Firework Fred and worse company — draft
 a 15-card deck, and fight up the 12-win ladder past elites and the moor's
 three terrors. Between fights the moor makes offers: card buckets shaped by
 what you're building, treasures that warp the run, and — if you're lucky or

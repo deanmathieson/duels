@@ -1,15 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Nell Threefingers — Cutpurse hero definition.
- * The most-acquitted woman in Hollowmoor: smuggler, fence, and the reason
- * the Drowned Rat keeps a back door. (She lost the other two fingers to a
- * job she still swears went fine.)
+ * Burglar Bill — Burglar hero definition.
+ * Striped jumper, sack marked SWAG, a ferret down one sleeve. Never been
+ * convicted; the evidence keeps going missing.
  * Theme: tempo, weapons, cheap damage, draw, and back-alley Omens.
  */
 export const rogueHero: HeroDef = {
   id: 'hero_rogue',
-  name: 'Nell Threefingers',
+  name: 'Burglar Bill',
   cardClass: 'rogue',
   heroPowers: [
     'hp_rogue_dagger_mastery',
@@ -29,12 +28,12 @@ export const rogueHero: HeroDef = {
 }
 
 /**
- * Cutpurse hero power definitions — 3 thematic options for Nell Threefingers.
+ * Burglar hero power definitions — 3 thematic options for Burglar Bill.
  */
 export const rogueHeroPowers: HeroPowerDef[] = [
   /**
    * Knife-Work — equip a 1/2 Dagger.
-   * The classic Cutpurse hero power. (A hero power should be ~1 mana of
+   * The classic Burglar hero power. (A hero power should be ~1 mana of
    * effect, and the dagger alone is that.)
    */
   {

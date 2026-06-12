@@ -1,7 +1,7 @@
 import type { CardDef } from '../../game/types'
 
 /**
- * Hedgewitch class cards — exactly 20 ids as specified in CONTENT.md.
+ * Farmer class cards — exactly 20 ids as specified in CONTENT.md.
  * Encoded per EFFECTSPEC.md conventions.
  */
 export const druidCards: CardDef[] = [

@@ -1,15 +1,15 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Mistress Maundy — Bargainer hero definition.
- * The crossroads creditor of Hollowmoor: every debt in the county passes
- * through her ledger, and the interest is always paid in red.
+ * Pawnbroker Paul — Pawnbroker hero definition.
+ * Three brass balls over the door and a ledger nobody reads twice. Paul
+ * lends against anything: watches, wedding rings, years off your life.
  * Theme: Fae creditors, self-damage value, blood-bought draw, board flood
  * with Pennywisps.
  */
 export const warlockHero: HeroDef = {
   id: 'hero_warlock',
-  name: 'Mistress Maundy',
+  name: 'Pawnbroker Paul',
   cardClass: 'warlock',
   heroPowers: [
     'hp_warlock_life_tap',
@@ -28,7 +28,7 @@ export const warlockHero: HeroDef = {
 }
 
 /**
- * Bargainer hero powers — 3 thematic options for Mistress Maundy.
+ * Pawnbroker hero powers — 3 thematic options for Pawnbroker Paul.
  */
 export const warlockHeroPowers: HeroPowerDef[] = [
   /**

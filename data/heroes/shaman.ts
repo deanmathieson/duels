@@ -1,13 +1,13 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Granny Mireweather — Augur hero definition.
- * A bog-witch and weather-reader of Hollowmoor: carved Effigies staked in the
- * marsh, entrail-readings, and storms bartered from things under the water.
+ * Weatherman Willy — Weatherman hero definition.
+ * Reads tomorrow off the clouds and is never wrong, which is the problem:
+ * what Willy forecasts, arrives. Carved Effigies for weathervanes.
  */
 export const shamanHero: HeroDef = {
   id: 'hero_shaman',
-  name: 'Granny Mireweather',
+  name: 'Weatherman Willy',
   cardClass: 'shaman',
   heroPowers: ['hp_shaman_totemic_call', 'hp_shaman_storm_strike', 'hp_shaman_ancestral_mending'],
   signatureTreasures: [
@@ -22,7 +22,7 @@ export const shamanHero: HeroDef = {
 }
 
 /**
- * Augur hero powers for Granny Mireweather.
+ * Weatherman hero powers for Weatherman Willy.
  */
 export const shamanHeroPowers: HeroPowerDef[] = [
   /**
@@ -67,12 +67,12 @@ export const shamanHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Peat Poultice — 3 mana. Restore 5 Health to your hero and gain 2 Armor.
-   * Grave-mud and moss, slapped on warm. Smells worse than it works.
+   * Warm Front — 3 mana. Restore 5 Health to your hero and gain 2 Armor.
+   * Willy forecasts mild and sunny, and for once it's aimed at you.
    */
   {
     id: 'hp_shaman_ancestral_mending',
-    name: 'Peat Poultice',
+    name: 'Warm Front',
     cost: 3,
     text: 'Restore 5 Health to your hero. Gain 2 Armor.',
     effects: [

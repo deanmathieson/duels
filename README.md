@@ -2,8 +2,9 @@
 
 An original roguelike deckbuilder set in **Hollowmoor**: a cursed county of crooked woods,
 peat bogs and candlelit villages where every duel is a bargain and the dead never stop
-talking. Pick one of nine callings (Hedgewitch, Trapper, Stargazer, Lamplighter, Vicar,
-Cutpurse, Augur, Bargainer, Banneret), take a hero power and a signature treasure, build a
+talking. Pick one of nine villagers (Farmer Greg, Gamekeeper Gary, Firework Fred,
+Lamplighter Larry, the Priest, Burglar Bill, Weatherman Willy, Pawnbroker Paul or
+Bess the Blacksmith), take a hero power and a signature treasure, build a
 15-card deck, then fight a seeded 12-fight gauntlet — locals, elites with bonus treasure,
 and one of the moor's three terrors at the end. **12 wins or 3 losses.**
 

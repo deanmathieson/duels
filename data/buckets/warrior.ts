@@ -106,7 +106,7 @@ export const warriorBuckets: BucketDef[] = [
   // ---------------------------------------------------------------------------
   {
     id: 'bucket_warrior_tempo',
-    name: 'March of the Banneret',
+    name: 'March of the Militia',
     cardClass: 'warrior',
     cardIds: ['warrior_cruel_taskmaster', 'warrior_warsong_commander', 'warrior_cleave'],
   },

@@ -70,15 +70,15 @@ export const TRIBE_LABEL: Record<MinionTribe, string> = {
 /** Display names for hero classes (callings, in Hollowmoor parlance). */
 export const CLASS_LABEL: Record<CardClass, string> = {
   neutral: 'Neutral',
-  druid: 'Hedgewitch',
-  hunter: 'Trapper',
-  mage: 'Stargazer',
+  druid: 'Farmer',
+  hunter: 'Gamekeeper',
+  mage: 'Firework Maker',
   paladin: 'Lamplighter',
-  priest: 'Vicar',
-  rogue: 'Cutpurse',
-  shaman: 'Augur',
-  warlock: 'Bargainer',
-  warrior: 'Banneret',
+  priest: 'Priest',
+  rogue: 'Burglar',
+  shaman: 'Weatherman',
+  warlock: 'Pawnbroker',
+  warrior: 'Blacksmith',
 }
 
 /** A calling's signature colour identity. */

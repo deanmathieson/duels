@@ -18,7 +18,7 @@ export const priestBuckets: BucketDef[] = [
   // ── SHADOW REMOVAL ───────────────────────────────────────────────────────
   {
     id: 'bucket_priest_shadow_removal',
-    name: "The Vicar's Black Book",
+    name: "The Priest's Black Book",
     cardClass: 'priest',
     cardIds: ['priest_shadow_word_pain', 'priest_shadow_word_death', 'priest_mind_blast'],
   },

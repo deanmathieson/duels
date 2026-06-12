@@ -48,15 +48,15 @@ const TRIBE_CREATURE: Record<string, string> = {
 /** Per-class palette/mood accents — short, so they survive the token budget. */
 const CLASS_MOOD: Record<CardClass, string> = {
   neutral: 'village folk, lantern light',
-  druid: 'hedgewitch greens, briar and mandrake',
-  hunter: 'poacher browns, snares and hounds, misty moor',
-  mage: 'midnight blues, falling stars and frost',
+  druid: 'farmstead greens, briar and mandrake',
+  hunter: 'gamekeeper browns, snares and hounds, misty moor',
+  mage: 'gunpowder smoke, rockets and sparks on midnight blue',
   paladin: 'wax-yellow lantern glow, candle processions',
   priest: 'incense gloom, crooked parish church',
-  rogue: 'tavern-backroom shadows, knives and silver',
-  shaman: 'bog greens and storm greys, carved effigies',
-  warlock: 'fae-court purples, crossroads contract dread',
-  warrior: 'rusting plate, ragged banners, alehouse brawn',
+  rogue: 'moonlit rooftops, swag sacks, knives and silver',
+  shaman: 'storm greys and bog greens, weathervanes and effigies',
+  warlock: 'pawnshop clutter, fae-court purples, contract dread',
+  warrior: 'forge-glow orange, anvils and sparks, horseshoes',
 }
 
 interface PromptEntry {

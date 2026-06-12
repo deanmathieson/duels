@@ -603,7 +603,7 @@ export const mageCards: CardDef[] = [
     type: 'spell',
     cardClass: 'mage',
     rarity: 'epic',
-    text: 'Add 3 random Stargazer spells to your hand.',
+    text: 'Add 3 random Firework Maker spells to your hand.',
     flavor: 'Three new prayers every printing, and not one of them fit for church.',
     spell: [{ kind: 'addRandomCardToHand', pool: 'spell', count: 3, fromClass: 'mage' }],
   },
@@ -642,7 +642,7 @@ export const mageCards: CardDef[] = [
     type: 'spell',
     cardClass: 'mage',
     rarity: 'epic',
-    text: 'Discover a spell. Add 2 random Stargazer spells to your hand.',
+    text: 'Discover a spell. Add 2 random Firework Maker spells to your hand.',
     flavor: 'The dead know every constellation. They have the better view.',
     spell: [
       { kind: 'discover', pool: 'spell' },

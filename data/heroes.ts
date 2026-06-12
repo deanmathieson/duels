@@ -1,21 +1,19 @@
 import type { HeroDef, HeroPowerDef } from '../game/types'
 
 /**
- * Old Nan Nettlebed — the Hedgewitch of Hollowmoor.
+ * Farmer Greg — the Farmer of Hollowmoor.
  *
- * Every village in the county keeps a hedgewitch; Hollowmoor keeps THE
- * hedgewitch. Nan has outlived four husbands (three of them properly dead),
- * brews remedies the church has twice tried to ban and once tried to buy,
- * and holds the only standing bargain with the Briar — the crooked green
- * dark that grows back overnight no matter what is done to it. Cross her
- * and you'll wake up wed to a mandrake. Pay her and you'll get exactly what
- * you asked for, which is worse. Her cures all work; they simply have a
- * sense of humour.
+ * Wellies, pitchfork, and a field where something is always screaming.
+ * Greg grows what the moor lets him: mandrakes by the gallows, briar that
+ * comes back overnight, a prize marrow he doesn't turn his back on. He's
+ * not a clever man, but the crops do what he says, and that frightens
+ * everyone who IS clever. Ask him how the harvest's looking and he'll say
+ * "can't complain" — over the sound of the harvest, complaining.
  */
 export const heroes: HeroDef[] = [
   {
     id: 'forest_warden_omu',
-    name: 'Old Nan Nettlebed',
+    name: 'Farmer Greg',
     cardClass: 'druid',
     heroPowers: ['hp_natures_gifts', 'hp_invigorating_bloom', 'hp_harvest_time'],
     signatureTreasures: [
@@ -32,14 +30,14 @@ export const heroes: HeroDef[] = [
 ]
 
 /**
- * All hero power definitions: Old Nan Nettlebed's 3 powers +
+ * All hero power definitions: Farmer Greg's 3 powers +
  * the 6 enemy hero powers used by Worker D enemies.
  */
 export const heroPowers: HeroPowerDef[] = [
-  // --- Hedgewitch hero powers ---
+  // --- Farmer Greg's hero powers ---
   {
     id: 'hp_natures_gifts',
-    name: "A Witch's Bargain",
+    name: 'Elbow Grease',
     cost: 2,
     text: 'Choose One - +2 Attack this turn; or Spell Damage +2 this turn.',
     chooseOne: [
@@ -56,7 +54,7 @@ export const heroPowers: HeroPowerDef[] = [
   },
   {
     id: 'hp_invigorating_bloom',
-    name: 'Strong Medicine',
+    name: 'Hearty Breakfast',
     cost: 2,
     text: 'Reduce the Cost of cards in your hand that cost (5) or more by (1).',
     effects: [{ kind: 'reduceCostInHand', amount: 1, minCost: 5 }],

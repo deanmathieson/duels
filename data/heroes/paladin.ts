@@ -1,14 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Tallow Meg, the Lamplighter — paladin-slot hero definition.
- * Head of the Hollowmoor parish watch: lantern processions, wax and oaths,
- * candle-lit vigils against the dark — equal parts piety and protection racket.
+ * Lamplighter Larry — paladin-slot hero definition.
+ * Lights the village lamps at dusk, every dusk, because of what happens
+ * to villages that skip one. Ladder, lantern pole, dependable.
  * Theme: go-wide Wickling tokens, buff synergies, healing, Blessing.
  */
 export const paladinHero: HeroDef = {
   id: 'hero_paladin',
-  name: 'Tallow Meg, the Lamplighter',
+  name: 'Lamplighter Larry',
   cardClass: 'paladin',
   heroPowers: [
     'hp_paladin_reinforce',
@@ -27,7 +27,7 @@ export const paladinHero: HeroDef = {
 }
 
 /**
- * Hero power definitions for Tallow Meg, the Lamplighter.
+ * Hero power definitions for Lamplighter Larry.
  *
  * - Light the Wick: classic 2-mana summon a 1/1 Wickling.
  * - The Midnight Procession: 3-mana — summon two 1/1 Wicklings. (Was a

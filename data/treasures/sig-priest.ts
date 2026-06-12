@@ -57,7 +57,7 @@ const apotheosisCard: CardDef = {
   cardClass: 'priest',
   rarity: 'legendary',
   text: 'Restore 8 Health to your hero. Give all friendly minions **Blessing**.',
-  flavor: "Grace, the Vicar preaches, is poured rather than earned. Seconds cost a shilling.",
+  flavor: "Grace, the Priest preaches, is poured rather than earned. Seconds cost a shilling.",
   spell: [
     { kind: 'heal', amount: 8, target: 'friendlyHero' },
     { kind: 'giveDivineShield', target: 'friendlyMinions' },

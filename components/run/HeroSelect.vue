@@ -118,23 +118,23 @@ const selectedId = ref<string | undefined>(heroDefs.length === 1 ? heroDefs[0].i
 /** Per-hero flavour text shown under the portrait. */
 const LORE: Record<string, string> = {
   forest_warden_omu:
-    'The Hedgewitch of Hollowmoor. Four husbands buried — three of them properly dead — and a standing bargain with the Briar. Her garden grows overnight, and so do her grudges.',
+    "Grows what the moor lets him: gallows mandrakes, overnight briar, a marrow he doesn't turn his back on. Ask about the harvest and he'll say \"can't complain\" — over the screaming.",
   hero_hunter:
-    "The poacher matriarch of the moor. Never lost a dog, never missed a shot, never paid the gamekeeper in anything he could bank. Her snares catch dinner; her smile catches everything else.",
+    "Keeps the squire's land, the squire's pheasants, and the squire's secrets. Flat cap, shotgun, three good dogs. Whatever's been eating the sheep, Gary's been eating it back.",
   hero_mage:
-    'A scandalous hedge-astrologer who reads ruin in the night sky and sells the good news at a markup. Burn bright, burn fast, and bill the survivors.',
+    'Sells rockets out of a shed that has burned down four times, twice on purpose. No eyebrows, big grin, and one box he keeps for "special customers."',
   hero_paladin:
-    'Captain of the lantern processions. Half the parish owes her protection money; the other half owes her apologies. Light every wick, shield every debtor — collection comes later.',
+    "Lights the village lamps at dusk, every dusk, because everyone remembers the dusk he didn't. Ladder, lantern pole, and a round for every wick that holds.",
   hero_priest:
-    'Shepherd of the crookedest parish in the county. Mends his flock with one hand, unravels their secrets with the other, and drinks the communion cellar dry in between.',
+    "Nobody remembers his name and nobody asks. Tea, biscuits, exorcisms, Sundays. The collection plate always comes back fuller than it went out.",
   hero_rogue:
-    'The most-acquitted woman in Hollowmoor: smuggler, fence, and dealer in the corpse trade. Knives cheap, silence extra, no refunds.',
+    'Striped jumper, sack marked SWAG, a ferret down one sleeve. Never convicted — the evidence keeps going missing. So does the magistrate\'s silverware.',
   hero_shaman:
-    'The bog-witch who reads tomorrow in entrails and stakes carved Effigies in the marsh. The weather owes her favors. So does half the drowned.',
+    "Reads tomorrow off the clouds and is never wrong, which is the problem: what Willy forecasts, arrives. Tonight there's a storm coming, and he's pointing it at you.",
   hero_warlock:
-    'The crossroads creditor. She pays in her own blood, lends at ruinous interest, and the Fae who hold her notes are always, always hungry.',
+    'Three brass balls over the door, a ledger nobody reads twice. Paul lends against anything — watches, wedding rings, years off your life — and he always collects.',
   hero_warrior:
-    'The last Banneret of a mortgaged keep — rusting plate, tavern debts, and a tourney title nobody dares ask him to defend. Stack armor, swing iron, outlast the county.'
+    'Arms like fence posts, apron full of scorch marks. Bess shoes the horses, mends the ploughs, and forges what the village needs the night before it needs it. Stack armor, swing iron.'
 }
 
 /** Lore for a hero, with a graceful fallback. */

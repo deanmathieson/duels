@@ -1,14 +1,14 @@
 import type { HeroDef, HeroPowerDef } from '../../game/types'
 
 /**
- * Hespera Quill, the Comet-Wife — Stargazer hero definition.
- * A scandalous hedge-astrologer who reads ruin in the night sky and sells the
- * good news at a markup. Theme: burn and spell damage — hero powers amplify
- * spell output.
+ * Firework Fred — Firework Maker hero definition.
+ * Sells rockets out of a shed that has burned down four times, twice on
+ * purpose. No eyebrows, big grin. Theme: burn and spell damage — hero
+ * powers amplify spell output.
  */
 export const mageHero: HeroDef = {
   id: 'hero_mage',
-  name: 'Hespera Quill, the Comet-Wife',
+  name: 'Firework Fred',
   cardClass: 'mage',
   heroPowers: ['hp_mage_arcane_surge', 'hp_mage_open_the_portal', 'hp_mage_frigid_blast'],
   signatureTreasures: [
@@ -23,16 +23,16 @@ export const mageHero: HeroDef = {
 }
 
 /**
- * Hero powers for Hespera Quill, the Comet-Wife.
+ * Hero powers for Firework Fred.
  */
 export const mageHeroPowers: HeroPowerDef[] = [
   /**
-   * Bad Horoscope — cost 2.
+   * Light the Fuse — cost 2.
    * Choose One — Deal 2 damage to an enemy; or gain Spell Damage +2 this turn.
    */
   {
     id: 'hp_mage_arcane_surge',
-    name: 'Bad Horoscope',
+    name: 'Light the Fuse',
     cost: 2,
     text: 'Choose One - Deal 2 damage to an enemy; or gain Spell Damage +2 this turn.',
     targeted: true,
@@ -51,12 +51,12 @@ export const mageHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Crack the Almanac — cost 2.
+   * Lucky Dip — cost 2. A rummage in the rocket box.
    * Add a random spell to your hand and reduce its cost by (2).
    */
   {
     id: 'hp_mage_open_the_portal',
-    name: 'Crack the Almanac',
+    name: 'Lucky Dip',
     cost: 2,
     text: 'Add a random spell to your hand. It costs (2) less.',
     effects: [{ kind: 'addRandomCardToHand', pool: 'spell', count: 1, costReduction: 2 }],
@@ -64,14 +64,14 @@ export const mageHeroPowers: HeroPowerDef[] = [
   },
 
   /**
-   * Killing Frost — cost 3.
+   * Catherine Wheel — cost 3. Sparks for everyone.
    * Deal 1 damage to all enemies.
    * (Toned to 1 damage to fit the ~half-cost hero-power budget on a
    * repeatable 3-cost power.)
    */
   {
     id: 'hp_mage_frigid_blast',
-    name: 'Killing Frost',
+    name: 'Catherine Wheel',
     cost: 3,
     text: 'Deal 1 damage to all enemies.',
     effects: [{ kind: 'damage', amount: 1, target: 'allEnemyCharacters' }],

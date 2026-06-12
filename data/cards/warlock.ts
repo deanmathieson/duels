@@ -375,13 +375,13 @@ export const warlockCards: CardDef[] = [
   },
 
   /**
-   * Hespera of the Red Quill — 5/5 Fae Legendary.
+   * The Notary — 5/5 Fae Legendary.
    * Omen: Deal 3 damage to your hero. Draw 3 cards.
-   * (Self-damage draw — the Bargainer's resource engine, notarised in blood.)
+   * (Self-damage draw — the Pawnbroker's resource engine, notarised in blood.)
    */
   {
     id: 'warlock_blood_queen_lanathel',
-    name: 'Hespera of the Red Quill',
+    name: 'The Notary',
     cost: 7,
     type: 'minion',
     cardClass: 'warlock',
@@ -602,7 +602,7 @@ export const warlockCards: CardDef[] = [
     type: 'spell',
     cardClass: 'warlock',
     rarity: 'common',
-    text: 'Add two random Bargainer minions to your hand.',
+    text: 'Add two random Pawnbroker minions to your hand.',
     flavor: 'Whistle after dark and something always answers. Rarely what you hoped. Never alone.',
     spell: [
       { kind: 'addRandomCardToHand', pool: 'minion', count: 2, fromClass: 'warlock' },
