@@ -220,7 +220,10 @@ const preview = useCardPreview()
 
 function onHoverEnter(): void {
   if (props.faceDown || props.noHover) return
-  preview.show(props.card, rootEl.value)
+  // Forward this card's own Spell Damage bonus so the big preview shows the
+  // same boosted "Deal N(+B) damage" the card face does (the invariant: the
+  // preview never disagrees with the card it magnifies).
+  preview.show(props.card, rootEl.value, props.spellDamage)
 }
 function onHoverLeave(): void {
   if (props.faceDown || props.noHover) return

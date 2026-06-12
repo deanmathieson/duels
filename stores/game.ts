@@ -8,6 +8,7 @@ import {
   queries,
   getCard,
   hasCard,
+  spellDamageBonus,
 } from '~/game/index'
 import type {
   Action,
@@ -79,6 +80,13 @@ export const useGameStore = defineStore('game', () => {
   const human = computed<PlayerState | null>(() => match.value?.players[0] ?? null)
   /** The enemy player state (always player 1, AI-driven). */
   const enemy = computed<PlayerState | null>(() => match.value?.players[1] ?? null)
+
+  /** The human's FULL live Spell Damage this turn — board/auras + temporary
+   *  "+N this turn" hero effects — so spell cards display the boost that the
+   *  engine will actually apply (the board value alone misses this-turn buffs). */
+  const humanSpellDamage = computed<number>(() =>
+    match.value ? spellDamageBonus(match.value, 0) : 0
+  )
 
   /** Current game phase ('mulligan' | 'main' | 'gameOver'), or null. */
   const phase = computed(() => match.value?.phase ?? null)
@@ -488,6 +496,7 @@ export const useGameStore = defineStore('game', () => {
     // getters
     human,
     enemy,
+    humanSpellDamage,
     phase,
     winner,
     pendingChoice,

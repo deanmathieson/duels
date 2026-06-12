@@ -181,7 +181,7 @@
         :playable-ids="playableInstanceIds"
         :selected-id="selectedCardId ?? dragPlayCardId"
         :live-costs="liveCostMap"
-        :spell-damage="human?.spellDamage ?? 0"
+        :spell-damage="store.humanSpellDamage"
         @select="onHandCardClick"
         @pointerdown-card="onHandPointerDown"
       />
