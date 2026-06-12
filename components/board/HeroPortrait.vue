@@ -28,6 +28,15 @@
          visible disc alone is a fiddly click/drop target. -->
     <div v-if="targetable" class="hit-pad" aria-hidden="true" />
 
+    <!-- Class identity aura (behind the ring; hidden while a brighter
+         attack-ready / targetable state owns the glow). -->
+    <div
+      v-if="!canAttack && !targetable && !selected"
+      class="class-aura"
+      :style="auraStyle"
+      aria-hidden="true"
+    />
+
     <!-- Portrait ring -->
     <div class="hero-ring" :class="{ 'attack-ready': canAttack }">
       <div class="hero-disc" :style="portraitStyle">
@@ -76,7 +85,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CardClass, HeroState, WeaponInstance } from '~/game/types'
+import type { HeroState, WeaponInstance } from '~/game/types'
+import { CLASS_COLOR } from '~/data/terms'
 
 /** A hero portrait with health, armor, weapon and attack indicators. */
 const props = withDefaults(
@@ -96,23 +106,18 @@ const props = withDefaults(
 
 defineEmits<{ (e: 'select'): void }>()
 
-const CLASS_GRADIENT: Record<CardClass, [string, string]> = {
-  neutral: ['#8b7355', '#3a2c1d'],
-  druid: ['#6b8f3a', '#26410f'],
-  hunter: ['#3f7a2e', '#16310d'],
-  mage: ['#3f7fd6', '#11335f'],
-  paladin: ['#d6b23f', '#6b5410'],
-  priest: ['#e8e4d8', '#8b8674'],
-  rogue: ['#5a5f66', '#1d2024'],
-  shaman: ['#2f5fd6', '#11275f'],
-  warlock: ['#8a3fd6', '#3a115f'],
-  warrior: ['#b3402a', '#5a1810'],
-}
+/** This hero's calling colour identity (single source of truth in terms.ts). */
+const classColor = computed(() => CLASS_COLOR[props.hero.cardClass] ?? CLASS_COLOR.neutral)
 
-const portraitStyle = computed(() => {
-  const g = CLASS_GRADIENT[props.hero.cardClass] ?? CLASS_GRADIENT.neutral
-  return { background: `radial-gradient(120% 120% at 35% 22%, ${g[0]} 0%, ${g[1]} 100%)` }
-})
+const portraitStyle = computed(() => ({
+  background: `radial-gradient(120% 120% at 35% 22%, ${classColor.value.base} 0%, ${classColor.value.dark} 100%)`,
+}))
+
+/** A faint, always-on aura ring in the calling's colour — the hero's identity
+ *  halo (distinct from the green attack-ready / red targetable rings). */
+const auraStyle = computed(() => ({
+  boxShadow: `0 0 16px 3px ${classColor.value.glow}`,
+}))
 </script>
 
 <style scoped>
@@ -131,11 +136,29 @@ const portraitStyle = computed(() => {
   border-radius: 38px;
 }
 
+/* Class identity aura — a soft coloured halo behind the portrait ring. */
+.class-aura {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: classAuraBreathe 4.5s ease-in-out infinite;
+}
+@keyframes classAuraBreathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .class-aura { animation: none; opacity: 0.7; }
+}
+
 .hero-ring {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   padding: 4px;
+  position: relative;
+  z-index: 1;
   background: linear-gradient(180deg, #f6da86 0%, #b8841f 50%, #5e420a 100%);
   box-shadow:
     inset 0 1px 2px rgba(255, 255, 255, 0.6),

@@ -1,5 +1,11 @@
 import { gsap } from 'gsap'
 
+/** A minimal class-colour tint passed into the FX helpers (see data/terms.ts). */
+export interface FxTint {
+  light: string
+  glow: string
+}
+
 /**
  * GSAP-based animation helpers for the board. Every function is defensive: a
  * missing / null element is a no-op so callers can pass `ref.value` straight
@@ -139,8 +145,9 @@ export function useAnimations() {
    * untransformed inner card, pin the clone at the slot's current screen rect
    * in a fixed wrapper, and animate the wrapper. Self-removing.
    * @param node - the played card's hand-slot element
+   * @param tint - the calling's colour (the ghost lifts with a hue-matched glow)
    */
-  function cardPlayGhost(node: Element | null | undefined): void {
+  function cardPlayGhost(node: Element | null | undefined, tint?: FxTint): void {
     const e = el(node)
     if (!e || typeof document === 'undefined') return
     const rect = e.getBoundingClientRect()
@@ -161,6 +168,7 @@ export function useAnimations() {
       `height:${rect.height}px`,
       'pointer-events:none',
       'z-index:120',
+      tint ? `filter:drop-shadow(0 0 12px ${tint.glow})` : '',
     ].join(';')
     wrapper.appendChild(clone)
     document.body.appendChild(wrapper)
@@ -170,28 +178,70 @@ export function useAnimations() {
       return
     }
     gsap.to(wrapper, {
-      y: -48,
-      scale: 1.12,
+      y: -54,
+      scale: 1.14,
       opacity: 0,
-      duration: 0.18,
+      duration: 0.2,
       ease: 'power2.in',
       onComplete: () => wrapper.remove(),
     })
   }
 
   /**
-   * Summon pop — a minion appearing on the board with an overshoot bounce and
-   * a brief glow flash. A dust/sparkle bloom underlines the arrival.
-   * @param node - the minion element
+   * Spell cast glow — a class-tinted ring + bloom at a point (the caster /
+   * board centre) when a spell resolves, giving spells a colour signature.
+   * @param node - the element to centre the glow on
+   * @param tint - the calling's colour
    */
-  function summonPop(node: Element | null | undefined): gsap.core.Timeline | undefined {
+  function castGlow(node: Element | null | undefined, tint: FxTint): void {
+    const c = centerOf(node)
+    if (!c || reduced || typeof document === 'undefined') return
+    classBloom(node, 0.7, tint.light, tint.glow)
+    const size = 64
+    const ring = document.createElement('div')
+    ring.style.cssText = [
+      'position:fixed',
+      `left:${c.x}px`,
+      `top:${c.y}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      'margin-left:' + -size / 2 + 'px',
+      'margin-top:' + -size / 2 + 'px',
+      'border-radius:50%',
+      'pointer-events:none',
+      'z-index:186',
+      'mix-blend-mode:screen',
+      `border:2px solid ${tint.light}`,
+      `box-shadow:0 0 16px 4px ${tint.glow}, inset 0 0 12px ${tint.glow}`,
+    ].join(';')
+    document.body.appendChild(ring)
+    gsap.fromTo(
+      ring,
+      { scale: 0.5, opacity: 0.9 },
+      { scale: 2.1, opacity: 0, duration: 0.5, ease: 'power2.out', onComplete: () => ring.remove() }
+    )
+  }
+
+  /**
+   * Summon pop — a minion appearing on the board with an overshoot bounce and
+   * a brief glow flash. A class-tinted bloom + a ring underline the arrival, so
+   * each calling's minions enter in their own colour.
+   * @param node - the minion element
+   * @param tint - the calling's colour (defaults to warm gold)
+   */
+  function summonPop(
+    node: Element | null | undefined,
+    tint?: FxTint
+  ): gsap.core.Timeline | undefined {
     const e = el(node)
     if (!e) return
     if (reduced) {
       gsap.set(e, { opacity: 1, scale: 1 })
       return
     }
-    impactFlash(e, 0.35, 'rgba(255,233,168,0.9)')
+    const core = tint?.light ?? 'rgba(255,233,168,0.95)'
+    const glow = tint?.glow ?? 'rgba(255,200,120,0.5)'
+    classBloom(e, 0.5, core, glow)
     const tl = gsap.timeline()
     tl.fromTo(
       e,
@@ -199,6 +249,49 @@ export function useAnimations() {
       { opacity: 1, scale: 1.16, y: 0, filter: 'brightness(1)', duration: 0.34, ease: 'back.out(2.4)' }
     ).to(e, { scale: 1, duration: 0.18, ease: 'power2.out', clearProps: 'filter' })
     return tl
+  }
+
+  /**
+   * A class-tinted bloom: like impactFlash but the whole gradient is the
+   * calling's hue (core → glow → out), so summons/casts read in-colour rather
+   * than the generic warm flash. Self-removing.
+   */
+  function classBloom(
+    node: Element | null | undefined,
+    power: number,
+    core: string,
+    glow: string
+  ): void {
+    const c = centerOf(node)
+    if (!c || reduced || typeof document === 'undefined') return
+    const size = 52 + power * 80
+    const bloom = document.createElement('div')
+    bloom.style.cssText = [
+      'position:fixed',
+      `left:${c.x}px`,
+      `top:${c.y}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      'margin-left:' + -size / 2 + 'px',
+      'margin-top:' + -size / 2 + 'px',
+      'border-radius:50%',
+      'pointer-events:none',
+      'z-index:185',
+      'mix-blend-mode:screen',
+      `background:radial-gradient(circle, ${core} 0%, ${glow} 45%, rgba(0,0,0,0) 72%)`,
+    ].join(';')
+    document.body.appendChild(bloom)
+    gsap.fromTo(
+      bloom,
+      { scale: 0.4, opacity: 0.95 },
+      {
+        scale: 1.6 + power,
+        opacity: 0,
+        duration: 0.42 + power * 0.18,
+        ease: 'power2.out',
+        onComplete: () => bloom.remove(),
+      }
+    )
   }
 
   /* --------------------------------------------------------------------------
@@ -540,6 +633,7 @@ export function useAnimations() {
     cardDraw,
     cardPlayGhost,
     summonPop,
+    castGlow,
     attackLunge,
     damageShake,
     shieldBreak,

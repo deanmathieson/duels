@@ -7,6 +7,7 @@
       small ? 'w-[140px] hs-card-sm' : 'w-[200px]',
       { 'hs-card-hover': !faceDown && !noHover, 'hs-card-playable': playable && !faceDown }
     ]"
+    :style="{ '--cv-class': classColor.base, '--cv-class-glow': classColor.glow }"
     @mouseenter="onHoverEnter"
     @mouseleave="onHoverLeave"
   >
@@ -31,12 +32,11 @@
         class="absolute inset-0 rounded-card pointer-events-none"
         :style="rimGlowStyle"
       />
-      <!-- Type tint glaze -->
+      <!-- Class colour glaze — the calling's signature hue washes the top of
+           the card so each calling reads at a glance. -->
       <div
-        class="absolute inset-0 rounded-card opacity-30 pointer-events-none"
-        :style="{
-          background: `radial-gradient(120% 90% at 50% 0%, var(--frame-tint), transparent 60%)`
-        }"
+        class="absolute inset-0 rounded-card pointer-events-none cv-class-glaze"
+        :style="classGlazeStyle"
       />
 
       <!-- Inner content stack -->
@@ -92,15 +92,15 @@
           </div>
         </div>
 
-        <!-- Tribe / type ribbon -->
+        <!-- Tribe / type ribbon (rules tinted by the calling's colour) -->
         <div
           v-if="ribbonLabel"
           class="mx-auto mt-[2px] flex items-center justify-center gap-1 font-engrave uppercase tracking-wider text-parchment-light/80"
           :class="small ? 'text-[7px]' : 'text-[8px]'"
         >
-          <span class="cv-ribbon-rule" />
+          <span class="cv-ribbon-rule cv-ribbon-rule-l" />
           <span>{{ ribbonLabel }}</span>
-          <span class="cv-ribbon-rule" />
+          <span class="cv-ribbon-rule cv-ribbon-rule-r" />
         </div>
 
         <!-- Card text (parchment) -->
@@ -184,8 +184,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { CardDef, CardClass, Rarity } from '~/game/types'
-import { TRIBE_LABEL } from '~/data/terms'
+import type { CardDef, Rarity } from '~/game/types'
+import { CLASS_COLOR, TRIBE_LABEL } from '~/data/terms'
 
 /** A polished collectible-card render. */
 const props = withDefaults(
@@ -227,20 +227,6 @@ function onHoverLeave(): void {
   preview.hide()
 }
 
-/** Class-keyed gradient used for the placeholder art when no asset is set. */
-const CLASS_GRADIENT: Record<CardClass, [string, string]> = {
-  neutral: ['#8b7355', '#3a2c1d'],
-  druid: ['#6b8f3a', '#26410f'],
-  hunter: ['#3f7a2e', '#16310d'],
-  mage: ['#3f7fd6', '#11335f'],
-  paladin: ['#d6b23f', '#6b5410'],
-  priest: ['#e8e4d8', '#8b8674'],
-  rogue: ['#5a5f66', '#1d2024'],
-  shaman: ['#2f5fd6', '#11275f'],
-  warlock: ['#8a3fd6', '#3a115f'],
-  warrior: ['#b3402a', '#5a1810']
-}
-
 /** Per-rarity accent colors for the gem glow + rim treatment. */
 const RARITY_ACCENT: Record<Rarity, string> = {
   free: '#9aa0a6',
@@ -252,10 +238,17 @@ const RARITY_ACCENT: Record<Rarity, string> = {
 
 const initial = computed(() => props.card.name.charAt(0).toUpperCase())
 
-const gradient = computed(() => CLASS_GRADIENT[props.card.cardClass] ?? CLASS_GRADIENT.neutral)
+/** This card's calling colour identity (single source of truth in terms.ts). */
+const classColor = computed(() => CLASS_COLOR[props.card.cardClass] ?? CLASS_COLOR.neutral)
 
 const placeholderArtStyle = computed(() => ({
-  background: `radial-gradient(120% 120% at 35% 25%, ${gradient.value[0]} 0%, ${gradient.value[1]} 100%)`
+  background: `radial-gradient(120% 120% at 35% 25%, ${classColor.value.base} 0%, ${classColor.value.dark} 100%)`
+}))
+
+/** Faint class-hued wash behind the art, so each calling reads at a glance
+ *  without fighting the gold frame. */
+const classGlazeStyle = computed(() => ({
+  background: `radial-gradient(130% 80% at 50% 6%, ${classColor.value.glow}, transparent 62%)`
 }))
 
 const isLegendary = computed(() => props.card.rarity === 'legendary')
@@ -375,11 +368,23 @@ const renderedText = computed(() => {
     0 0 8px rgba(255, 110, 90, 0.7);
 }
 
-/* Thin engraved rule on either side of the tribe/type ribbon. */
+/* Thin engraved rule on either side of the tribe/type ribbon, tinted by the
+   calling's colour so the hue threads through the card's chrome. */
 .cv-ribbon-rule {
   width: 14%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 200, 80, 0.55), transparent);
+}
+.cv-ribbon-rule-l {
+  background: linear-gradient(90deg, transparent, var(--cv-class, rgba(240, 200, 80, 0.55)));
+}
+.cv-ribbon-rule-r {
+  background: linear-gradient(270deg, transparent, var(--cv-class, rgba(240, 200, 80, 0.55)));
+}
+
+/* Static class-hue wash — kept still (not animated): with dozens of cards on
+   the draft/codex screens, per-card breathing glazes are wasted compositing. */
+.cv-class-glaze {
+  opacity: 0.5;
 }
 
 /* Soft rarity gem glow for epic/legendary. */

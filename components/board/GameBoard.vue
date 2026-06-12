@@ -234,6 +234,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { getCard, getHeroPower, hasCard } from '~/game/index'
 import type { ChooseOneOption, GameEvent, MinionInstance } from '~/game/types'
+import { CLASS_COLOR } from '~/data/terms'
 import { useAnimations } from '~/composables/useAnimations'
 import { useAudio } from '~/composables/useAudio'
 
@@ -260,6 +261,12 @@ const HERO_TARGET = store.HERO_TARGET
 /** True when a target id refers to a hero portrait (vs a minion). */
 function isHeroTarget(id: string): boolean {
   return id.startsWith('hero:')
+}
+
+/** The calling-colour FX tint for a card id (falls back to neutral). */
+function tintForCard(cardId: string): { light: string; glow: string } {
+  const c = (hasCard(cardId) ? CLASS_COLOR[getCard(cardId).cardClass] : null) ?? CLASS_COLOR.neutral
+  return { light: c.light, glow: c.glow }
 }
 
 /* --------------------------------------------------------------------------
@@ -844,9 +851,10 @@ function playSelectedCard(
   opts: { targetId?: string; chooseOneIndex?: number }
 ): void {
   const cardEl = handRef.value?.elFor(instanceId)
+  const inst = human.value?.hand.find((c) => c.instanceId === instanceId)
   cancelSelection()
   preview.clear()
-  anim.cardPlayGhost(cardEl)
+  anim.cardPlayGhost(cardEl, inst ? tintForCard(inst.cardId) : undefined)
   void store.humanPlayCard(instanceId, opts)
 }
 
@@ -951,10 +959,19 @@ async function processEvents(events: GameEvent[]): Promise<void> {
         // add a one-off shard/flash burst at its last known position.
         anim.impactFlash(nodeFor(ev.instanceId), 0.5, 'rgba(220,220,235,0.9)')
         break
+      case 'cardPlayed': {
+        // A spell resolving pulses a class-tinted ring from the caster's hero,
+        // so each calling's spells read in its colour (both players).
+        const def = hasCard(ev.cardId) ? getCard(ev.cardId) : undefined
+        if (def?.type === 'spell') {
+          anim.castGlow(nodeFor(HERO_TARGET(ev.player)), tintForCard(ev.cardId))
+        }
+        break
+      }
       case 'minionSummoned':
         await nextTick()
         audio.play('cardPlay', { gain: 0.6 })
-        anim.summonPop(nodeFor(ev.instanceId))
+        anim.summonPop(nodeFor(ev.instanceId), tintForCard(ev.cardId))
         break
       case 'heroPowerUsed':
         if (ev.player === 0) anim.heroPowerCharge(nodeFor('heroPower:0'))
