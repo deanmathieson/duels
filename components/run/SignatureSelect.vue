@@ -63,12 +63,23 @@
       </button>
     </div>
 
-    <div class="mt-6 flex items-center gap-3 shrink-0 action-row">
-      <BaseButton variant="wood" size="md" @click="goBack">Back</BaseButton>
-      <BaseButton variant="gold" size="lg" :disabled="!selectedId" @click="choose">
-        Take {{ selectedName }}
-      </BaseButton>
-    </div>
+    <!-- Always-reachable Back (pinned bottom-left, clear of the top HUD). -->
+    <BaseButton variant="wood" size="sm" class="back-fixed" @click="goBack">Back</BaseButton>
+
+    <!-- Floating mid-screen confirm — always on-screen on mobile (no scrolling
+         to a clipped footer). Wrapper ignores clicks; only the panel is live. -->
+    <Transition name="confirm-pop">
+      <div v-if="selectedId" class="confirm-float">
+        <div class="confirm-card">
+          <p class="confirm-label font-engrave">Signature chosen</p>
+          <p class="confirm-name font-engrave">{{ selectedName }}</p>
+          <BaseButton variant="gold" size="lg" @click="choose">Take {{ selectedName }}</BaseButton>
+          <button class="confirm-cancel font-engrave" @click="selectedId = undefined">
+            Pick another
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -109,7 +120,7 @@ onMounted(() => {
     { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(1.4)', delay: 0.1 }
   )
   gsap.fromTo(
-    '.action-row',
+    '.back-fixed',
     { opacity: 0, y: 12 },
     { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', delay: 0.55 }
   )
@@ -363,5 +374,74 @@ function goBack(): void {
 @keyframes mark-pop {
   from { opacity: 0; transform: scale(0.5) rotate(-15deg); }
   to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Pinned Back — always on-screen, clear of the top HUD. */
+.back-fixed {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 60;
+}
+
+/* Floating mid-screen confirm (mirrors the hero-select pattern). */
+.confirm-float {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  pointer-events: none;
+}
+.confirm-card {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1.1rem 2rem 1rem;
+  border-radius: 16px;
+  border: 2px solid #f0c850;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(240, 200, 80, 0.16), transparent 65%),
+    linear-gradient(180deg, rgba(58, 42, 24, 0.97) 0%, rgba(32, 22, 12, 0.97) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 44px rgba(0, 0, 0, 0.75),
+    0 0 36px 6px rgba(240, 200, 80, 0.4);
+}
+.confirm-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #d8a830;
+}
+.confirm-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffe9a8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 12px rgba(240, 200, 80, 0.35);
+}
+.confirm-cancel {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 233, 210, 0.55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.confirm-cancel:hover {
+  color: #ffe9a8;
+}
+.confirm-pop-enter-active,
+.confirm-pop-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+.confirm-pop-enter-from,
+.confirm-pop-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
 }
 </style>
