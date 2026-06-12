@@ -358,19 +358,32 @@ export const useGameStore = defineStore('game', () => {
       /* default profile */
     }
 
-    let state = createInitialState(setup, seed)
-    // Engine starts in 'mulligan'. Auto-keep both opening hands to reach 'main'.
-    const r0 = applyAction(state, keepAllAction(state, 0))
-    state = r0.state
-    const r1 = applyAction(state, keepAllAction(state, 1))
-    state = r1.state
-
+    // Engine starts in the 'mulligan' phase with both opening hands dealt. We
+    // leave it there: the board shows the interactive mulligan for the human,
+    // and `humanMulligan()` advances to 'main' + the first turn. (The AI keeps
+    // its dealt hand — its mulligan was always a no-op in this engine.)
+    const state = createInitialState(setup, seed)
     match.value = state
-    lastEvents.value = [...r0.events, ...r1.events]
+    lastEvents.value = []
     eventTick.value++
-    appendLog([...r0.events, ...r1.events], state)
+    appendLog(state.log, state)
+  }
 
-    // If the AI was given the first turn, let it play.
+  /**
+   * Resolve the human's mulligan: keep the chosen cards (the Coin is always
+   * kept), shuffle the rest back and redraw. This is the action that advances
+   * the match from 'mulligan' to 'main' and starts the first turn; if the AI
+   * has the first turn, it then plays.
+   * @param keepInstanceIds - hand card instance ids the player chose to keep
+   */
+  async function humanMulligan(keepInstanceIds: string[]): Promise<void> {
+    if (!match.value || match.value.phase !== 'mulligan') return
+    // The Coin (dealt to the player going second) is never mulliganed away.
+    const coinIds = match.value.players[0].hand
+      .filter((c) => c.cardId === 'the_coin')
+      .map((c) => c.instanceId)
+    const keep = [...new Set([...keepInstanceIds, ...coinIds])]
+    dispatch({ type: 'mulligan', player: 0, keepInstanceIds: keep })
     await maybeRunEnemy()
   }
 
@@ -380,15 +393,6 @@ export const useGameStore = defineStore('game', () => {
       enemyProfile.value = getEnemyDef(enemyId).aiProfile
     } catch {
       enemyProfile.value = 'midrange'
-    }
-  }
-
-  /** Build a mulligan action that keeps the player's entire current hand. */
-  function keepAllAction(state: GameState, player: PlayerId): Action {
-    return {
-      type: 'mulligan',
-      player,
-      keepInstanceIds: state.players[player].hand.map((c) => c.instanceId),
     }
   }
 
@@ -511,6 +515,7 @@ export const useGameStore = defineStore('game', () => {
     // actions
     startMatch,
     setEnemyById,
+    humanMulligan,
     humanPlayCard,
     humanAttack,
     humanHeroPower,

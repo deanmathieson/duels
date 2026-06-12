@@ -227,6 +227,9 @@
     <!-- Turn banners -->
     <TurnBanner kind="you" :trigger="yourTurnTrigger" />
     <TurnBanner kind="enemy" :trigger="enemyTurnTrigger" />
+
+    <!-- Opening-hand mulligan (covers the board until the player confirms) -->
+    <MulliganScreen v-if="store.phase === 'mulligan'" />
   </div>
 </template>
 
@@ -1037,9 +1040,13 @@ watch(
 )
 
 onMounted(() => {
-  // Kick the opening "Your Turn" banner if it's already the player's turn.
-  if (isHumanTurn.value) yourTurnTrigger.value++
-  else enemyTurnTrigger.value++
+  // Kick the opening turn banner only once we're actually in play — during the
+  // mulligan phase the real banner fires from the first `turnStarted` event
+  // when the player confirms.
+  if (store.phase === 'main') {
+    if (isHumanTurn.value) yourTurnTrigger.value++
+    else enemyTurnTrigger.value++
+  }
   // Switch to the tenser board ambience while the battlefield is on screen.
   audio.playMusic('board')
   window.addEventListener('keydown', onKeydown)
