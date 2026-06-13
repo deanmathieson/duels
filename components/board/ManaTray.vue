@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAnimations } from '~/composables/useAnimations'
+import { useAudio } from '~/composables/useAudio'
 
 /** 10 crystal pips: filled = available, dim = spent, locked beyond max. */
 const props = withDefaults(
@@ -36,6 +37,7 @@ const props = withDefaults(
 const MAX_MANA = 10
 
 const { manaFill, manaSpend } = useAnimations()
+const audio = useAudio()
 const pipEls = ref<HTMLElement[]>([])
 
 /**
@@ -64,6 +66,9 @@ watch(
     } else if (now < before) {
       // Crystals now..before were just spent — flick the highest ones down.
       for (let i = now; i < before && i < MAX_MANA; i++) manaSpend(pipEls.value[i])
+      // One soft "spend" cue per outlay, the player's tray only (the compact
+      // tray is the enemy's — its spends are covered by their card/power SFX).
+      if (!props.compact) audio.tone('mana')
     }
   }
 )

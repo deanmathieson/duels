@@ -272,6 +272,19 @@ function tintForCard(cardId: string): { light: string; glow: string } {
   return { light: c.light, glow: c.glow }
 }
 
+/** The FX tint for a board/just-died minion instance (resolves its card id by
+ *  searching both players' board + graveyard, since a death event only carries
+ *  the instance id). Falls back to neutral if the instance can't be found. */
+function tintForInstance(instanceId: string): { light: string; glow: string } {
+  for (const p of [store.human, store.enemy]) {
+    const m =
+      p?.board.find((x) => x.instanceId === instanceId) ??
+      p?.graveyard?.find((x) => x.instanceId === instanceId)
+    if (m) return tintForCard(m.cardId)
+  }
+  return tintForCard('')
+}
+
 /* --------------------------------------------------------------------------
  * Store-derived view state
  * ----------------------------------------------------------------------- */
@@ -619,7 +632,12 @@ function onKeydown(e: KeyboardEvent): void {
 function onHandCardClick(instanceId: string): void {
   if (clickSuppressed()) return
   if (!isHumanTurn.value) return
-  if (!playableInstanceIds.value.includes(instanceId)) return
+  if (!playableInstanceIds.value.includes(instanceId)) {
+    // Clicked a card you can't play right now (usually short on mana) — a brief
+    // flat buzz tells you the action was refused instead of a silent dead click.
+    audio.tone('error')
+    return
+  }
 
   // Toggle off if re-clicking the armed card.
   if (selectedCardId.value === instanceId) {
@@ -953,20 +971,24 @@ async function processEvents(events: GameEvent[]): Promise<void> {
         break
       }
       case 'heal':
+        audio.tone('heal')
         anim.impactFlash(nodeFor(ev.targetId), 0.4, 'rgba(130,255,140,0.9)')
         spawnSplash(ev.targetId, ev.amount, 'heal')
         break
       case 'death':
         audio.play('death')
-        // The board array reactively removes the minion (CSS shatter on leave);
-        // add a one-off shard/flash burst at its last known position.
+        // The board array reactively removes the minion (CSS fade on leave); add
+        // a one-off flash + a burst of tumbling shards at its last known spot so
+        // a kill carries weight instead of the minion just blinking out.
         anim.impactFlash(nodeFor(ev.instanceId), 0.5, 'rgba(220,220,235,0.9)')
+        anim.deathShatter(nodeFor(ev.instanceId), tintForInstance(ev.instanceId))
         break
       case 'cardPlayed': {
         // A spell resolving pulses a class-tinted ring from the caster's hero,
         // so each calling's spells read in its colour (both players).
         const def = hasCard(ev.cardId) ? getCard(ev.cardId) : undefined
         if (def?.type === 'spell') {
+          audio.tone('spell')
           anim.castGlow(nodeFor(HERO_TARGET(ev.player)), tintForCard(ev.cardId))
         }
         break
@@ -977,6 +999,7 @@ async function processEvents(events: GameEvent[]): Promise<void> {
         anim.summonPop(nodeFor(ev.instanceId), tintForCard(ev.cardId))
         break
       case 'heroPowerUsed':
+        audio.tone('heroPower')
         if (ev.player === 0) anim.heroPowerCharge(nodeFor('heroPower:0'))
         break
       case 'gameOver':

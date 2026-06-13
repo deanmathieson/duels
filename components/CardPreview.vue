@@ -11,6 +11,14 @@
           <CardView :card="card" :spell-damage="spellDamage" />
         </div>
 
+        <!-- Flavour scroll: the card's hand-written character moment, shown
+             beneath the magnified card so the world's voice finally reaches the
+             player (the flavor field is authored on every card but otherwise
+             never rendered anywhere in the UI). -->
+        <div v-if="card.flavor" class="flavor-scroll">
+          <span class="flavor-text font-body">{{ card.flavor }}</span>
+        </div>
+
         <!-- Keyword glossary plates (Hearthstone-style reference tiles) -->
         <div v-if="glossary.length" class="glossary-col" :class="glossarySide">
           <div v-for="g in glossary" :key="g.label" class="glossary-plate">
@@ -162,6 +170,31 @@ const glossarySide = computed<'side-right' | 'side-left'>(() => {
 .card-preview-inner {
   width: 200px;
   height: 280px;
+}
+
+/* Flavour scroll under the magnified card — a slim torn-parchment ribbon
+   carrying the card's hand-written line. Centred on the card, clamped to its
+   width so it never sprawls. */
+.flavor-scroll {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  max-width: 280px;
+  padding: 8px 14px;
+  border-radius: 4px 10px 5px 11px;
+  border: 1px solid #6b4a16;
+  background: linear-gradient(180deg, #f3e5c3 0%, #e6cf9c 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 18px rgba(0, 0, 0, 0.55);
+}
+.flavor-text {
+  display: block;
+  font-style: italic;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: center;
+  color: #4a3210;
 }
 
 /* Glossary plates beside the zoomed card */

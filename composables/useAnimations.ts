@@ -518,6 +518,61 @@ export function useAnimations() {
     })
   }
 
+  /**
+   * Death shatter — a burst of small shards flung outward from a dying minion's
+   * centre, each tumbling, falling under a touch of gravity and fading. This is
+   * the "weight" on a kill the clean CSS fade lacked: minions now break apart
+   * instead of politely vanishing. Self-removing; a no-op under reduced-motion.
+   * @param node - the dying minion element (shards spawn at its centre)
+   * @param tint - optional class colour; shards take its hue, else bone-grey
+   */
+  function deathShatter(node: Element | null | undefined, tint?: FxTint): void {
+    const c = centerOf(node)
+    if (!c || reduced || typeof document === 'undefined') return
+    const e = el(node)
+    const rect = e?.getBoundingClientRect()
+    const spread = rect ? Math.min(rect.width, rect.height) * 0.4 : 26
+    const color = tint?.light ?? '#cfc6b4'
+    const glow = tint?.glow ?? 'rgba(160,150,130,0.5)'
+    const count = 9
+    for (let i = 0; i < count; i++) {
+      const shard = document.createElement('div')
+      const s = gsap.utils.random(5, 11)
+      shard.style.cssText = [
+        'position:fixed',
+        `left:${c.x}px`,
+        `top:${c.y}px`,
+        `width:${s}px`,
+        `height:${s * gsap.utils.random(0.6, 1.4)}px`,
+        'margin-left:' + -s / 2 + 'px',
+        'margin-top:' + -s / 2 + 'px',
+        'pointer-events:none',
+        'z-index:188',
+        `background:linear-gradient(140deg, ${color}, rgba(40,32,24,0.9))`,
+        `box-shadow:0 0 6px ${glow}`,
+        'border-radius:1px',
+      ].join(';')
+      document.body.appendChild(shard)
+      const ang = (Math.PI * 2 * i) / count + gsap.utils.random(-0.3, 0.3)
+      const dist = gsap.utils.random(0.6, 1.3) * (spread + 28)
+      gsap.fromTo(
+        shard,
+        { x: 0, y: 0, opacity: 1, rotateZ: 0, scale: 1 },
+        {
+          x: Math.cos(ang) * dist,
+          // bias downward so shards fall, not just radiate
+          y: Math.sin(ang) * dist * 0.7 + gsap.utils.random(18, 40),
+          rotateZ: gsap.utils.random(-220, 220),
+          opacity: 0,
+          scale: 0.4,
+          duration: gsap.utils.random(0.4, 0.62),
+          ease: 'power2.out',
+          onComplete: () => shard.remove(),
+        }
+      )
+    }
+  }
+
   /* --------------------------------------------------------------------------
    * Hero / mana / hero power
    * ----------------------------------------------------------------------- */
@@ -639,6 +694,7 @@ export function useAnimations() {
     shieldBreak,
     floatingNumber,
     death,
+    deathShatter,
     heroHit,
     manaFill,
     manaSpend,

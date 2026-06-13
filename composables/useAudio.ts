@@ -26,6 +26,15 @@ export type SfxName =
   | 'victory'
   | 'defeat'
 
+/**
+ * Procedurally-synthesised cues for actions that have no recorded SFX. They are
+ * built live from oscillators, so they ship no asset files, can never 404, and
+ * stay tonally consistent with the rest of the palette. These fill the moments
+ * that previously played in silence (a spell resolving, a heal, mana spent, a
+ * hero power, an illegal action) — the gaps that read as "lifeless".
+ */
+export type ToneName = 'spell' | 'heal' | 'mana' | 'heroPower' | 'error'
+
 /** Looping ambient tracks. */
 export type MusicName = 'menu' | 'board'
 
@@ -72,6 +81,15 @@ const THROTTLE_MS: Record<SfxName, number> = {
   defeat: 400,
 }
 
+/** Minimum gap (ms) between repeats of a synth tone. */
+const TONE_THROTTLE_MS: Record<ToneName, number> = {
+  spell: 50,
+  heal: 60,
+  mana: 40,
+  heroPower: 80,
+  error: 120,
+}
+
 /** Ambient music sits well below the SFX bus. */
 const MUSIC_LEVEL = 0.35
 /** SFX preloaded right after the first user gesture (the common in-match set). */
@@ -90,6 +108,7 @@ interface AudioSingleton {
   buffers: Map<string, AudioBuffer>
   loading: Map<string, Promise<AudioBuffer | null>>
   lastPlayed: Map<SfxName, number>
+  lastToned: Map<ToneName, number>
   settings: ReturnType<typeof useSettingsStore> | null
   desiredMusic: MusicName | null
   music: MusicVoice | null
@@ -108,6 +127,7 @@ const S: AudioSingleton = {
   buffers: new Map(),
   loading: new Map(),
   lastPlayed: new Map(),
+  lastToned: new Map(),
   settings: null,
   desiredMusic: null,
   music: null,
@@ -289,6 +309,87 @@ function play(name: SfxName, opts: { rate?: number; gain?: number } = {}): void 
   })
 }
 
+/**
+ * One synthesised partial: an oscillator swept from `f0`→`f1` Hz over `dur`
+ * seconds, shaped by a quick attack / exponential decay envelope, started at
+ * `delay` seconds after now. Routed through the SFX bus so the mute toggle and
+ * master volume apply exactly as they do to recorded sounds.
+ */
+function partial(opts: {
+  type: OscillatorType
+  f0: number
+  f1?: number
+  dur: number
+  gain: number
+  delay?: number
+}): void {
+  const ctx = S.ctx
+  if (!ctx || !S.sfxBus) return
+  const t = ctx.currentTime + (opts.delay ?? 0)
+  const osc = ctx.createOscillator()
+  osc.type = opts.type
+  osc.frequency.setValueAtTime(opts.f0, t)
+  if (opts.f1 != null && opts.f1 !== opts.f0) {
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1, opts.f1), t + opts.dur)
+  }
+  const g = ctx.createGain()
+  g.gain.setValueAtTime(0.0001, t)
+  g.gain.exponentialRampToValueAtTime(opts.gain, t + 0.012) // fast attack
+  g.gain.exponentialRampToValueAtTime(0.0001, t + opts.dur) // decay to silence
+  osc.connect(g)
+  g.connect(S.sfxBus)
+  osc.start(t)
+  osc.stop(t + opts.dur + 0.02)
+}
+
+/** Recipes for each synthesised cue — a small stack of partials. */
+const TONE_RECIPES: Record<ToneName, () => void> = {
+  // Spell resolving: an airy shimmer rising in two detuned voices.
+  spell() {
+    partial({ type: 'triangle', f0: 520, f1: 1180, dur: 0.34, gain: 0.16 })
+    partial({ type: 'sine', f0: 784, f1: 1568, dur: 0.3, gain: 0.1, delay: 0.02 })
+  },
+  // Heal: a soft consonant bell (root + major third), gentle and warm.
+  heal() {
+    partial({ type: 'sine', f0: 659, dur: 0.5, gain: 0.14 })
+    partial({ type: 'sine', f0: 880, dur: 0.46, gain: 0.09, delay: 0.04 })
+  },
+  // Mana spent: a short hollow "ploink".
+  mana() {
+    partial({ type: 'triangle', f0: 420, f1: 240, dur: 0.16, gain: 0.13 })
+  },
+  // Hero power: a resonant thunk topped with a bright spark.
+  heroPower() {
+    partial({ type: 'square', f0: 180, f1: 110, dur: 0.22, gain: 0.12 })
+    partial({ type: 'triangle', f0: 990, f1: 1480, dur: 0.26, gain: 0.08, delay: 0.04 })
+  },
+  // Illegal action: a low, flat buzz that reads instantly as "no".
+  error() {
+    partial({ type: 'sawtooth', f0: 200, f1: 150, dur: 0.18, gain: 0.11 })
+    partial({ type: 'sawtooth', f0: 150, f1: 110, dur: 0.2, gain: 0.09, delay: 0.05 })
+  },
+}
+
+/**
+ * Play a procedurally-synthesised cue. Same gating as {@link play}: muted →
+ * silent, gesture-gated, and throttled against rapid repeats.
+ */
+function tone(name: ToneName): void {
+  const s = settings()
+  if (s && !s.soundOn) return
+  if (!supported()) return
+
+  const t = now()
+  const last = S.lastToned.get(name) ?? -Infinity
+  if (t - last < (TONE_THROTTLE_MS[name] ?? 60)) return
+  S.lastToned.set(name, t)
+
+  const ctx = ensureCtx()
+  if (!ctx) return
+  resume()
+  TONE_RECIPES[name]()
+}
+
 /** Warm the buffer cache for a set of sounds (background, non-blocking). */
 function preload(names: SfxName[] = PRELOAD): void {
   if (!supported()) return
@@ -393,10 +494,10 @@ export function useAudio() {
     bindGestureUnlock()
     // Expose a debug handle in dev so audio can be poked from the console.
     try {
-      if ((import.meta as any).dev) (window as any).__audio = { S, play, playMusic, stopMusic, unlock }
+      if ((import.meta as any).dev) (window as any).__audio = { S, play, tone, playMusic, stopMusic, unlock }
     } catch {
       /* import.meta.dev not available */
     }
   }
-  return { play, preload, playMusic, stopMusic, unlock }
+  return { play, tone, preload, playMusic, stopMusic, unlock }
 }
