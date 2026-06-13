@@ -418,6 +418,132 @@ export function useAnimations() {
     )
   }
 
+  /**
+   * Radiating spark streaks — the firework "rays": thin tapered darts that shoot
+   * out from a point and fade. Radial by default, or biased along `dir` (with
+   * `spread`) for a directional muzzle kick.
+   */
+  function sparkStreaks(
+    c: Pt,
+    opts: {
+      colors: string[]
+      glow: string
+      count: number
+      dist: number
+      /** Radians: if set, streaks fan around this heading instead of full-circle. */
+      dir?: number
+      spread?: number
+      z?: number
+    }
+  ): void {
+    if (reduced || typeof document === 'undefined') return
+    const spread = opts.spread ?? Math.PI * 2
+    for (let i = 0; i < opts.count; i++) {
+      const ang =
+        opts.dir != null
+          ? opts.dir + gsap.utils.random(-spread / 2, spread / 2)
+          : (Math.PI * 2 * i) / opts.count + gsap.utils.random(-0.25, 0.25)
+      const color = opts.colors[i % opts.colors.length]
+      const len = gsap.utils.random(9, 17)
+      const streak = document.createElement('div')
+      streak.style.cssText = [
+        'position:fixed',
+        `left:${c.x}px`,
+        `top:${c.y}px`,
+        `width:${len}px`,
+        'height:3px',
+        'margin-top:-1.5px',
+        'pointer-events:none',
+        `z-index:${opts.z ?? 192}`,
+        'mix-blend-mode:screen',
+        'border-radius:2px',
+        `background:linear-gradient(90deg, ${color}, rgba(0,0,0,0))`,
+        `box-shadow:0 0 6px ${opts.glow}`,
+      ].join(';')
+      document.body.appendChild(streak)
+      const dist = gsap.utils.random(0.7, 1.2) * opts.dist
+      gsap.set(streak, { rotation: (ang * 180) / Math.PI, transformOrigin: '0 50%' })
+      gsap.fromTo(
+        streak,
+        { x: 0, y: 0, opacity: 1, scaleX: 0.5 },
+        {
+          x: Math.cos(ang) * dist,
+          y: Math.sin(ang) * dist,
+          opacity: 0,
+          scaleX: 1.1,
+          duration: gsap.utils.random(0.3, 0.5),
+          ease: 'power2.out',
+          onComplete: () => streak.remove(),
+        }
+      )
+    }
+  }
+
+  /**
+   * The firework "crackle" — a delayed scatter of tiny twinkles that pop in
+   * after the main burst, then drift and fade. This is the secondary report
+   * that makes a burst read as a firework rather than a single flash.
+   */
+  function crackle(c: Pt, colors: string[], glow: string, count = 10): void {
+    if (reduced || typeof document === 'undefined') return
+    gsap.delayedCall(gsap.utils.random(0.1, 0.17), () => {
+      for (let i = 0; i < count; i++) {
+        const tw = document.createElement('div')
+        const s = gsap.utils.random(2, 4)
+        const ox = gsap.utils.random(-36, 36)
+        const oy = gsap.utils.random(-32, 22)
+        tw.style.cssText = [
+          'position:fixed',
+          `left:${c.x + ox}px`,
+          `top:${c.y + oy}px`,
+          `width:${s}px`,
+          `height:${s}px`,
+          'margin-left:' + -s / 2 + 'px',
+          'margin-top:' + -s / 2 + 'px',
+          'border-radius:50%',
+          'pointer-events:none',
+          'z-index:193',
+          'mix-blend-mode:screen',
+          `background:${colors[i % colors.length]}`,
+          `box-shadow:0 0 6px ${glow}`,
+        ].join(';')
+        document.body.appendChild(tw)
+        // Quick pop-in, then a brief drift-and-fade — the twinkle.
+        gsap.fromTo(
+          tw,
+          { opacity: 0, scale: 0.3 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.08,
+            ease: 'power1.out',
+            onComplete: () => {
+              gsap.to(tw, {
+                opacity: 0,
+                scale: 0.2,
+                y: '+=10',
+                duration: gsap.utils.random(0.18, 0.34),
+                ease: 'power1.in',
+                onComplete: () => tw.remove(),
+              })
+            },
+          }
+        )
+      }
+    })
+  }
+
+  /**
+   * Launch kick ("pew") — a bright flash plus a fan of forward spark streaks at
+   * the caster as a projectile leaves, so a cast reads as fired, not just spawned.
+   */
+  function muzzleFlash(from: Pt, to: Pt, core: string, glow: string): void {
+    if (reduced || typeof document === 'undefined') return
+    const ang = Math.atan2(to.y - from.y, to.x - from.x)
+    flashAt(from, 0.4, core)
+    sparkStreaks(from, { colors: [core], glow, count: 5, dist: 26, dir: ang, spread: 0.9, z: 191 })
+  }
+
   /** A fading wake dot dropped behind a moving projectile. */
   function spawnTrail(x: number, y: number, color: string, size: number): void {
     if (typeof document === 'undefined') return
@@ -487,6 +613,8 @@ export function useAnimations() {
       `box-shadow:0 0 ${Math.round(s * 0.8)}px ${Math.round(s * 0.3)}px ${spec.glow}`,
     ].join(';')
     document.body.appendChild(node)
+    // The launch "pew": a flash + forward sparks kicking off the caster.
+    muzzleFlash(from, to, spec.core, spec.glow)
     return new Promise<void>((resolve) => {
       const proxy = { t: 0 }
       let lastTrail = 0
@@ -506,7 +634,7 @@ export function useAnimations() {
             rotation: spec.spin * t,
             scale: 1 + 0.16 * Math.sin(t * Math.PI),
           })
-          if (spec.trail && t - lastTrail > 0.055) {
+          if (spec.trail && t - lastTrail > 0.042) {
             lastTrail = t
             spawnTrail(x, y, spec.trail, s)
           }
@@ -548,16 +676,18 @@ export function useAnimations() {
       case 'fire':
         return {
           ...base,
-          size: 26,
+          size: 28,
           arc: 54,
           duration: 0.46,
           spin: 0,
           shape: 'orb',
           onImpact: (x, y) => {
             const c = { x, y }
-            flashAt(c, 0.85, 'rgba(255,210,130,0.95)')
-            ringAt(c, p.edge, p.glow, 84)
-            shardsAt(c, { color: p.edge, glow: p.glow, count: 9, dist: 60, shape: 'orb', gravity: 0.5 })
+            flashAt(c, 0.95, 'rgba(255,215,140,0.97)')
+            ringAt(c, p.edge, p.glow, 92)
+            shardsAt(c, { color: p.edge, glow: p.glow, count: 11, dist: 66, shape: 'orb', gravity: 0.55 })
+            sparkStreaks(c, { colors: ['#ffe9a8', p.edge, '#ff8a3c'], glow: p.glow, count: 11, dist: 60 })
+            crackle(c, ['#ffd36b', p.edge, '#ff8a3c'], p.glow, 8)
           },
         }
       case 'frost':
@@ -576,18 +706,22 @@ export function useAnimations() {
           },
         }
       case 'arcane':
+        // The fireworks signature: a bright burst of multi-hued rays + a
+        // delayed crackle of twinkles — a proper firework, not a single pop.
         return {
           ...base,
-          size: 14,
+          size: 16,
           arc: 18,
-          duration: 0.34,
+          duration: 0.32,
           spin: 360,
           shape: 'dart',
           onImpact: (x, y) => {
             const c = { x, y }
-            flashAt(c, 0.5, 'rgba(240,200,255,0.95)')
+            flashAt(c, 0.65, 'rgba(245,210,255,0.97)')
+            ringAt(c, p.edge, p.glow, 60)
+            sparkStreaks(c, { colors: ['#fff0ff', p.core, p.edge, '#ffd36b'], glow: p.glow, count: 15, dist: 66 })
             sparkleAt(c, p.core, p.glow)
-            ringAt(c, p.edge, p.glow, 52)
+            crackle(c, ['#fff0ff', p.core, '#9cd2ff', '#ffd36b'], p.glow, 12)
           },
         }
       case 'lightning':

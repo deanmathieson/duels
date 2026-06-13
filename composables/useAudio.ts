@@ -48,6 +48,8 @@ export type ToneName =
   | 'shadow'
   | 'nature'
   | 'holy'
+  // The firework "crackle" — a popping report layered on a burst impact.
+  | 'crackle'
 
 /** Looping ambient tracks. */
 export type MusicName = 'menu' | 'board'
@@ -111,6 +113,7 @@ const TONE_THROTTLE_MS: Record<ToneName, number> = {
   shadow: 40,
   nature: 40,
   holy: 40,
+  crackle: 40,
 }
 
 /** Ambient music sits well below the SFX bus. */
@@ -392,20 +395,23 @@ const TONE_RECIPES: Record<ToneName, () => void> = {
     partial({ type: 'sawtooth', f0: 150, f1: 110, dur: 0.2, gain: 0.09, delay: 0.05 })
   },
   // --- Spell-school launch cues (the projectile leaving the caster) ---------
-  // Fire: a guttural downward whoosh — the roar of a comet taking off.
+  // Fire: a guttural downward whoosh with a punchy low body — comet liftoff.
   fire() {
-    partial({ type: 'sawtooth', f0: 520, f1: 130, dur: 0.3, gain: 0.12 })
+    partial({ type: 'sawtooth', f0: 540, f1: 130, dur: 0.3, gain: 0.13 })
     partial({ type: 'triangle', f0: 300, f1: 90, dur: 0.34, gain: 0.1, delay: 0.01 })
+    partial({ type: 'square', f0: 160, f1: 70, dur: 0.14, gain: 0.09 }) // chest-thump transient
   },
   // Frost: a high, glassy zing rising into a brittle shimmer.
   frost() {
     partial({ type: 'sine', f0: 1500, f1: 2300, dur: 0.26, gain: 0.1 })
     partial({ type: 'triangle', f0: 880, f1: 1320, dur: 0.22, gain: 0.07, delay: 0.02 })
   },
-  // Arcane: two detuned voices sparkling upward — brighter/faster than `spell`.
+  // Arcane: a bright, snappy "pew" — a fast descending zip with a sparkle on
+  // top. The signature launch of the fireworks school.
   arcane() {
-    partial({ type: 'triangle', f0: 680, f1: 1500, dur: 0.3, gain: 0.13 })
-    partial({ type: 'sine', f0: 1020, f1: 2040, dur: 0.26, gain: 0.08, delay: 0.02 })
+    partial({ type: 'triangle', f0: 1700, f1: 760, dur: 0.16, gain: 0.13 })
+    partial({ type: 'sine', f0: 2400, f1: 1120, dur: 0.12, gain: 0.08 })
+    partial({ type: 'sine', f0: 1180, f1: 2360, dur: 0.1, gain: 0.06, delay: 0.05 }) // sparkle tail
   },
   // Lightning: a fast square crack with a sawtooth snap on top.
   lightning() {
@@ -426,6 +432,13 @@ const TONE_RECIPES: Record<ToneName, () => void> = {
   holy() {
     partial({ type: 'sine', f0: 784, dur: 0.4, gain: 0.12 })
     partial({ type: 'sine', f0: 1175, dur: 0.36, gain: 0.08, delay: 0.03 })
+  },
+  // Crackle: a quick stutter of high pops — the firework's secondary report.
+  crackle() {
+    partial({ type: 'square', f0: 1800, f1: 900, dur: 0.05, gain: 0.06 })
+    partial({ type: 'square', f0: 2200, f1: 1100, dur: 0.045, gain: 0.05, delay: 0.05 })
+    partial({ type: 'square', f0: 1500, f1: 700, dur: 0.05, gain: 0.05, delay: 0.1 })
+    partial({ type: 'triangle', f0: 2600, f1: 1400, dur: 0.04, gain: 0.04, delay: 0.14 })
   },
 }
 

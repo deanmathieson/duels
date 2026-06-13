@@ -1024,6 +1024,9 @@ async function processEvents(events: GameEvent[]): Promise<void> {
               style,
               tintForCard(ev.cardId)
             )
+            // The firework schools pop a crackle as the burst lands (the await
+            // resolves at the first projectile's impact).
+            if (style === 'fire' || style === 'arcane') audio.tone('crackle')
           } else {
             audio.tone('spell')
             anim.castGlow(nodeFor(HERO_TARGET(ev.player)), tintForCard(ev.cardId))
