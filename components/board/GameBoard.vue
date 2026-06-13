@@ -238,8 +238,9 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { getCard, getHeroPower, hasCard } from '~/game/index'
 import type { ChooseOneOption, GameEvent, MinionInstance } from '~/game/types'
 import { CLASS_COLOR } from '~/data/terms'
+import { resolveSpellFx, type SpellFxStyle } from '~/data/spellFx'
 import { useAnimations } from '~/composables/useAnimations'
-import { useAudio } from '~/composables/useAudio'
+import { useAudio, type ToneName } from '~/composables/useAudio'
 
 /**
  * GameBoard — the playable battlefield.
@@ -928,13 +929,36 @@ function removeSplash(id: number): void {
 const yourTurnTrigger = ref(0)
 const enemyTurnTrigger = ref(0)
 
+/** Map a spell school to its launch-cue tone (generic `orb` → the `spell` cue). */
+function launchTone(style: SpellFxStyle): ToneName {
+  return style === 'orb' ? 'spell' : style
+}
+
+/**
+ * Gather the targets a just-played spell will hit, for projectile aiming. Reads
+ * forward from the `cardPlayed` event over the spell's own `damage` events,
+ * stopping at the next card / attack / turn boundary so we don't bleed into a
+ * later action. Duplicates are kept so a multi-hit spell (e.g. the split-star
+ * barrage) fires one projectile per hit.
+ */
+function collectSpellTargets(events: GameEvent[], startIdx: number): string[] {
+  const ids: string[] = []
+  for (let j = startIdx + 1; j < events.length; j++) {
+    const e = events[j]
+    if (e.type === 'cardPlayed' || e.type === 'attack' || e.type === 'turnStarted') break
+    if (e.type === 'damage') ids.push(e.targetId)
+  }
+  return ids
+}
+
 /**
  * Process a batch of engine events into animations. DOM nodes are read after a
  * tick so newly-summoned minions exist; damage/attacks animate immediately.
  */
 async function processEvents(events: GameEvent[]): Promise<void> {
   // Let Vue patch the DOM (new minions, removed ones) before measuring.
-  for (const ev of events) {
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i]
     switch (ev.type) {
       case 'turnStarted':
         if (ev.player === 0) yourTurnTrigger.value++
@@ -984,12 +1008,26 @@ async function processEvents(events: GameEvent[]): Promise<void> {
         anim.deathShatter(nodeFor(ev.instanceId), tintForInstance(ev.instanceId))
         break
       case 'cardPlayed': {
-        // A spell resolving pulses a class-tinted ring from the caster's hero,
-        // so each calling's spells read in its colour (both players).
         const def = hasCard(ev.cardId) ? getCard(ev.cardId) : undefined
         if (def?.type === 'spell') {
-          audio.tone('spell')
-          anim.castGlow(nodeFor(HERO_TARGET(ev.player)), tintForCard(ev.cardId))
+          // Damage spells fling a themed projectile from the caster to each
+          // target; the engine's following `damage` events land their impact as
+          // the barrage arrives. Non-damage spells (draw, armor, summon, buff)
+          // have no targets to fly at, so they keep the class-tinted cast ring.
+          const targetIds = collectSpellTargets(events, i)
+          if (targetIds.length) {
+            const style = resolveSpellFx(ev.cardId, def.name)
+            audio.tone(launchTone(style))
+            await anim.spellProjectiles(
+              nodeFor(HERO_TARGET(ev.player)),
+              targetIds.map((id) => nodeFor(id)),
+              style,
+              tintForCard(ev.cardId)
+            )
+          } else {
+            audio.tone('spell')
+            anim.castGlow(nodeFor(HERO_TARGET(ev.player)), tintForCard(ev.cardId))
+          }
         }
         break
       }

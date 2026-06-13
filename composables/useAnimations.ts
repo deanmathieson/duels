@@ -1,9 +1,16 @@
 import { gsap } from 'gsap'
+import { SPELL_FX_PALETTE, type SpellFxStyle } from '../data/spellFx'
 
 /** A minimal class-colour tint passed into the FX helpers (see data/terms.ts). */
 export interface FxTint {
   light: string
   glow: string
+}
+
+/** A viewport point — the currency of the point-based FX helpers. */
+interface Pt {
+  x: number
+  y: number
 }
 
 /**
@@ -58,35 +65,8 @@ export function useAnimations() {
     tint = 'rgba(255,240,200,0.95)'
   ): void {
     const c = centerOf(node)
-    if (!c || reduced || typeof document === 'undefined') return
-    const size = 46 + power * 70
-    const bloom = document.createElement('div')
-    bloom.style.cssText = [
-      'position:fixed',
-      `left:${c.x}px`,
-      `top:${c.y}px`,
-      `width:${size}px`,
-      `height:${size}px`,
-      'margin-left:' + -size / 2 + 'px',
-      'margin-top:' + -size / 2 + 'px',
-      'border-radius:50%',
-      'pointer-events:none',
-      'z-index:190',
-      'mix-blend-mode:screen',
-      `background:radial-gradient(circle, ${tint} 0%, rgba(255,200,120,0.55) 42%, rgba(255,160,60,0) 72%)`,
-    ].join(';')
-    document.body.appendChild(bloom)
-    gsap.fromTo(
-      bloom,
-      { scale: 0.4, opacity: 0.95 },
-      {
-        scale: 1.5 + power,
-        opacity: 0,
-        duration: 0.3 + power * 0.18,
-        ease: 'power2.out',
-        onComplete: () => bloom.remove(),
-      }
-    )
+    if (!c) return
+    flashAt(c, power, tint)
   }
 
   /**
@@ -292,6 +272,418 @@ export function useAnimations() {
         onComplete: () => bloom.remove(),
       }
     )
+  }
+
+  /* --------------------------------------------------------------------------
+   * Spell projectiles — themed orbs/shards flung from caster to target, with a
+   * school-specific impact (explosion, frost shatter, arcane spark…). The whole
+   * subsystem is gated behind reduced-motion: those callers get an instantly
+   * resolved Promise so spell *damage* still lands without delay.
+   * ----------------------------------------------------------------------- */
+
+  /** Point-based impact flash (the node-based {@link impactFlash} delegates here). */
+  function flashAt(c: Pt, power = 0.5, tint = 'rgba(255,240,200,0.95)'): void {
+    if (reduced || typeof document === 'undefined') return
+    const size = 46 + power * 70
+    const bloom = document.createElement('div')
+    bloom.style.cssText = [
+      'position:fixed',
+      `left:${c.x}px`,
+      `top:${c.y}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      'margin-left:' + -size / 2 + 'px',
+      'margin-top:' + -size / 2 + 'px',
+      'border-radius:50%',
+      'pointer-events:none',
+      'z-index:190',
+      'mix-blend-mode:screen',
+      `background:radial-gradient(circle, ${tint} 0%, rgba(255,200,120,0.5) 42%, rgba(255,160,60,0) 72%)`,
+    ].join(';')
+    document.body.appendChild(bloom)
+    gsap.fromTo(
+      bloom,
+      { scale: 0.4, opacity: 0.95 },
+      {
+        scale: 1.5 + power,
+        opacity: 0,
+        duration: 0.3 + power * 0.18,
+        ease: 'power2.out',
+        onComplete: () => bloom.remove(),
+      }
+    )
+  }
+
+  /** An expanding tinted ring at a point — the shockwave of an impact. */
+  function ringAt(c: Pt, color: string, glow: string, size = 64): void {
+    if (reduced || typeof document === 'undefined') return
+    const ring = document.createElement('div')
+    ring.style.cssText = [
+      'position:fixed',
+      `left:${c.x}px`,
+      `top:${c.y}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      'margin-left:' + -size / 2 + 'px',
+      'margin-top:' + -size / 2 + 'px',
+      'border-radius:50%',
+      'pointer-events:none',
+      'z-index:189',
+      'mix-blend-mode:screen',
+      `border:2px solid ${color}`,
+      `box-shadow:0 0 16px 4px ${glow}, inset 0 0 12px ${glow}`,
+    ].join(';')
+    document.body.appendChild(ring)
+    gsap.fromTo(
+      ring,
+      { scale: 0.45, opacity: 0.9 },
+      { scale: 1.9, opacity: 0, duration: 0.46, ease: 'power2.out', onComplete: () => ring.remove() }
+    )
+  }
+
+  /** A burst of shards flung from a point — embers (orb) or ice (shard). */
+  function shardsAt(
+    c: Pt,
+    opts: { color: string; glow: string; count: number; dist: number; shape: 'orb' | 'shard'; gravity: number }
+  ): void {
+    if (reduced || typeof document === 'undefined') return
+    for (let i = 0; i < opts.count; i++) {
+      const shard = document.createElement('div')
+      const s = gsap.utils.random(5, 10)
+      const isOrb = opts.shape === 'orb'
+      shard.style.cssText = [
+        'position:fixed',
+        `left:${c.x}px`,
+        `top:${c.y}px`,
+        `width:${s}px`,
+        `height:${isOrb ? s : s * gsap.utils.random(1.4, 2.4)}px`,
+        'margin-left:' + -s / 2 + 'px',
+        'margin-top:' + -s / 2 + 'px',
+        'pointer-events:none',
+        'z-index:191',
+        'mix-blend-mode:screen',
+        isOrb
+          ? `background:radial-gradient(circle, ${opts.color} 0%, rgba(0,0,0,0) 72%)`
+          : `background:linear-gradient(${opts.color}, rgba(0,0,0,0))`,
+        `box-shadow:0 0 6px ${opts.glow}`,
+        isOrb ? 'border-radius:50%' : 'border-radius:1px',
+      ].join(';')
+      document.body.appendChild(shard)
+      const ang = (Math.PI * 2 * i) / opts.count + gsap.utils.random(-0.3, 0.3)
+      const dist = gsap.utils.random(0.7, 1.25) * opts.dist
+      gsap.fromTo(
+        shard,
+        { x: 0, y: 0, opacity: 1, rotateZ: 0, scale: 1 },
+        {
+          x: Math.cos(ang) * dist,
+          y: Math.sin(ang) * dist + opts.gravity * gsap.utils.random(20, 44),
+          rotateZ: gsap.utils.random(-200, 200),
+          opacity: 0,
+          scale: 0.3,
+          duration: gsap.utils.random(0.34, 0.56),
+          ease: 'power2.out',
+          onComplete: () => shard.remove(),
+        }
+      )
+    }
+  }
+
+  /** A four-point sparkle that blooms and fades — the arcane impact accent. */
+  function sparkleAt(c: Pt, color: string, glow: string): void {
+    if (reduced || typeof document === 'undefined') return
+    const size = 46
+    const star = document.createElement('div')
+    star.style.cssText = [
+      'position:fixed',
+      `left:${c.x}px`,
+      `top:${c.y}px`,
+      `width:${size}px`,
+      `height:${size}px`,
+      'margin-left:' + -size / 2 + 'px',
+      'margin-top:' + -size / 2 + 'px',
+      'pointer-events:none',
+      'z-index:191',
+      'mix-blend-mode:screen',
+      // Two crossed gradient bars form a + / sparkle; the radial adds a core.
+      `background:linear-gradient(${color},${color}) center/100% 14% no-repeat,` +
+        `linear-gradient(${color},${color}) center/14% 100% no-repeat,` +
+        `radial-gradient(circle, ${color} 0%, rgba(0,0,0,0) 60%)`,
+      `filter:drop-shadow(0 0 8px ${glow})`,
+    ].join(';')
+    document.body.appendChild(star)
+    gsap.fromTo(
+      star,
+      { scale: 0.3, opacity: 1, rotate: 0 },
+      { scale: 1.6, opacity: 0, rotate: 45, duration: 0.42, ease: 'power2.out', onComplete: () => star.remove() }
+    )
+  }
+
+  /** A fading wake dot dropped behind a moving projectile. */
+  function spawnTrail(x: number, y: number, color: string, size: number): void {
+    if (typeof document === 'undefined') return
+    const d = document.createElement('div')
+    const s = size * gsap.utils.random(0.45, 0.75)
+    d.style.cssText = [
+      'position:fixed',
+      `left:${x}px`,
+      `top:${y}px`,
+      `width:${s}px`,
+      `height:${s}px`,
+      'margin-left:' + -s / 2 + 'px',
+      'margin-top:' + -s / 2 + 'px',
+      'border-radius:50%',
+      'pointer-events:none',
+      'z-index:191',
+      'mix-blend-mode:screen',
+      `background:radial-gradient(circle, ${color} 0%, rgba(0,0,0,0) 70%)`,
+    ].join(';')
+    document.body.appendChild(d)
+    gsap.to(d, { opacity: 0, scale: 0.3, duration: 0.34, ease: 'power2.out', onComplete: () => d.remove() })
+  }
+
+  /** The visual recipe for a single projectile (built per-school by {@link buildSpec}). */
+  interface ProjectileSpec {
+    core: string
+    edge: string
+    glow: string
+    /** Trail wake colour, or undefined for a trail-less bolt. */
+    trail?: string
+    size: number
+    /** Perpendicular lift (px) of the flight arc's apex — 0 is dead straight. */
+    arc: number
+    duration: number
+    /** Total spin (deg) over the flight. */
+    spin: number
+    shape: 'orb' | 'shard' | 'dart'
+    onImpact: (x: number, y: number) => void
+  }
+
+  /** Fly one projectile from → to along an arc, resolving at the moment of impact. */
+  function projectile(from: Pt, to: Pt, spec: ProjectileSpec): Promise<void> {
+    if (reduced || typeof document === 'undefined') return Promise.resolve()
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+    const len = Math.hypot(dx, dy) || 1
+    // Perpendicular unit vector — the arc bows the flight off the straight line.
+    const nx = -dy / len
+    const ny = dx / len
+    const mid: Pt = { x: (from.x + to.x) / 2 + nx * spec.arc, y: (from.y + to.y) / 2 + ny * spec.arc }
+    const s = spec.size
+    const radius = spec.shape === 'orb' ? '50%' : spec.shape === 'shard' ? '2px' : '46% 46% 52% 52%'
+    const node = document.createElement('div')
+    node.style.cssText = [
+      'position:fixed',
+      `left:${from.x}px`,
+      `top:${from.y}px`,
+      `width:${s}px`,
+      `height:${s}px`,
+      'margin-left:' + -s / 2 + 'px',
+      'margin-top:' + -s / 2 + 'px',
+      `border-radius:${radius}`,
+      'pointer-events:none',
+      'z-index:192',
+      'mix-blend-mode:screen',
+      `background:radial-gradient(circle at 40% 35%, ${spec.core} 0%, ${spec.edge} 55%, rgba(0,0,0,0) 80%)`,
+      `box-shadow:0 0 ${Math.round(s * 0.8)}px ${Math.round(s * 0.3)}px ${spec.glow}`,
+    ].join(';')
+    document.body.appendChild(node)
+    return new Promise<void>((resolve) => {
+      const proxy = { t: 0 }
+      let lastTrail = 0
+      gsap.to(proxy, {
+        t: 1,
+        duration: spec.duration,
+        ease: 'power1.in',
+        onUpdate() {
+          const t = proxy.t
+          const u = 1 - t
+          // Quadratic Bézier from → mid → to.
+          const x = u * u * from.x + 2 * u * t * mid.x + t * t * to.x
+          const y = u * u * from.y + 2 * u * t * mid.y + t * t * to.y
+          gsap.set(node, {
+            x: x - from.x,
+            y: y - from.y,
+            rotation: spec.spin * t,
+            scale: 1 + 0.16 * Math.sin(t * Math.PI),
+          })
+          if (spec.trail && t - lastTrail > 0.055) {
+            lastTrail = t
+            spawnTrail(x, y, spec.trail, s)
+          }
+        },
+        onComplete() {
+          node.remove()
+          spec.onImpact(to.x, to.y)
+          resolve()
+        },
+      })
+    })
+  }
+
+  /** Build the per-school projectile recipe (palette + arc + impact). */
+  function buildSpec(style: SpellFxStyle, tint?: FxTint): ProjectileSpec {
+    if (style === 'orb') {
+      const core = tint?.light ?? '#ffe9a8'
+      const glow = tint?.glow ?? 'rgba(255,200,120,0.6)'
+      return {
+        core: '#ffffff',
+        edge: core,
+        glow,
+        trail: glow,
+        size: 18,
+        arc: 36,
+        duration: 0.4,
+        spin: 240,
+        shape: 'orb',
+        onImpact: (x, y) => {
+          const c = { x, y }
+          flashAt(c, 0.55, core)
+          ringAt(c, core, glow, 60)
+        },
+      }
+    }
+    const p = SPELL_FX_PALETTE[style]
+    const base = { core: p.core, edge: p.edge, glow: p.glow, trail: p.trail }
+    switch (style) {
+      case 'fire':
+        return {
+          ...base,
+          size: 26,
+          arc: 54,
+          duration: 0.46,
+          spin: 0,
+          shape: 'orb',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.85, 'rgba(255,210,130,0.95)')
+            ringAt(c, p.edge, p.glow, 84)
+            shardsAt(c, { color: p.edge, glow: p.glow, count: 9, dist: 60, shape: 'orb', gravity: 0.5 })
+          },
+        }
+      case 'frost':
+        return {
+          ...base,
+          size: 18,
+          arc: 26,
+          duration: 0.4,
+          spin: 520,
+          shape: 'shard',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.5, 'rgba(210,245,255,0.95)')
+            ringAt(c, p.edge, p.glow, 70)
+            shardsAt(c, { color: p.core, glow: p.glow, count: 6, dist: 52, shape: 'shard', gravity: 0.2 })
+          },
+        }
+      case 'arcane':
+        return {
+          ...base,
+          size: 14,
+          arc: 18,
+          duration: 0.34,
+          spin: 360,
+          shape: 'dart',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.5, 'rgba(240,200,255,0.95)')
+            sparkleAt(c, p.core, p.glow)
+            ringAt(c, p.edge, p.glow, 52)
+          },
+        }
+      case 'lightning':
+        return {
+          ...base,
+          size: 14,
+          arc: 10,
+          duration: 0.26,
+          spin: 0,
+          shape: 'dart',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.7, 'rgba(220,240,255,0.97)')
+            ringAt(c, p.edge, p.glow, 64)
+            shardsAt(c, { color: p.core, glow: p.glow, count: 5, dist: 46, shape: 'shard', gravity: 0 })
+          },
+        }
+      case 'shadow':
+        return {
+          ...base,
+          size: 20,
+          arc: 40,
+          duration: 0.44,
+          spin: 200,
+          shape: 'orb',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.6, 'rgba(190,140,230,0.9)')
+            ringAt(c, p.edge, p.glow, 72)
+            shardsAt(c, { color: p.edge, glow: p.glow, count: 7, dist: 54, shape: 'orb', gravity: 0.6 })
+          },
+        }
+      case 'nature':
+        return {
+          ...base,
+          size: 18,
+          arc: 46,
+          duration: 0.42,
+          spin: 120,
+          shape: 'orb',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.5, 'rgba(200,255,170,0.9)')
+            ringAt(c, p.edge, p.glow, 66)
+          },
+        }
+      case 'holy':
+        return {
+          ...base,
+          size: 20,
+          arc: 30,
+          duration: 0.4,
+          spin: 0,
+          shape: 'orb',
+          onImpact: (x, y) => {
+            const c = { x, y }
+            flashAt(c, 0.6, 'rgba(255,245,200,0.95)')
+            ringAt(c, p.edge, p.glow, 72)
+          },
+        }
+    }
+  }
+
+  /**
+   * Fling a spell's projectiles from the caster toward each target. Single-target
+   * spells get one projectile; AoE / multi-hit spells fan a staggered barrage.
+   * Resolves when the FIRST projectile lands, so the engine's damage impacts can
+   * begin firing in sync while later projectiles are still mid-flight.
+   *
+   * @param fromNode - the caster's hero element
+   * @param toNodes - one element per target (duplicates allowed for multi-hit)
+   * @param style - the projectile school (see resolveSpellFx)
+   * @param tint - class colour, used only by the generic `orb` school
+   */
+  function spellProjectiles(
+    fromNode: Element | null | undefined,
+    toNodes: (Element | null | undefined)[],
+    style: SpellFxStyle,
+    tint?: FxTint
+  ): Promise<void> {
+    if (reduced || typeof document === 'undefined') return Promise.resolve()
+    const from = centerOf(fromNode)
+    if (!from) return Promise.resolve()
+    const tos = toNodes
+      .map((n) => centerOf(n))
+      .filter((c): c is Pt => !!c)
+    if (!tos.length) return Promise.resolve()
+    const stagger = style === 'arcane' || style === 'lightning' ? 0.11 : 0.085
+    // Launch the trailing projectiles on a stagger (fire-and-forget); they land
+    // and explode on their own timeline as the barrage rolls in.
+    for (let i = 1; i < tos.length; i++) {
+      const to = tos[i]
+      gsap.delayedCall(i * stagger, () => void projectile(from, to, buildSpec(style, tint)))
+    }
+    // Gate the caller on the first projectile's flight only.
+    return projectile(from, tos[0], buildSpec(style, tint))
   }
 
   /* --------------------------------------------------------------------------
@@ -689,6 +1081,7 @@ export function useAnimations() {
     cardPlayGhost,
     summonPop,
     castGlow,
+    spellProjectiles,
     attackLunge,
     damageShake,
     shieldBreak,

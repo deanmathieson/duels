@@ -33,7 +33,21 @@ export type SfxName =
  * that previously played in silence (a spell resolving, a heal, mana spent, a
  * hero power, an illegal action) — the gaps that read as "lifeless".
  */
-export type ToneName = 'spell' | 'heal' | 'mana' | 'heroPower' | 'error'
+export type ToneName =
+  | 'spell'
+  | 'heal'
+  | 'mana'
+  | 'heroPower'
+  | 'error'
+  // Spell-school launch cues — the "whoosh" of a projectile leaving the caster,
+  // played the instant a themed spell projectile is flung (see useAnimations).
+  | 'fire'
+  | 'frost'
+  | 'arcane'
+  | 'lightning'
+  | 'shadow'
+  | 'nature'
+  | 'holy'
 
 /** Looping ambient tracks. */
 export type MusicName = 'menu' | 'board'
@@ -88,6 +102,15 @@ const TONE_THROTTLE_MS: Record<ToneName, number> = {
   mana: 40,
   heroPower: 80,
   error: 120,
+  // Launch cues fire in quick staggered bursts (AoE / missile barrages), so
+  // keep their throttle short enough that each projectile still gets a voice.
+  fire: 40,
+  frost: 40,
+  arcane: 40,
+  lightning: 40,
+  shadow: 40,
+  nature: 40,
+  holy: 40,
 }
 
 /** Ambient music sits well below the SFX bus. */
@@ -367,6 +390,42 @@ const TONE_RECIPES: Record<ToneName, () => void> = {
   error() {
     partial({ type: 'sawtooth', f0: 200, f1: 150, dur: 0.18, gain: 0.11 })
     partial({ type: 'sawtooth', f0: 150, f1: 110, dur: 0.2, gain: 0.09, delay: 0.05 })
+  },
+  // --- Spell-school launch cues (the projectile leaving the caster) ---------
+  // Fire: a guttural downward whoosh — the roar of a comet taking off.
+  fire() {
+    partial({ type: 'sawtooth', f0: 520, f1: 130, dur: 0.3, gain: 0.12 })
+    partial({ type: 'triangle', f0: 300, f1: 90, dur: 0.34, gain: 0.1, delay: 0.01 })
+  },
+  // Frost: a high, glassy zing rising into a brittle shimmer.
+  frost() {
+    partial({ type: 'sine', f0: 1500, f1: 2300, dur: 0.26, gain: 0.1 })
+    partial({ type: 'triangle', f0: 880, f1: 1320, dur: 0.22, gain: 0.07, delay: 0.02 })
+  },
+  // Arcane: two detuned voices sparkling upward — brighter/faster than `spell`.
+  arcane() {
+    partial({ type: 'triangle', f0: 680, f1: 1500, dur: 0.3, gain: 0.13 })
+    partial({ type: 'sine', f0: 1020, f1: 2040, dur: 0.26, gain: 0.08, delay: 0.02 })
+  },
+  // Lightning: a fast square crack with a sawtooth snap on top.
+  lightning() {
+    partial({ type: 'square', f0: 1200, f1: 300, dur: 0.16, gain: 0.1 })
+    partial({ type: 'sawtooth', f0: 2000, f1: 600, dur: 0.12, gain: 0.07 })
+  },
+  // Shadow: a low, swallowing dive — the air going cold.
+  shadow() {
+    partial({ type: 'sine', f0: 200, f1: 90, dur: 0.36, gain: 0.13 })
+    partial({ type: 'triangle', f0: 150, f1: 70, dur: 0.34, gain: 0.09, delay: 0.03 })
+  },
+  // Nature: a soft, growing swell — sap rising.
+  nature() {
+    partial({ type: 'triangle', f0: 520, f1: 760, dur: 0.26, gain: 0.12 })
+    partial({ type: 'sine', f0: 780, f1: 1040, dur: 0.24, gain: 0.07, delay: 0.02 })
+  },
+  // Holy: a clean consonant bell (root + fifth).
+  holy() {
+    partial({ type: 'sine', f0: 784, dur: 0.4, gain: 0.12 })
+    partial({ type: 'sine', f0: 1175, dur: 0.36, gain: 0.08, delay: 0.03 })
   },
 }
 
