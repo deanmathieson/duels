@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import type { RunRecord } from '~/game/run/meta'
 import {
   ALL_CALLINGS,
@@ -275,3 +275,9 @@ export const useMetaStore = defineStore('meta', () => {
     dailyStatus,
   }
 })
+
+// Accept hot updates so editing this store mid-session re-patches the live
+// instance instead of wedging its reactivity.
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useMetaStore, import.meta.hot))
+}

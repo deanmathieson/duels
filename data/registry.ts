@@ -241,6 +241,16 @@ export function getTreasureDef(id: string): TreasureDef {
   return t
 }
 
+/** @returns true when a treasure id resolves to a registered definition. */
+export function hasTreasureDef(id: string): boolean {
+  return id in treasureIndex
+}
+
+/** @returns true when a bucket id resolves to a registered definition. */
+export function hasBucketDef(id: string): boolean {
+  return id in bucketIndex
+}
+
 /** @returns the bucket definition for an id (throws if unknown). */
 export function getBucketDef(id: string): BucketDef {
   const b = bucketIndex[id]

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 
 const STORAGE_KEY = 'duels-settings'
@@ -111,3 +111,9 @@ export const useSettingsStore = defineStore('settings', () => {
     save,
   }
 })
+
+// Accept hot updates so editing this store mid-session re-patches the live
+// instance instead of wedging its reactivity.
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSettingsStore, import.meta.hot))
+}

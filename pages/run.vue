@@ -3,9 +3,15 @@
     <!-- Persistent HUD (hidden on end screens for a clean curtain) -->
     <RunHud v-if="showHud" @abandon="confirmAbandon" />
 
-    <!-- Stage view -->
+    <!-- Stage view. NOTE: no `mode="out-in"` — out-in holds the outgoing stage
+         until its leave transition's `transitionend` fires, and if that event
+         is missed (a backgrounded tab, an interrupted transition) the swap
+         hangs forever: the old stage gone, the next never mounted, which read
+         as the draft "dying" after a pick. A simultaneous crossfade always
+         mounts the incoming stage. The stages are absolutely positioned while
+         transitioning so the brief overlap doesn't shift layout. -->
     <div class="stage-area" :class="{ 'with-hud': showHud }">
-      <Transition name="stage-fade" mode="out-in">
+      <Transition name="stage-fade">
         <component :is="stageComponent" :key="run.stage" />
       </Transition>
     </div>
@@ -155,6 +161,14 @@ function doAbandon(): void {
 .stage-fade-enter-active,
 .stage-fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+/* During a simultaneous crossfade both stages exist briefly; take the leaving
+   one out of flow so the incoming stage holds the layout (no jump/shift). */
+.stage-fade-leave-active {
+  position: absolute;
+  inset: 0;
+  /* It's on its way out — don't let it intercept clicks meant for the incoming stage. */
+  pointer-events: none;
 }
 .stage-fade-enter-from {
   opacity: 0;

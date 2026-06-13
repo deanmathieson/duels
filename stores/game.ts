@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 import {
   applyAction,
@@ -527,3 +527,10 @@ export const useGameStore = defineStore('game', () => {
     HERO_TARGET,
   }
 })
+
+// Accept hot updates so editing this store mid-session re-patches the live
+// instance instead of wedging its reactivity (which left stage transitions
+// mounting blank after a store edit).
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useGameStore, import.meta.hot))
+}

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type {
   CardDef,
@@ -35,6 +35,8 @@ import {
   getBucketDef,
   getEnemyDef,
   hasEnemyDef,
+  hasTreasureDef,
+  hasBucketDef,
   migrateCardIds,
   enemies,
   bucketIdsForClass,
@@ -193,24 +195,43 @@ export const useRunStore = defineStore('run', () => {
     }
   }
 
+  /**
+   * Sanitise a persisted reward offering against current content: drop choice
+   * ids that no longer resolve (bucket ids for bucket offers, treasure ids
+   * otherwise). Returns undefined when the offering is missing or has no valid
+   * choices left, so a save written by an older build can't crash the reward UI.
+   */
+  function sanitizeOffering(o: RewardOffering | undefined): RewardOffering | undefined {
+    if (!o || !Array.isArray(o.choices)) return undefined
+    const valid = o.type === 'bucket' ? hasBucketDef : hasTreasureDef
+    const choices = o.choices.filter(valid)
+    return choices.length ? { ...o, choices } : undefined
+  }
+
   /** Apply a plain RunState onto the reactive refs. */
   function hydrate(s: RunState): void {
     stage.value = s.stage
     heroId.value = s.heroId
     heroPowerId.value = s.heroPowerId
-    signatureTreasureId.value = s.signatureTreasureId
     // Saved decks may reference card ids retired by content updates — map them
     // to their replacements (or drop them) instead of crashing on getCard.
     deck.value = migrateCardIds([...(s.deck ?? [])])
-    passiveTreasures.value = [...(s.passiveTreasureIds ?? [])]
-    activeTreasures.value = [...(s.activeTreasureIds ?? [])]
+    // Treasure ids, like card ids, may be retired by content updates (e.g. an id
+    // that was a treasure becoming a plain token). Drop any that no longer
+    // resolve so a stale save can't crash the treasure UI on render.
+    passiveTreasures.value = [...(s.passiveTreasureIds ?? [])].filter(hasTreasureDef)
+    activeTreasures.value = [...(s.activeTreasureIds ?? [])].filter(hasTreasureDef)
+    signatureTreasureId.value =
+      s.signatureTreasureId && hasTreasureDef(s.signatureTreasureId) ? s.signatureTreasureId : undefined
     wins.value = s.wins ?? 0
     losses.value = s.losses ?? 0
     maxHealth.value = s.maxHealth ?? STARTING_HEALTH
     round.value = s.round ?? 1
     seed.value = s.seed ?? (Date.now() & 0x7fffffff)
-    offering.value = s.offering
-    rewardQueue.value = (s.rewardQueue ?? []).map((o) => ({ ...o, choices: [...o.choices] }))
+    offering.value = sanitizeOffering(s.offering)
+    rewardQueue.value = (s.rewardQueue ?? [])
+      .map(sanitizeOffering)
+      .filter((o): o is RewardOffering => !!o)
     // A retired enemy id falls back to the round-based lineup.
     currentEnemyId.value = s.currentEnemyId && hasEnemyDef(s.currentEnemyId) ? s.currentEnemyId : undefined
     mode.value = s.mode ?? 'free'
@@ -781,3 +802,10 @@ export const useRunStore = defineStore('run', () => {
     skipReward,
   }
 })
+
+// Accept hot updates so editing this store mid-session re-patches the live
+// instance instead of wedging its reactivity (which left stage transitions —
+// e.g. hero select → hero power — mounting blank after a store edit).
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useRunStore, import.meta.hot))
+}
